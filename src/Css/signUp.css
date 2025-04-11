@@ -1,0 +1,10 @@
+ /* Sign Up */
+ .btn-secondary {
+    background-color: #2d485d !important;
+    border-color: #2d485d !important;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #3a5c72 !important; 
+    border-color: #3a5c72 !important;
+  }

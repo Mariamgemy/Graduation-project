@@ -1,0 +1,38 @@
+.btn-outline-secondry {
+  transition: all 0.3s ease-in-out !important;
+  font-family: "Dosis", sans-serif !important;
+  -webkit-transition: all 0.3s ease-in-out !important;
+  -moz-transition: all 0.3s ease-in-out !important;
+  -ms-transition: all 0.3s ease-in-out !important;
+  -o-transition: all 0.3s ease-in-out !important;
+}
+
+
+.btn-outline-secondry {
+  /*width: 150px !important;
+  height: 60px !important;
+  */border-radius: 10px !important;
+  background-image: linear-gradient(135deg, #5c91b4 0%, #040f16 100%) !important;
+  box-shadow: 0 10px 30px -8px gray !important;
+  outline: none !important;
+  cursor: pointer !important;
+  border: none !important;
+  font-size: 24px !important;
+  color: white !important;
+  -webkit-border-radius: 10px !important;
+  -moz-border-radius: 10px !important;
+  -ms-border-radius: 10px !important;
+  -o-border-radius: 10px !important;
+}
+
+.btn-outline-secondry:hover {
+  transform: translateY(3px) !important;
+  box-shadow: none !important;
+}
+
+.btn-outline-secondry:active {
+  opacity: 0.5 !important;
+}
+.nav-btn {
+  margin-left: 15px;
+}

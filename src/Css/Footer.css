@@ -1,0 +1,19 @@
+.nav-bgc{
+    background-color: var(--primary-color) !important;
+    color: #fff !important;
+
+}
+.footer-logo img{
+    max-width: 120px !important;
+
+}
+.custom-link{
+    line-height: 1.8;
+    justify-content: center;
+width: 75%;
+color: #fff;
+  
+}
+li a:hover{
+    color: #3b7bab;
+}

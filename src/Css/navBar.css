@@ -1,0 +1,289 @@
+/* NavBar */
+
+
+
+
+  
+  .navbar, .nav-link {
+    text-align: right !important;
+  }
+  
+
+  .nav-bgc{
+    background-color: var(--primary-color) !important;
+    
+  }
+  .navbar {
+    background-color: var(--primary-color) !important;
+    height: 104px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    
+  }
+  
+  
+  .navbar-brand img {
+    max-height: 90px; 
+    width: auto;
+    margin-top: 10px;
+  }
+  
+  
+  
+  @media (max-width: 991px) {
+    .navbar {
+      height: 70px;
+      padding: 0 10px;
+    }
+    .navbar-toggler {
+      margin-top: -20px; 
+    }
+    .nav-logo img {
+      max-height: 80px;
+      width: auto;
+      margin-top: -11px;
+    }
+  }
+  
+  /* .btn-outline-success{
+    background-color: #425A6C !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 30px !important;
+   
+  
+  }
+  .nav-btn {
+    margin-left: 15px;
+  }
+  .nav-btn:hover{
+    background-color:#3b6887!important;
+    transition: box-shadow 0.3s ease-in-out !important;
+  
+  }
+  .nav-btn:focus{
+    outline: none;
+    background-color:#3b6887!important;
+    box-shadow: 0 0 4px#fff !important; 
+    border-color: #fff !important;
+  } */
+
+  .btn-outline-success {
+    transition: all 0.3s ease-in-out !important;
+    font-family: "Dosis", sans-serif !important;
+    -webkit-transition: all 0.3s ease-in-out !important;
+    -moz-transition: all 0.3s ease-in-out !important;
+    -ms-transition: all 0.3s ease-in-out !important;
+    -o-transition: all 0.3s ease-in-out !important;
+}
+
+  
+  .btn-outline-success {
+    /* width: 150px !important;
+    height: 60px !important; */
+    border-radius: 50px !important;
+    background-image: linear-gradient(135deg, #5c91b4 0%, #040f16 100%) !important;
+    box-shadow: 0 10px 30px -8px gray !important;
+    outline: none !important;
+    cursor: pointer !important;
+    border: none !important;
+    font-size: 24px !important;
+    color: white !important;
+  }
+  
+  .btn-outline-success:hover {
+    transform: translateY(3px) !important;
+    box-shadow: none !important;
+  }
+  
+  .btn-outline-success:active {
+    opacity: 0.5 !important;
+  }
+  .nav-btn {
+    margin-left: 15px;
+  }
+
+
+
+  .close-fixed {
+    position: absolute;
+    top: 18px;
+    left: 10px; 
+    z-index: 1051;
+
+  }
+  .btn-close{
+  width: 1.6rem !important;
+  height: 1.6rem !important;
+  filter: brightness(0) invert(1);
+  -webkit-filter: brightness(0) invert(1);
+}
+  
+  
+  .navbar-nav .nav-link {
+    font-size: 20px; 
+    padding: 10px 15px; 
+    color: #fff;
+  }
+  
+  .textP{
+      color:var(--primary-color);
+  }
+  .btn-tog{
+    color: #fff !important;
+  }
+  .navbar-toggler-icon{
+    background-image: url(../logo/Vector.svg) !important;
+    width: 1.4em !important;
+    height: 1.4em !important;
+  }
+  .navbar-toggler{
+    border: none !important;
+  }
+  .navbar{
+    --bs-navbar-toggler-focus-width: 0 !important;
+  }
+  .h5-color{
+    color: #fff;
+    
+  }
+   /* _____________________________________________________________________ */
+  
+  
+  
+    
+  
+  .searchInput{
+    height: 50px;
+    background-color: transparent !important;
+    border-radius: 40px !important;
+    -webkit-border-radius: 40px !important;
+    -moz-border-radius: 40px !important;
+    -ms-border-radius: 40px !important;
+    -o-border-radius: 40px !important;
+    color: #fff !important;
+
+}
+
+  .search-container {
+    width: 300px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    /* background: white; */
+    border-radius: 20px;
+    padding: 5px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  /* إخفاء البحث في الشاشات الصغيرة */
+  @media (max-width: 992px) { 
+    .search-container {
+      display: none;
+    }
+  
+    /* زر البحث داخل التوجلر */
+    .toggle-search-btn {
+      display: block !important;
+    }
+  }
+  /* responsive mobile */
+  @media (max-width: 1140px) {
+    .search-container {
+      
+      width: 200px;
+    }
+  }
+  @media (max-width: 1035px) {
+    .search-container {
+      
+      width: 150px;
+    }
+  }
+
+  /* حقل البحث */
+  .searchInput {
+
+    transition: box-shadow 0.3s ease-in-out !important;
+    -webkit-transition: box-shadow 0.3s ease-in-out !important;
+    -moz-transition: box-shadow 0.3s ease-in-out !important;
+    -ms-transition: box-shadow 0.3s ease-in-out !important;
+    -o-transition: box-shadow 0.3s ease-in-out !important;
+  }
+  /* BoxShadow */
+  .searchInput:focus {
+    outline: none; /* إزالة الحدود الافتراضية */
+    box-shadow: 0 0 8px #fff !important; /* تحديد اللون */
+    border-color: #fff !important;
+  }
+  /* placeHolder */
+  .searchInput::placeholder {
+    color: #fff !important;
+    font-size: 20px; 
+    font-weight: 500;
+    opacity: 1 ; 
+  }
+  
+  .btn-search {
+    position: absolute;
+    top: 45%;
+    left: 10px; 
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 20px;
+  }
+  
+  .btn-search:hover {
+    color: #3b6887;
+  }
+  /* ________________________________________________________________________ */
+  
+  
+  
+  /* Css/NavbarFocusIndicator.css */
+  .nav-link.focus-indicator {
+    margin-left: 25px !important;
+    position: relative;
+    padding-bottom: 2px;
+    outline: none;
+    overflow: hidden; /* مهم لإخفاء المؤشر الزائد أثناء الحركة */
+  }
+  
+  .nav-link.focus-indicator::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0%;
+height: 3px;
+    background-color: white;
+    border-radius: 2px 2px 0 0;
+    transition: width 0.1s ease-in-out;
+    -webkit-transition: width 0.1s ease-in-out;
+    -moz-transition: width 0.1s ease-in-out;
+    -ms-transition: width 0.1s ease-in-out;
+    -o-transition: width 0.1s ease-in-out;
+}
+
+.nav-link.focus-indicator:hover::after,
+.nav-link.focus-indicator:focus::after {
+  width: 60%; 
+}
+
+.nav-link.focus-indicator:hover {
+  opacity: 0.8 !important;
+  cursor: pointer;
+}
+.dropdown-item:focus{
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+}

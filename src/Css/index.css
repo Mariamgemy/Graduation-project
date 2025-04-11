@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Underdog&display=swap');
+  :root{
+    --primary-color:#2D485C
+    /* --hover-color :#3a5c72 */
+  }
+  body {
+    direction: rtl;
+    text-align: right ;
+    background-color: #f1f5f9 !important;
+    padding-top: 60px;
+    margin: 0;
+    /* padding: 120px; */
+    font-family: 'Tajawal',"Roboto", sans-serif !important;
+
+  }
+  html{
+    scroll-behavior: smooth;
+  }
+  section , footer{
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    max-width: 100%;
+    padding: 25px 0;
+    margin-top: 50px;
+  }
+  a{
+    text-decoration: none !important;
+  }
+  span{
+    display: block;
+  }
+  ul{
+    margin: 0;
+    padding: 0;
+  }
+  li{
+    list-style-type: none ;
+  }
+  button{
+    box-sizing: border-box;
+    text-align: center;
+    direction: rtl !important;
+
+  }
+  .container {
+    direction: rtl !important;
+  }
+  

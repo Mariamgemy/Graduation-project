@@ -1,0 +1,57 @@
+.btn-all{
+    background-color: #425A6C !important;
+    color: #fff !important ;
+    border: none !important;
+    border-radius: 30px !important ;
+    -webkit-border-radius: 30px !important ;
+    -moz-border-radius: 30px !important ;
+    -ms-border-radius: 30px !important ;
+    -o-border-radius: 30px !important ;
+  }
+  
+  
+  .btn-all:hover{
+  background-color:#3b6887!important;
+  transition: box-shadow 0.3s ease-in-out !important;
+  
+  }
+  .btn-all:focus{
+  outline: none;
+  background-color:#3b6887!important;
+  box-shadow: 0 0 4px#fff !important; 
+  border-color: #fff !important;
+  } 
+  .text-color{
+    color: #425A6C !important;
+
+  
+  }
+  
+  /* _________________ */
+  
+  
+  
+  .card {
+    border: 0;
+    box-shadow: 0 2px 4px rgba(28, 27, 27, 0.1); 
+    border-radius: 0.5rem; 
+    padding: 1rem;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; 
+    cursor: pointer; 
+  
+  }
+  
+  .card:hover {
+    transform: translateY(-7px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  
+    -webkit-transform: translateY(-7px);
+    -moz-transform: translateY(-7px);
+    -ms-transform: translateY(-7px);
+    -o-transform: translateY(-7px);
+  }
+  
+  .card-title {
+  color: #425A6C !important;
+  }
+  
