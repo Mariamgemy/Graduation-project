@@ -7,7 +7,8 @@ import { FaChevronLeft } from "react-icons/fa";
 import '../Css/navBar.css';
 import '../Css/test.css'
 import { IoSearch } from "react-icons/io5";
-import ModalComponent from "../pages/IdValidation"
+import CustomModal from "../pages/IdValidation"
+import LoginCard from '../pages/LoginCard';
 
 const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -70,7 +71,7 @@ const NavBar = () => {
               <button type='button' className="btn nav-btn btn-outline-success px-4 py-2 fs-5 mb-2" onClick={() => setShowModal(true)}>
                 <MdPerson size={30} /> تسجيل الدخول
               </button>
-              <ModalComponent show={showModal} handleClose={() => setShowModal(false)} />
+              <LoginCard show={showModal} handleClose={() => setShowModal(false)} />
               <div className="d-none d-lg-block ">
                 <Dropdown show={dropdownOpen} onToggle={(isOpen) => setDropdownOpen(isOpen)}>
                   <Dropdown.Toggle className="no-caret btn nav-btn btn-outline-success me-2 px-4 py-2 fs-5" variant="success">

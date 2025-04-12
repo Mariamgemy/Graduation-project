@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 import "../Css/captcha.css";
+import { BsArrowClockwise } from "react-icons/bs";
 
 const CaptchaComponent = forwardRef((props, ref) => {
   const [captchaText, setCaptchaText] = useState("");
@@ -89,7 +90,7 @@ const CaptchaComponent = forwardRef((props, ref) => {
         return false;
       }
       if (!isVerified) {
-        setErrorMessage("من فضلك اضغطي على زر تحقق أولاً");
+        setErrorMessage("من فضلك اضغط على زر تحقق أولاً");
         return false;
       }
       return true;
@@ -153,10 +154,9 @@ const CaptchaComponent = forwardRef((props, ref) => {
 
         <button
           type="button"
-          className="btn nav-btn btn-outline-secondari px-4 py-2 fs-5 mb-2"
+          className="btn nav-btn btn-outline-secondari px-3 py-2 fs-5 mb-2"
           onClick={generateNewCaptcha}
-        >
-          <i className="bi bi-arrow-clockwise"></i> تغيير
+        ><BsArrowClockwise size={25}/> تغيير
         </button>
       </div>
     </div>

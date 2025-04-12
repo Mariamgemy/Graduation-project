@@ -15,7 +15,7 @@ import Questions from './pages/Questions';
 import CardDetails from "./pages/ServicesSteps";
 import Layout from "./components/Layout"
 import CustomModal from './pages/IdValidation';
-import Backend from './pages/Backend';
+import BackendPage from './pages/Backend';
 
 function App() {
 
@@ -32,7 +32,7 @@ function App() {
 <Route path='services' element={<Layout><Services/></Layout>}/>
 <Route path='questions' element={<Layout><Questions/></Layout>}/>
 <Route path='idValidate' element={<Layout><CustomModal/></Layout>}/>
-<Route path='backend' element={<Layout><Backend/></Layout>}/>
+<Route path='backend' element={<Layout><BackendPage/></Layout>}/>
 <Route path="/card/:id" element={<Layout><CardDetails /></Layout>} />
 
 
