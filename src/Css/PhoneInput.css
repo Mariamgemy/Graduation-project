@@ -1,0 +1,18 @@
+.phone-input-container {
+  position: relative;
+  width: 100%;
+}
+
+.phone-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  z-index: 2;
+}
+
+.phone-input {
+  padding-left: 35px;
+  width: 100%;
+}

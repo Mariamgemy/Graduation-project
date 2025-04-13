@@ -51,9 +51,9 @@ const NavBar = () => {
                 <h5 className='h5-color'>__________________________________________</h5>
                 <h5 className='h5-color mt-4 mb-4'> <FiMenu size={30} color="white" /> المزيد</h5>
                 <Link to="/questions" className="nav-link text-end"><FaChevronLeft className="ms-2" />الأسئلة الشائعة </Link>
-                <Link to="#complaints" className="nav-link text-end"><FaChevronLeft className="ms-2" />الشكاوى والمقترحات </Link>
+                <Link to="/suggestions" className="nav-link text-end"><FaChevronLeft className="ms-2" />الشكاوى والمقترحات </Link>
                 <Link to="#privacy" className="nav-link text-end"><FaChevronLeft className="ms-2" />سياسة الخصوصية </Link>
-                <Link to="#terms" className="nav-link text-end"><FaChevronLeft className="ms-2" />شروط الاستخدام </Link>
+                <Link to="popularServices" className="nav-link text-end"><FaChevronLeft className="ms-2" /> أشهر الخدمات </Link>
               </div>
             </Nav>
             <div className="search-container search-Wel">
@@ -80,9 +80,9 @@ const NavBar = () => {
 
                   <Dropdown.Menu>
                     <Link className="dropdown-item" to="/questions" onClick={handleDropdownItemClick}>الأسئلة الشائعة</Link>
-                    <Link className="dropdown-item" to="/questions" onClick={handleDropdownItemClick}> الشكاوى والمقترحات</Link>
+                    <Link className="dropdown-item" to="/suggestions" onClick={handleDropdownItemClick}> الشكاوى والمقترحات</Link>
                     <Link className="dropdown-item" to="/questions" onClick={handleDropdownItemClick}> سياسة الخصوصية</Link>
-                    <Link className="dropdown-item" to="/questions" onClick={handleDropdownItemClick}>شروط الاستخدام</Link>
+                    <Link className="dropdown-item" to="/popularServices" onClick={handleDropdownItemClick}>أشهر الخدمات  </Link>
          
                   </Dropdown.Menu>
                 </Dropdown>

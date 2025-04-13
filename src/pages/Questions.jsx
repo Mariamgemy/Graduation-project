@@ -16,7 +16,7 @@ function Questions() {
   return (
     <>
     <div className="container">
-  <h2 className=" text-color fw-bold mt-5 text-center">الاسئلة الشائعة </h2>
+  <h2 className=" text-color fw-bold mt-5 text-center mb-4">الاسئلة الشائعة </h2>
 <Line/>
  <hr/>
  <div className="row">

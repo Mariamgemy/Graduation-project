@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import '../Css/signUp.css';
+import "../Css/signUp.css";
 import panaImage from "../components/images/pana.svg";
 import { Link } from "react-router-dom";
-
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -13,15 +12,12 @@ const SignUp = () => {
   });
 
   const [errors, setErrors] = useState({
-    name:"",
+    name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
-  const [flag , setFlag] = useState(false)
-
-
-
+  const [flag, setFlag] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -64,16 +60,12 @@ const SignUp = () => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      setFlag(false)
+      setFlag(false);
       return;
     }
 
     console.log("بيانات المستخدم:", formData);
   };
-
-
-
-
 
   return (
     <div className="container-fluid vh-100">
@@ -83,7 +75,7 @@ const SignUp = () => {
           <img
             src={panaImage}
             alt="صورة الويب سايت"
-              className="img-fluid w-75"
+            className="img-fluid w-75"
           />
         </div>
 
@@ -96,15 +88,14 @@ const SignUp = () => {
                 <label className="form-label">الاسم الكامل</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                  className={`form-control ${errors.name ? "is-invalid" : ""}`}
                   name="name"
                   placeholder="أدخل اسمك"
                   value={formData.name}
                   onChange={handleChange}
-                 
                 />
-                 {errors.name && (
-                  <div className="invalid-feedback" style={{ color: 'red' }}>
+                {errors.name && (
+                  <div className="invalid-feedback" style={{ color: "red" }}>
                     {errors.name}
                   </div>
                 )}
@@ -113,15 +104,14 @@ const SignUp = () => {
                 <label className="form-label">البريد الإلكتروني</label>
                 <input
                   type="email"
-                  className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
                   name="email"
                   placeholder="example@email.com"
                   value={formData.email}
                   onChange={handleChange}
-                
                 />
                 {errors.email && (
-                  <div className="invalid-feedback" style={{ color: 'red' }}>
+                  <div className="invalid-feedback" style={{ color: "red" }}>
                     {errors.email}
                   </div>
                 )}
@@ -130,15 +120,16 @@ const SignUp = () => {
                 <label className="form-label">كلمة المرور</label>
                 <input
                   type="password"
-                  className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                  className={`form-control ${
+                    errors.password ? "is-invalid" : ""
+                  }`}
                   name="password"
                   placeholder="********"
                   value={formData.password}
                   onChange={handleChange}
-                  
                 />
                 {errors.password && (
-                  <div className="invalid-feedback" style={{ color: 'red' }}>
+                  <div className="invalid-feedback" style={{ color: "red" }}>
                     {errors.password}
                   </div>
                 )}
@@ -147,15 +138,16 @@ const SignUp = () => {
                 <label className="form-label">تأكيد كلمة المرور</label>
                 <input
                   type="password"
-                  className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                  className={`form-control ${
+                    errors.confirmPassword ? "is-invalid" : ""
+                  }`}
                   name="confirmPassword"
                   placeholder="********"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  
                 />
                 {errors.confirmPassword && (
-                  <div className="invalid-feedback" style={{ color: 'red' }}>
+                  <div className="invalid-feedback" style={{ color: "red" }}>
                     {errors.confirmPassword}
                   </div>
                 )}

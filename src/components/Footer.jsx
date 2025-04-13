@@ -9,22 +9,29 @@ function Footer() {
 <footer className="mt-auto nav-bgc ">
   <div className="container">
     <div className="row">
-      <div className="col-md-4 mb-3">
+      <div className="col-md-3 mb-3">
       <Link className=" d-flex align-items-center footer-logo" to="/" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img src={logo} alt="Logo" />
         </Link>
         <div className="custom-link" >كل الخدمات الحكومية بطريقة فورية وسهلة وانت فى مكانك.</div>
       </div>
-      <div className="col-md-4 mb-3">
-        <h5 className="text-center fw-bold">أشهر الخدمات </h5>
+      <div className="col-md-3 mb-3">
+        <h5 className="text-center fw-bold">الدعم والمساعدة  </h5>
         <ul className="list-unstyled text-center">
-          <li><a href="#" className="text-decoration-none custom-link ">الأحوال المدنية</a></li>
-          <li><a href="#" className="text-decoration-none custom-link ">خدمات المرور</a></li>
-          <li><a href="#" className="text-decoration-none custom-link ">خدمات الكهرباء والمرافق والفواتير
-          </a></li>
+          <li><Link to="/questions" className="text-decoration-none custom-link "> الاسئلة الشائعة</Link></li>
+          <li><Link to="#" className="text-decoration-none custom-link ">الشكاوي والمقترحات </Link></li>
+          <li><Link to="#" className="text-decoration-none custom-link ">سياسة الخصوصية   
+          </Link></li>
         </ul>
       </div>
-      <div className="col-md-4 mb-3">
+      <div className="col-md-3 mb-3">
+        <h5 className="text-center fw-bold">الخدمات</h5>
+        <ul className="list-unstyled text-center">
+          <li><Link to="/popularServices" className="text-decoration-none custom-link "> أشهر الخدمات </Link></li>
+          
+        </ul>
+      </div>
+      <div className="col-md-3 mb-3">
         <h5 className="text-center mb-3 fw-bold"> تـابـعـنـا :</h5>
 <ToolTip/>
       </div>
