@@ -27,7 +27,7 @@ const UtilityServices = forwardRef((props, ref) => {
     return emailRegex.test(Email);
   };
   const isValidName = (name) => {
-    const nameRegex = /^[\u0621-\u064A\u066E-\u06D3\s]+$/;
+    const nameRegex = /^[a-zA-Z\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
     return nameRegex.test(name);
   };
 
@@ -57,17 +57,17 @@ const UtilityServices = forwardRef((props, ref) => {
         if (!fullName) {
           newErrors.fullName = "هذا الحقل مطلوب";
         } else if (!isValidName(fullName)) {
-          newErrors.fullName = "الاسم غير صحيح";
+          newErrors.fullName = "الاسم غير صالح";
         }
         if (!phone) {
           newErrors.phone = "هذا الحقل مطلوب";
         } else if (!isValidPhoneNumber(phone)) {
-          newErrors.phone = "الرقم غير صحيح";
+          newErrors.phone = "الرقم غير صالح";
         }
         if (!email) {
           newErrors.email = "هذا الحقل مطلوب";
         } else if (!isValidEmail(email)) {
-          newErrors.email = "البريد الالكتروني غير صحيح";
+          newErrors.email = "البريد الالكتروني غير صالح";
         }
       }
 
@@ -377,7 +377,7 @@ const UtilityServices = forwardRef((props, ref) => {
             />
             {errors.subscriberNumber && (
               <div className="text-danger">{errors.subscriberNumber}</div>
-            )}{" "}
+            )}
           </div>
         </>
       )}

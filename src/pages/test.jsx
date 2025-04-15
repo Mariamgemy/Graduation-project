@@ -31,3 +31,68 @@
         <p className="text-clor mb-4">
           عند الاستفسار برقم المخالفة يجب تحديد مصدر المخالفة.
         </p> */}
+
+
+
+        const [formData, setFormData] = useState({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+      
+        const [errors, setErrors] = useState({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+        });
+        const [flag, setFlag] = useState(false);
+      
+        const handleChange = (e) => {
+          setFormData({ ...formData, [e.target.name]: e.target.value });
+        };
+      
+        const validateName = (name) => {
+          return name.length > 1;
+        };
+        const validateEmail = (email) => {
+          const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return regex.test(email);
+        };
+      
+        const validatePassword = (password) => {
+          return password.length >= 8;
+        };
+      
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          let newErrors = {};
+      
+          // التحقق من صحة البريد الإلكتروني
+          if (!validateName(formData.name)) {
+            newErrors.name = "يرجى إدخال أسم صحيح";
+          }
+          // التحقق من صحة البريد الإلكتروني
+          if (!validateEmail(formData.email)) {
+            newErrors.email = "يرجى إدخال بريد إلكتروني صحيح";
+          }
+      
+          // التحقق من كلمة المرور
+          if (!validatePassword(formData.password)) {
+            newErrors.password = "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل";
+          }
+      
+          // التحقق من تطابق كلمتي المرور
+          if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = "كلمتا المرور غير متطابقتين!";
+          }
+      
+          if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setFlag(false);
+            return;
+          }
+      
+          console.log("بيانات المستخدم:", formData);
+        };

@@ -131,14 +131,14 @@ const CaptchaComponent = forwardRef((props, ref) => {
   {isVerified && (
     <i
       className="bi bi-check-circle-fill text-success position-absolute"
-      style={{ left: "10px", top: "50%", transform: "translateY(-50%)" }}
+      style={{ left: "12%", top: "50%", transform: "translateY(-50%)" }}
     ></i>
   )}
   {errorMessage && (
   <>  <i
       className="bi bi-x-circle-fill text-danger position-absolute"
-      style={{ left: "10px", top: "30%", transform: "translateY(-50%)" }}
-    ></i><div className="text-danger">{errorMessage}</div></>
+      style={{ left: "12%", top: "30%", transform: "translateY(-50%)" }}
+    ></i><div className="text-danger mb-1">{errorMessage}</div></>
   )}
 </div>
 
