@@ -2,15 +2,17 @@
 
 import React, { useRef, useState } from "react";
 import UtilityServices from "./Services/UtilityServices";
-import CaptchaComponent from "./captcha";
+// import CaptchaComponent from "./captcha";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../Css/UniqueCard.css";
 import "../Css/Form.css";
+import CivilServices from "./Services/CivilServices";
 
 function Formm() {
   const location = useLocation();
   const card = location.state;
   const utilityRef = useRef();
+  const civilRef = useRef();
   const navigate = useNavigate();
   const captchaRef = useRef();
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -21,6 +23,15 @@ function Formm() {
     card.title === "سداد فاتورة الغاز" ||
     card.title === "تقديم شكوى مرافق";
 
+  const isCivilCard =
+    card.title === "شهادة ميلاد" ||
+    card.title === "شهادة وفاة" ||
+    card.title === "قسيمة زواج" ||
+    card.title === "قسيمة طلاق"||
+    card.title === "بدل فاقد لبطاقة الرقم القومي"||
+    card.title === "شهادة ميلاد مميكنة لأول مرة";
+
+
     const handleSubmit = async (e) => {
       e.preventDefault();
     
@@ -28,13 +39,13 @@ function Formm() {
     
       let formData = {};
     
-      if (isUtilityCard) {
+      if (isUtilityCard || isCivilCard) {
         const isValidUtility = utilityRef.current?.validateForm();
         if (!isValidUtility) isFormValid = false;
         else formData = utilityRef.current?.getFormData(); // نجمع البيانات هنا
       }
     
-      const isCaptchaValid = captchaRef.current?.validateCaptchaField();
+      // const isCaptchaValid = captchaRef.current?.validateCaptchaField();
       if (!isCaptchaValid) isFormValid = false;
     
       if (!isFormValid) return;
@@ -85,7 +96,8 @@ function Formm() {
   
     <form onSubmit={handleSubmit}>
       {isUtilityCard && <UtilityServices ref={utilityRef} />}
-      <CaptchaComponent ref={captchaRef} />
+      {isCivilCard && <CivilServices ref={civilRef} />}
+      {/* <CaptchaComponent ref={captchaRef} /> */}
 
       {/* <button
         type="submit"
@@ -100,14 +112,14 @@ function Formm() {
   type="submit"
   className={`btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2 ${formSubmitted ? "btn-success" : "btn-outline-secondry"}`}
 >
-  {formSubmitted ? "تم الإرسال بنجاح" : "بحث"}
+  {formSubmitted ? "تم الإرسال بنجاح" : "ارسال"}
 </button>
 
       {formSubmitted && (<button
         type="submit"
         className="btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2"
       >
-        بحث
+        ارسال
       </button>)}
 
     </form>

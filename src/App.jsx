@@ -14,6 +14,7 @@ import CustomModal from "./pages/IdValidation";
 import BackendPage from "./pages/Backend";
 import PopularServices from "./pages/PopularServices";
 import Suggestions from "./pages/Suggestions";
+import ComplaintDone from "./pages/complaintDone";
 
 function App() {
   return (
@@ -90,6 +91,14 @@ function App() {
           element={
             <Layout>
               <Suggestions />
+            </Layout>
+          }
+        />
+        <Route
+          path="complaintDone"
+          element={
+            <Layout>
+              <ComplaintDone/>
             </Layout>
           }
         />

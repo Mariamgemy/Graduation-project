@@ -1,6 +1,9 @@
 import { forwardRef, useImperativeHandle } from "react";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
+import CaptchaComponent from "../Captcha";
+import { useRef } from "react";
+
 const UtilityServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
@@ -17,6 +20,7 @@ const UtilityServices = forwardRef((props, ref) => {
   const [email, setEmail] = useState("");
   const [utilityType, setUtilityType] = useState("");
   const [errors, setErrors] = useState({});
+  const captchaRef = useRef();
 
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
@@ -33,6 +37,7 @@ const UtilityServices = forwardRef((props, ref) => {
 
   useImperativeHandle(ref, () => ({
     validateForm: () => {
+      const isCaptchaValid = captchaRef.current?.validateCaptchaField();
       const newErrors = {};
 
       if (card.title === "سداد فاتورة الكهرباء") {
@@ -381,6 +386,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
         </>
       )}
+      <CaptchaComponent ref={captchaRef} />
     </>
   );
 });

@@ -5,14 +5,9 @@ import Footer from "../components/Footer";
 import "../Css/Suggestions.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 const Suggestions = () => {
-  // const [userName, setUserName] = useState("");
-  // const [phone, setPhone] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [complaint, setComplaint] = useState("");
-  // const [textComplaint, setTextComplaint] = useState("");
-  // const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     userName: "",
     email: "",
@@ -30,6 +25,8 @@ const Suggestions = () => {
     captcha: "",
   });
   const [flag, setFlag] = useState(false);
+  const captchaRef = useRef();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -70,21 +67,32 @@ const Suggestions = () => {
     if (!formData.complaint) newErrors.complaint = "هذا الحقل مطلوب";
     if (!formData.textComplaint) newErrors.textComplaint = "هذا الحقل مطلوب";
 
+    // التحقق من صحة الكابتشا
+    const isCaptchaValid = captchaRef.current.validateCaptchaField();
+    // if (!isCaptchaValid) {
+    //   newErrors.captcha = "يرجى إدخال رمز التحقق بشكل صحيح";
+    // }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setFlag(false);
       return;
     }
-    console.log("بيانات المستخدم:", formData);
-  };
 
-  // try {
-  //   const response = await submitToAPI(formData);
-  //   console.log("استجابة submitToAPI:", response); // خطوة 5
-  //   navigate("/backend", { state: { responseData: response } });
-  // } catch (error) {
-  //   console.error("خطأ أثناء الإرسال:", error.message);
-  // }
+    // إذا وصلنا هنا، فهذا يعني أن جميع البيانات صحيحة
+    console.log("بيانات الشكوي:", formData);
+
+    try {
+      // يمكنك إضافة كود الاتصال بال API هنا
+      // const response = await submitToAPI(formData);
+      // console.log("استجابة submitToAPI:", response);
+
+      // التوجيه للصفحة التالية فقط بعد نجاح التحقق
+      navigate("/complaintDone");
+    } catch (error) {
+      console.error("خطأ أثناء الإرسال:", error.message);
+    }
+  };
 
   return (
     <>
@@ -190,7 +198,7 @@ const Suggestions = () => {
                     <div className="text-danger">{errors.textComplaint}</div>
                   )}
                   <div className="mt-3">
-                    <CaptchaComponent />
+                    <CaptchaComponent ref={captchaRef} />
                     {errors.captcha && (
                       <div className="text-danger">{errors.captcha}</div>
                     )}
