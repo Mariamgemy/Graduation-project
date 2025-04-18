@@ -108,19 +108,7 @@ function Formm() {
         بحث
       </button> */}
 
-      <button
-  type="submit"
-  className={`btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2 ${formSubmitted ? "btn-success" : "btn-outline-secondry"}`}
->
-  {formSubmitted ? "تم الإرسال بنجاح" : "ارسال"}
-</button>
-
-      {formSubmitted && (<button
-        type="submit"
-        className="btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2"
-      >
-        ارسال
-      </button>)}
+     
 
     </form>
     </div> 

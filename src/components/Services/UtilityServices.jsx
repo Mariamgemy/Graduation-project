@@ -20,6 +20,7 @@ const UtilityServices = forwardRef((props, ref) => {
   const [email, setEmail] = useState("");
   const [utilityType, setUtilityType] = useState("");
   const [errors, setErrors] = useState({});
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const captchaRef = useRef();
 
   const isValidPhoneNumber = (phoneNumber) => {
@@ -386,7 +387,30 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
         </>
       )}
-      <CaptchaComponent ref={captchaRef} />
+      <div className="mt-3">
+        <CaptchaComponent ref={captchaRef} />
+        {errors.captcha && <div className="text-danger">{errors.captcha}</div>}
+      </div>
+
+      <div className="text-start">
+        <button
+          type="submit"
+          className={`btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2 ${
+            formSubmitted ? "btn-success" : "btn-outline-secondry"
+          }`}
+        >
+          {formSubmitted ? "تم الإرسال بنجاح" : "ارسال"}
+        </button>
+
+        {formSubmitted && (
+          <button
+            type="submit"
+            className="btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2"
+          >
+            ارسال
+          </button>
+        )}
+      </div>
     </>
   );
 });

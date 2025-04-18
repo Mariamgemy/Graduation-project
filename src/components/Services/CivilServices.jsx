@@ -4,14 +4,19 @@ import { useState } from "react";
 import "./Civil.css";
 import NavigationButtons from "../NavigationButtons";
 import Steppar from "../Steppar";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 const CivilServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
 
   const [motherName, setMotherName] = useState("");
-  const [isSelf, setIsSelf] = useState(false);
+  const [isSelf, setIsSelf] = useState("");
   const [numberOfCopies, setNumberOfCopies] = useState("");
+  const [quadriliteralName, setQuadriliteralName] = useState("");
+  const [id, setId] = useState("");
+  const [familyName, setFamilyName] = useState("");
+  const [gender, setGender] = useState("");
   const [subscriberNumber, setSubscriberNumber] = useState("");
   const [meterNumber, setMeterNumber] = useState("");
   const [governorate, setGovernorate] = useState("");
@@ -23,7 +28,7 @@ const CivilServices = forwardRef((props, ref) => {
   const [email, setEmail] = useState("");
   const [utilityType, setUtilityType] = useState("");
   const [errors, setErrors] = useState({});
-
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
     return phoneRegex.test(phoneNumber);
@@ -50,7 +55,7 @@ const CivilServices = forwardRef((props, ref) => {
         else if (!isValidMotherName(motherName)) {
           newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
         }
-        if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
+        if (!isSelf) newErrors.isSelf = " اختار اولاً ";
       }
 
       if (card.title === "سداد فاتورة المياه") {
@@ -112,52 +117,162 @@ const CivilServices = forwardRef((props, ref) => {
       {card.title === "شهادة ميلاد" && (
         <>
           <div className="mb-3">
-            <Steppar/>
-            <NavigationButtons/>
-            <label className="form-label">اسم الأم لمقدم الطلب</label>
+            <Steppar />
+            <NavigationButtons />
+            <label className="form-label ">اسم الأم لمقدم الطلب</label>
             <input
               type="text"
-              className="form-control"
+              className="form-control w-25"
               value={motherName}
               onChange={(e) => setMotherName(e.target.value)}
             />
-            
+
             {errors.motherName && (
               <div className="text-danger">{errors.motherName}</div>
             )}
           </div>
 
           <div className="mb-3 ">
-            <label className="form-label"> هل تريد إصدار شهادة الميلاد لنفسك ؟</label>
-          
-            {/* <input
-              type="text"
-              className="form-control"
-              value={subscriberNumber}
-              onChange={(e) => setSubscriberNumber(e.target.value)}
-            /> */}
-            <div className="d-flex gap-3">  <input type="radio" name="isSelf" className="form-check-input" />
-            <label className="form-check-label">نعم</label>
-            <input type="radio" name="isSelf" className="form-check-input" />
-            <label className="form-check-label">لا</label>
-            {errors.subscriberNumber && (
-              <div className="text-danger">{errors.subscriberNumber}</div>
+            <label className="form-label">
+              هل تريد إصدار شهادة الميلاد لنفسك ؟
+            </label>
+
+            <div className="d-flex gap-5">
+              <div className="form-check">
+                <input
+                  type="radio"
+                  name="isSelf"
+                  className="form-check-input"
+                  value="yes"
+                  checked={isSelf === true}
+                  onChange={(e) => setIsSelf(true)}
+                />
+                <label className="form-check-label">نعم</label>
+              </div>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  name="isSelf"
+                  className="form-check-input"
+                  value="no"
+                  checked={isSelf === false}
+                  onChange={(e) => setIsSelf(false)}
+                />
+                <label className="form-check-label">لا</label>
+              </div>
+              {errors.isSelf && (
+                <div className="text-danger">{errors.isSelf}</div>
+              )}
+            </div>
+
+            {isSelf === true && (
+              <div className="mt-3">
+                <label className="form-label">عدد النسخ المطلوبة </label>
+                <select
+                  className="form-select w-25 custom-select"
+                  value={numberOfCopies}
+                  onChange={(e) => setNumberOfCopies(e.target.value)}
+                >
+                  <option value="">برجاء الاختيار</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                {errors.numberOfCopies && (
+                  <div className="text-danger">{errors.numberOfCopies}</div>
+                )}
+              </div>
             )}
-          </div></div>
-          <label className="form-label">عدد النسخ المطلوبة  </label>
-          <select
-              className="form-select w-25 custom-select"
-              value={numberOfCopies}
-              onChange={(e) => setNumberOfCopies(e.target.value)}
-            >
-              <option value="">برجاء الاختيار</option>
-              <option value=" 1 ">1  </option>
-              <option value=" 2 ">2  </option>
-              <option value=" 3 ">3  </option>
-              <option value=" 4 ">4 </option>
-              <option value=" 5 ">5  </option>
-            
-            </select>
+
+            {isSelf === false && (
+              <div className="card mt-3 p-3">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">الاسم رباعي</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={quadriliteralName}
+                        onChange={(e) => setQuadriliteralName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">الرقم القومي </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">صلة القرابة  </label>
+                      <select
+                        type="text"
+                        className="form-select custom-select"
+                        value={familyName}
+                        onChange={(e) => setFamilyName(e.target.value)}
+                      >
+                        <option value="">بالنسبة لمقدم الطلب </option>
+                        <option value="father">الابن</option>
+                        <option value="mother">لابنة</option>
+                        <option value="brother">الاب</option>
+                        <option value="sister">الام</option>
+                        <option value="sister">الزوج</option>
+                        <option value="sister">الزوجة</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">اسم الام لصاحب الشهادة </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={motherName}
+                        onChange={(e) => setMotherName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">النوع </label>
+                      <select
+                        type="text"
+                 className="form-select custom-select"
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                      >
+                        <option value=""> </option>
+                        <option value="female">أنثي</option>
+                        <option value="male">ذكر</option>
+                       
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">عدد النسخ </label>
+                      <select
+                  className="form-select custom-select"
+                  value={numberOfCopies}
+                  onChange={(e) => setNumberOfCopies(e.target.value)}
+                >
+                  <option value="">برجاء الاختيار</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                {errors.numberOfCopies && (
+                  <div className="text-danger">{errors.numberOfCopies}</div>
+                )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </>
       )}
 
@@ -409,6 +524,15 @@ const CivilServices = forwardRef((props, ref) => {
           </div>
         </>
       )}
+
+      <div className="text-start">
+        <button
+          type="submit"
+          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+        >
+          التالي &nbsp; <FaArrowLeftLong size={20} />
+        </button>
+      </div>
     </>
   );
 });
