@@ -158,7 +158,7 @@ const CivilServices = forwardRef((props, ref) => {
                   checked={isSelf === false}
                   onChange={(e) => setIsSelf(false)}
                 />
-                <label className="form-check-label">لا</label>
+                <label  className="form-check-label">لا</label>
               </div>
               {errors.isSelf && (
                 <div className="text-danger">{errors.isSelf}</div>
@@ -189,6 +189,7 @@ const CivilServices = forwardRef((props, ref) => {
             {isSelf === false && (
               <div className="card mt-3 p-3">
                 <div className="row">
+                <h2 className="text-color mb-3">بيانات صاحب الشهادة</h2>
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">الاسم رباعي</label>
