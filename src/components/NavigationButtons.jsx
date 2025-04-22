@@ -15,17 +15,17 @@ function NavigationButtons() {
       <div className="d-flex justify-content-around align-items-center">
         <button
           type="button"
-          className={`btn btn-light border rounded-0 ${activeButton === 'بيانات اللوحة' ? 'active-button' : ''}`}
-          onClick={() => handleButtonClick('بيانات اللوحة')}
+          className={`btn btn-light border rounded-0 ${activeButton === 'بيانات الشهادة' ? 'active-button' : ''}`}
+          onClick={() => handleButtonClick('بيانات الشهادة')}
         >
-          <i className="bi bi-file-earmark-text me-2"></i> بيانات اللوحة
+          <i className="bi bi-file-earmark-text me-2"></i> بيانات الشهادة
         </button>
         <button
           type="button"
-          className={`btn btn-light border rounded-0 ${activeButton === 'بيانات الرخصة' ? 'active-button' : ''}`}
-          onClick={() => handleButtonClick('بيانات الرخصة')}
+          className={`btn btn-light border rounded-0 ${activeButton === 'بيانات الاستلام' ? 'active-button' : ''}`}
+          onClick={() => handleButtonClick('بيانات الاستلام')}
         >
-       <i className="bi bi-person-vcard me-2"></i> بيانات الرخصة
+       <i className="bi bi-person-vcard me-2"></i> بيانات الاستلام
         </button>
         {/* <button
           type="button"
@@ -36,10 +36,10 @@ function NavigationButtons() {
         </button> */}
         <button
           type="button"
-          className={`btn btn-light border rounded-0 ${activeButton === 'بيانات المخالفة' ? 'active-button' : ''}`}
-          onClick={() => handleButtonClick('بيانات المخالفة')}
+          className={`btn btn-light border rounded-0 ${activeButton === 'نتيجة الطلب' ? 'active-button' : ''}`}
+          onClick={() => handleButtonClick('نتيجة الطلب')}
         >
-            <i className="bi bi-card-text me-2"></i>  بيانات المخالفة
+            <i className="bi bi-card-text me-2"></i>  نتيجة الطلب  
         </button>
       </div>
       <div className="separator-line"></div>
