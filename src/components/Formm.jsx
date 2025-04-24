@@ -7,12 +7,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../Css/UniqueCard.css";
 import "../Css/Form.css";
 import CivilServices from "./Services/CivilServices";
+import TrafficServices from "./Services/TrafficServices";
+
 
 function Formm() {
   const location = useLocation();
   const card = location.state;
   const utilityRef = useRef();
   const civilRef = useRef();
+  const trafficRef = useRef();
   const navigate = useNavigate();
   const captchaRef = useRef();
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -31,6 +34,14 @@ function Formm() {
     card.title === "بدل فاقد لبطاقة الرقم القومي"||
     card.title === "شهادة ميلاد مميكنة لأول مرة";
 
+  const isTrafficCard =
+    card.title === "استخراج رخصة قيادة" ||
+    card.title === "استخراج رخصة سيارة" ||
+    card.title === "تجديد رخصة قيادة" ||
+    card.title === "تجديد رخصة سيارة"||
+    card.title === "بدل فاقد/ تالف للرخص"||
+    card.title === "مخالفات المرور ودفعها";
+
 
     const handleSubmit = async (e) => {
       e.preventDefault();
@@ -39,10 +50,20 @@ function Formm() {
     
       let formData = {};
     
-      if (isUtilityCard || isCivilCard) {
+      if (isUtilityCard) {
         const isValidUtility = utilityRef.current?.validateForm();
         if (!isValidUtility) isFormValid = false;
         else formData = utilityRef.current?.getFormData(); // نجمع البيانات هنا
+      }
+      if ( isCivilCard ) {
+        const isValidCivil = civilRef.current?.validateForm();
+        if (!isValidCivil) isFormValid = false;
+        else formData = civilRef.current?.getFormData(); // نجمع البيانات هنا
+      }
+      if (isTrafficCard) {
+        const isValidTraffic = trafficRef.current?.validateForm();
+        if (!isValidTraffic) isFormValid = false;
+        else formData = trafficRef.current?.getFormData(); // نجمع البيانات هنا
       }
     
       // const isCaptchaValid = captchaRef.current?.validateCaptchaField();
@@ -97,6 +118,7 @@ function Formm() {
     <form onSubmit={handleSubmit}>
       {isUtilityCard && <UtilityServices ref={utilityRef} />}
       {isCivilCard && <CivilServices ref={civilRef} />}
+      {isTrafficCard && <TrafficServices ref={trafficRef} />}
       {/* <CaptchaComponent ref={captchaRef} /> */}
 
       {/* <button
