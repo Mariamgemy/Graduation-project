@@ -172,11 +172,11 @@ const TrafficServices = forwardRef((props, ref) => {
     <>
       {card.title === "استخراج رخصة قيادة" && (
         <>
-          <div className="mb-3">
-            <label className="form-label">الاسم الكامل *</label>
+          <div className="mb-3 ">
+            <label className="form-label">الاسم بالكامل </label>
             <input
               type="text"
-              className="form-control"
+              className="form-control "
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -186,7 +186,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">الرقم القومي *</label>
+            <label className="form-label">الرقم القومي </label>
             <input
               type="text"
               className="form-control"
@@ -197,7 +197,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">تاريخ الميلاد *</label>
+            <label className="form-label">تاريخ الميلاد </label>
             <input
               type="date"
               className="form-control"
@@ -210,7 +210,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">العنوان *</label>
+            <label className="form-label">العنوان </label>
             <input
               type="text"
               className="form-control"
@@ -223,13 +223,13 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">نوع الرخصة *</label>
+            <label className="form-label">نوع الرخصة </label>
             <select
-              className="form-select"
+              className="form-select "
               value={licenseType}
               onChange={(e) => setLicenseType(e.target.value)}
             >
-              <option value="">اختر نوع الرخصة</option>
+              <option value=""> </option>
               <option value="private">خاصة</option>
               <option value="commercial">تجارية</option>
               <option value="motorcycle">دراجة نارية</option>
@@ -240,59 +240,99 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">الصورة الشخصية *</label>
-            <input
-              type="file"
-              className="form-control"
-              accept="image/*"
-              onChange={(e) => setPersonalPhoto(e.target.files[0])}
-            />
+            <label className="form-label">الصورة الشخصية </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="personalPhoto"
+                accept="image/*"
+                onChange={(e) => {
+                  setPersonalPhoto(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="personalPhoto" className="file-input-label">
+                <span className="file-name">
+                  {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
             {errors.personalPhoto && (
               <div className="text-danger">{errors.personalPhoto}</div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">نتيجة الفحص الطبي *</label>
-            <input
-              type="file"
-              className="form-control"
-              accept=".pdf,.jpg,.jpeg,.png"
-              onChange={(e) => setMedicalResult(e.target.files[0])}
-            />
+            <label className="form-label">نتيجة الفحص الطبي </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="medicalResult"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  setMedicalResult(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="medicalResult" className="file-input-label">
+                <span className="file-name">
+                  {medicalResult ? medicalResult.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
             {errors.medicalResult && (
               <div className="text-danger">{errors.medicalResult}</div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">نتيجة الاختبار النظري *</label>
-            <input
-              type="file"
-              className="form-control"
-              accept=".pdf,.jpg,.jpeg,.png"
-              onChange={(e) => setTheoryResult(e.target.files[0])}
-            />
+            <label className="form-label">نتيجة الاختبار النظري </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="theoryResult"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  setTheoryResult(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="theoryResult" className="file-input-label">
+                <span className="file-name">
+                  {theoryResult ? theoryResult.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
             {errors.theoryResult && (
               <div className="text-danger">{errors.theoryResult}</div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">نتيجة الاختبار العملي *</label>
-            <input
-              type="file"
-              className="form-control"
-              accept=".pdf,.jpg,.jpeg,.png"
-              onChange={(e) => setPracticalResult(e.target.files[0])}
-            />
+            <label className="form-label">نتيجة الاختبار العملي </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="practicalResult"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  setPracticalResult(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="practicalResult" className="file-input-label">
+                <span className="file-name">
+                  {practicalResult ? practicalResult.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
             {errors.practicalResult && (
               <div className="text-danger">{errors.practicalResult}</div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">تاريخ الإصدار *</label>
+            <label className="form-label">تاريخ الإصدار </label>
             <input
               type="date"
               className="form-control"
@@ -305,7 +345,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">تاريخ الانتهاء *</label>
+            <label className="form-label">تاريخ الانتهاء </label>
             <input
               type="date"
               className="form-control"
@@ -322,7 +362,7 @@ const TrafficServices = forwardRef((props, ref) => {
       {card.title === "سداد فاتورة المياه" && (
         <>
           <div className="mb-3">
-            <label className="form-label">اختر الشركة *</label>
+            <label className="form-label">اختر الشركة </label>
             <select
               className="form-select custom-select-style"
               value={company}
@@ -346,7 +386,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم العداد *</label>
+            <label className="form-label">ادخل رقم العداد </label>
             <input
               type="text"
               className="form-control"
@@ -359,7 +399,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك *</label>
+            <label className="form-label">ادخل رقم المشترك </label>
             <input
               type="text"
               className="form-control"
@@ -376,7 +416,7 @@ const TrafficServices = forwardRef((props, ref) => {
       {card.title === "تقديم شكوى مرافق" && (
         <>
           <div className="mb-3">
-            <label className="form-label">نوع المرفق *</label>
+            <label className="form-label">نوع المرفق </label>
             <select
               className="form-select custom-select-style"
               value={utilityType}
@@ -393,7 +433,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">المحافظة *</label>
+            <label className="form-label">المحافظة </label>
             <select
               className="form-select custom-select-style"
               value={governorate}
@@ -439,7 +479,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">العنوان التفصيلي *</label>
+            <label className="form-label">العنوان التفصيلي </label>
             <input
               type="text"
               className="form-control"
@@ -452,7 +492,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">نوع الشكوى *</label>
+            <label className="form-label">نوع الشكوى </label>
             <select
               className="form-select custom-select-style"
               value={complaintType}
@@ -471,7 +511,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">وصف الشكوى *</label>
+            <label className="form-label">وصف الشكوى </label>
             <textarea
               className="form-control"
               rows="4"
@@ -484,7 +524,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">رقم المشترك *</label>
+            <label className="form-label">رقم المشترك </label>
             <input
               type="text"
               className="form-control"
@@ -497,7 +537,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">الاسم رباعي *</label>
+            <label className="form-label">الاسم رباعي </label>
             <input
               type="text"
               className="form-control"
@@ -510,7 +550,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">رقم الهاتف *</label>
+            <label className="form-label">رقم الهاتف </label>
             <input
               type="text"
               className="form-control"
@@ -521,7 +561,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">البريد الإلكتروني *</label>
+            <label className="form-label">البريد الإلكتروني </label>
             <input
               type="text"
               className="form-control"
@@ -536,7 +576,7 @@ const TrafficServices = forwardRef((props, ref) => {
       {card.title === "سداد فاتورة الغاز" && (
         <>
           <div className="mb-3">
-            <label className="form-label">اختر الشركة *</label>
+            <label className="form-label">اختر الشركة </label>
             <select
               className="form-select custom-select-style"
               value={company}
@@ -553,7 +593,7 @@ const TrafficServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك *</label>
+            <label className="form-label">ادخل رقم المشترك </label>
             <input
               type="text"
               className="form-control"
