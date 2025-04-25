@@ -359,55 +359,352 @@ const TrafficServices = forwardRef((props, ref) => {
         </>
       )}
 
-      {card.title === "سداد فاتورة المياه" && (
+{card.title === "استخراج رخصة سيارة" && (
         <>
-          <div className="mb-3">
-            <label className="form-label">اختر الشركة </label>
-            <select
-              className="form-select custom-select-style"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            >
-              <option value="">برجاء الاختيار</option>
-              <option value="القاهرة الكبرى والجيزة والقليوبية">
-                القاهرة الكبرى والجيزة والقليوبية
-              </option>
-              <option value="الإسكندرية">الإسكندرية</option>
-              <option value="الدلتا">الدلتا</option>
-              <option value="الصعيد">الصعيد</option>
-              <option value="القناة وسيناء">القناة وسيناء</option>
-              <option value="المناطق الحدودية والوادي الجديد">
-                المناطق الحدودية والوادي الجديد
-              </option>
-            </select>
-            {errors.company && (
-              <div className="text-danger">{errors.company}</div>
+          <div className="mb-3 ">
+            <label className="form-label">الاسم بالكامل </label>
+            <input
+              type="text"
+              className="form-control "
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            {errors.fullName && (
+              <div className="text-danger">{errors.fullName}</div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم العداد </label>
+            <label className="form-label">الرقم القومي </label>
             <input
               type="text"
               className="form-control"
-              value={meterNumber}
-              onChange={(e) => setMeterNumber(e.target.value)}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
             />
-            {errors.meterNumber && (
-              <div className="text-danger">{errors.meterNumber}</div>
+            {errors.id && <div className="text-danger">{errors.id}</div>}
+          </div>
+
+          <div className="mb-3 ">
+            <label className="form-label">
+              النوع ؟
+            </label>
+
+            <div className="d-flex gap-5">
+              <div className="form-check">
+                <input
+                  type="radio"
+                  name="isSelf"
+                  className="form-check-input"
+                  value="yes"
+                  checked={isSelf === true}
+                  onChange={(e) => setIsSelf(true)}
+                />
+                <label className="form-check-label">سيارة</label>
+              </div>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  name="isSelf"
+                  className="form-check-input"
+                  value="no"
+                  checked={isSelf === false}
+                  onChange={(e) => setIsSelf(false)}
+                />
+                <label  className="form-check-label">شاحنة</label>
+              </div>
+              {errors.isSelf && (
+                <div className="text-danger">{errors.isSelf}</div>
+              )}
+            </div>
+
+            {isSelf === true && (
+              <div className="card mt-3 p-3">
+              <div className="row">
+              <h2 className="text-color mb-3">  تفاصيل السيارة</h2>
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label">الطراز </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={quadriliteralName}
+                      onChange={(e) => setQuadriliteralName(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">اللون   </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={id}
+                      onChange={(e) => setId(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">سنة الصنع   </label>
+                    <input 
+                      type="number"
+                      min="1900" max="2025" step="1"
+                      className="form-control"
+                      value={familyName}
+                      onChange={(e) => setFamilyName(e.target.value)}
+                    />
+                
+                
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="mb-3">
+                    <label className="form-label">رقم الهيكل</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={motherName}
+                      onChange={(e) => setMotherName(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">النوع </label>
+                    <select
+                      type="text"
+               className="form-select custom-select"
+                      value={gender}
+                      onChange={(e) => setGender(e.target.value)}
+                    >
+                      <option value=""> </option>
+                      <option value="female">أنثي</option>
+                      <option value="male">ذكر</option>
+                     
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">عدد النسخ </label>
+                    <select
+                className="form-select custom-select"
+                value={numberOfCopies}
+                onChange={(e) => setNumberOfCopies(e.target.value)}
+              >
+                <option value="">برجاء الاختيار</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+              {errors.numberOfCopies && (
+                <div className="text-danger">{errors.numberOfCopies}</div>
+              )}
+                  </div>
+                </div>
+              </div>
+            </div>
+            )}
+
+            {isSelf === false && (
+              <div className="card mt-3 p-3">
+                <div className="row">
+                <h2 className="text-color mb-3">بيانات صاحب الشهادة</h2>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">الاسم رباعي</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={quadriliteralName}
+                        onChange={(e) => setQuadriliteralName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">الرقم القومي </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={id}
+                        onChange={(e) => setId(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">صلة القرابة  </label>
+                      <select
+                        type="text"
+                        className="form-select custom-select"
+                        value={familyName}
+                        onChange={(e) => setFamilyName(e.target.value)}
+                      >
+                        <option value="">بالنسبة لمقدم الطلب </option>
+                        <option value="father">الابن</option>
+                        <option value="mother">لابنة</option>
+                        <option value="brother">الاب</option>
+                        <option value="sister">الام</option>
+                        <option value="sister">الزوج</option>
+                        <option value="sister">الزوجة</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">اسم الام لصاحب الشهادة </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={motherName}
+                        onChange={(e) => setMotherName(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">النوع </label>
+                      <select
+                        type="text"
+                 className="form-select custom-select"
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                      >
+                        <option value=""> </option>
+                        <option value="female">أنثي</option>
+                        <option value="male">ذكر</option>
+                       
+                      </select>
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">عدد النسخ </label>
+                      <select
+                  className="form-select custom-select"
+                  value={numberOfCopies}
+                  onChange={(e) => setNumberOfCopies(e.target.value)}
+                >
+                  <option value="">برجاء الاختيار</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+                {errors.numberOfCopies && (
+                  <div className="text-danger">{errors.numberOfCopies}</div>
+                )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك </label>
+            <label className="form-label">الصورة الشخصية </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="personalPhoto"
+                accept="image/*"
+                onChange={(e) => {
+                  setPersonalPhoto(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="personalPhoto" className="file-input-label">
+                <span className="file-name">
+                  {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
+            {errors.personalPhoto && (
+              <div className="text-danger">{errors.personalPhoto}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">نتيجة الفحص الطبي </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="medicalResult"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  setMedicalResult(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="medicalResult" className="file-input-label">
+                <span className="file-name">
+                  {medicalResult ? medicalResult.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
+            {errors.medicalResult && (
+              <div className="text-danger">{errors.medicalResult}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">نتيجة الاختبار النظري </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="theoryResult"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  setTheoryResult(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="theoryResult" className="file-input-label">
+                <span className="file-name">
+                  {theoryResult ? theoryResult.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
+            {errors.theoryResult && (
+              <div className="text-danger">{errors.theoryResult}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">نتيجة الاختبار العملي </label>
+            <div className="file-input-container">
+              <input
+                type="file"
+                id="practicalResult"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(e) => {
+                  setPracticalResult(e.target.files[0]);
+                }}
+              />
+              <label htmlFor="practicalResult" className="file-input-label">
+                <span className="file-name">
+                  {practicalResult ? practicalResult.name : "لم يتم اختيار ملف"}
+                </span>
+                <span className="browse-button">اختر ملف</span>
+              </label>
+            </div>
+            {errors.practicalResult && (
+              <div className="text-danger">{errors.practicalResult}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">تاريخ الإصدار </label>
             <input
-              type="text"
+              type="date"
               className="form-control"
-              value={subscriberNumber}
-              onChange={(e) => setSubscriberNumber(e.target.value)}
+              value={issueDate}
+              onChange={(e) => setIssueDate(e.target.value)}
             />
-            {errors.subscriberNumber && (
-              <div className="text-danger">{errors.subscriberNumber}</div>
+            {errors.issueDate && (
+              <div className="text-danger">{errors.issueDate}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">تاريخ الانتهاء </label>
+            <input
+              type="date"
+              className="form-control"
+              value={expiryDate}
+              onChange={(e) => setExpiryDate(e.target.value)}
+            />
+            {errors.expiryDate && (
+              <div className="text-danger">{errors.expiryDate}</div>
             )}
           </div>
         </>
