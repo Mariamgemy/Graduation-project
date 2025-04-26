@@ -1,0 +1,49 @@
+.payment-methods-container {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 20px; 
+  }
+  
+  .payment-method-label {
+    position: relative;
+    cursor: pointer;
+    width: 120px; /* Equivalent to w-48 in Tailwind (48 * 4px) */
+    height: 120px; /* Equivalent to h-48 in Tailwind (48 * 4px) */
+    padding: 18px; /* Equivalent to p-6 in Tailwind (6 * 4px) */
+    border-radius: 12px; /* Equivalent to rounded-2xl in Tailwind */
+    border: 2px solid #d1d5db; /* Equivalent to border-2 and border-gray-300 in Tailwind */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease-in-out; /* Equivalent to transition-all duration-300 ease-in-out in Tailwind */
+    background-color: #fff; /* Equivalent to bg-white in Tailwind */
+  }
+  
+  .payment-method-label.selected {
+    border-color: #3d7aa7; /* Equivalent to border-blue-500 in Tailwind */
+    background-color: #eff6ff; /* Equivalent to bg-blue-100 in Tailwind */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Equivalent to shadow-md in Tailwind */
+  }
+  
+  .payment-method-radio {
+    position: absolute;
+    top: 12px; /* Equivalent to top-3 in Tailwind (3 * 4px) */
+    left: 12px; /* Equivalent to left-3 in Tailwind (3 * 4px) */
+    width: 20px; /* Equivalent to w-5 in Tailwind (5 * 4px) */
+    height: 20px; /* Equivalent to h-5 in Tailwind (5 * 4px) */
+    accent-color: #3d7aa7; /* Equivalent to accent-blue-500 in Tailwind */
+    cursor: pointer;
+  }
+  
+  .payment-method-icon {
+    font-size: 2.5rem; /* Equivalent to text-5xl in Tailwind (adjust as needed based on default font size) */
+    margin-bottom: 8px; /* Equivalent to mb-4 in Tailwind */
+  }
+  
+  .payment-method-name {
+    font-size: 1rem; /* Equivalent to text-lg in Tailwind (assuming default font size) */
+    font-weight: 500; 
+    margin-bottom: 12px;
+  }
