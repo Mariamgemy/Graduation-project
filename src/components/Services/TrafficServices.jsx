@@ -140,7 +140,11 @@ const [fineAmount , setFineAmount] = useState("");
           newErrors.currentLicenseExpiryDate = "هذا الحقل مطلوب";
         if (!paymentMethod) newErrors.paymentMethod = "هذا الحقل مطلوب";
         if (!isSelf) newErrors.isSelf = "هذا الحقل مطلوب";
-        if (!id) newErrors.id = "هذا الحقل مطلوب";
+        if (!id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
         if (!expiryDate) newErrors.expiryDate = "هذا الحقل مطلوب";
         if (!issueDate) newErrors.issueDate = "هذا الحقل مطلوب";
         if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";

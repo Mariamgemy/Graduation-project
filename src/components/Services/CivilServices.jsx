@@ -11,6 +11,7 @@ const CivilServices = forwardRef((props, ref) => {
   const card = location.state;
 
   const [motherName, setMotherName] = useState("");
+  const [anotherMotherName , setAnotherMotherName] = useState("");
   const [isSelf, setIsSelf] = useState("");
   const [numberOfCopies, setNumberOfCopies] = useState("");
   const [quadriliteralName, setQuadriliteralName] = useState("");
@@ -27,6 +28,8 @@ const CivilServices = forwardRef((props, ref) => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [utilityType, setUtilityType] = useState("");
+  const [kinship, setKinship] = useState("");
+
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const isValidPhoneNumber = (phoneNumber) => {
@@ -45,6 +48,10 @@ const CivilServices = forwardRef((props, ref) => {
     const nameRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{2,}$/;
     return nameRegex.test(motherName);
   };
+  const isValidId = (id) => {
+    const idRegex = /^\d{14}$/;
+    return idRegex.test(id);
+  };
 
   useImperativeHandle(ref, () => ({
     validateForm: () => {
@@ -55,7 +62,23 @@ const CivilServices = forwardRef((props, ref) => {
         else if (!isValidMotherName(motherName)) {
           newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
         }
+        if (!anotherMotherName) newErrors.anotherMotherName = "هذا الحقل مطلوب";
+        else if (!isValidMotherName(anotherMotherName)) {
+          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+        if (!quadriliteralName) newErrors.quadriliteralName = "هذا الحقل مطلوب";
+        else if (!isValidMotherName(quadriliteralName)) {
+          newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+        if (!id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
         if (!isSelf) newErrors.isSelf = " اختار اولاً ";
+        if(!kinship) newErrors.kinship = "هذا الحقل مطلوب";
+        if(!gender) newErrors.gender = "هذا الحقل مطلوب";
+        if(!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
       }
 
       if (card.title === "سداد فاتورة المياه") {
@@ -173,7 +196,7 @@ const CivilServices = forwardRef((props, ref) => {
                   value={numberOfCopies}
                   onChange={(e) => setNumberOfCopies(e.target.value)}
                 >
-                  <option value="">برجاء الاختيار</option>
+                  <option value=""> </option>
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -189,7 +212,7 @@ const CivilServices = forwardRef((props, ref) => {
             {isSelf === false && (
               <div className="card mt-3 p-3">
                 <div className="row">
-                <h2 className="text-color mb-3">بيانات صاحب الشهادة</h2>
+                <h3 className="text-color mb-3">بيانات صاحب الشهادة</h3>
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">الاسم رباعي</label>
@@ -199,6 +222,9 @@ const CivilServices = forwardRef((props, ref) => {
                         value={quadriliteralName}
                         onChange={(e) => setQuadriliteralName(e.target.value)}
                       />
+                    {errors.quadriliteralName && (
+                  <div className="text-danger">{errors.quadriliteralName}</div>
+                )}
                     </div>
                     <div className="mb-3">
                       <label className="form-label">الرقم القومي </label>
@@ -208,23 +234,29 @@ const CivilServices = forwardRef((props, ref) => {
                         value={id}
                         onChange={(e) => setId(e.target.value)}
                       />
+                      {errors.id && (
+                  <div className="text-danger">{errors.id}</div>
+                )}
                     </div>
                     <div className="mb-3">
                       <label className="form-label">صلة القرابة  </label>
                       <select
                         type="text"
                         className="form-select custom-select"
-                        value={familyName}
-                        onChange={(e) => setFamilyName(e.target.value)}
+                        value={kinship}
+                        onChange={(e) => setKinship(e.target.value)}
                       >
                         <option value="">بالنسبة لمقدم الطلب </option>
-                        <option value="father">الابن</option>
-                        <option value="mother">لابنة</option>
-                        <option value="brother">الاب</option>
-                        <option value="sister">الام</option>
-                        <option value="sister">الزوج</option>
-                        <option value="sister">الزوجة</option>
+                        <option value="son">الابن</option>
+                        <option value="dauter">الابنة</option>
+                        <option value="father">الاب</option>
+                        <option value="mother">الام</option>
+                        <option value="husband">الزوج</option>
+                        <option value="wife">الزوجة</option>
                       </select>
+                      {errors.kinship && (
+                  <div className="text-danger">{errors.kinship}</div>
+                )}
                     </div>
                   </div>
                   <div className="col-md-6">
@@ -233,9 +265,12 @@ const CivilServices = forwardRef((props, ref) => {
                       <input
                         type="text"
                         className="form-control"
-                        value={motherName}
-                        onChange={(e) => setMotherName(e.target.value)}
+                        value={anotherMotherName}
+                        onChange={(e) => setAnotherMotherName(e.target.value)}
                       />
+                      {errors.anotherMotherName && (
+                  <div className="text-danger">{errors.anotherMotherName}</div>
+                )}
                     </div>
                     <div className="mb-3">
                       <label className="form-label">النوع </label>
@@ -250,6 +285,9 @@ const CivilServices = forwardRef((props, ref) => {
                         <option value="male">ذكر</option>
                        
                       </select>
+                      {errors.gender && (
+                  <div className="text-danger">{errors.gender}</div>
+                )}
                     </div>
                     <div className="mb-3">
                       <label className="form-label">عدد النسخ </label>
@@ -258,7 +296,7 @@ const CivilServices = forwardRef((props, ref) => {
                   value={numberOfCopies}
                   onChange={(e) => setNumberOfCopies(e.target.value)}
                 >
-                  <option value="">برجاء الاختيار</option>
+                  <option value=""> </option>
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>

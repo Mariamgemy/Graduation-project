@@ -105,7 +105,7 @@ const UtilityServices = forwardRef((props, ref) => {
       {card.title === "سداد فاتورة الكهرباء" && (
         <>
           <div className="mb-3">
-            <label className="form-label">اختر الشركة *</label>
+            <label className="form-label">اختر الشركة </label>
             <select
               className="form-select custom-select-style"
               value={company}
@@ -125,7 +125,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم السداد الالكتروني *</label>
+            <label className="form-label">ادخل رقم السداد الالكتروني </label>
             <input
               type="text"
               className="form-control"
@@ -142,13 +142,13 @@ const UtilityServices = forwardRef((props, ref) => {
       {card.title === "سداد فاتورة المياه" && (
         <>
           <div className="mb-3">
-            <label className="form-label">اختر الشركة *</label>
+            <label className="form-label">اختر الشركة </label>
             <select
               className="form-select custom-select-style"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             >
-              <option value="">برجاء الاختيار</option>
+              <option value=""> </option>
               <option value="القاهرة الكبرى والجيزة والقليوبية">
                 القاهرة الكبرى والجيزة والقليوبية
               </option>
@@ -166,7 +166,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم العداد *</label>
+            <label className="form-label">ادخل رقم العداد </label>
             <input
               type="text"
               className="form-control"
@@ -179,7 +179,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك *</label>
+            <label className="form-label">ادخل رقم المشترك </label>
             <input
               type="text"
               className="form-control"
@@ -196,13 +196,13 @@ const UtilityServices = forwardRef((props, ref) => {
       {card.title === "تقديم شكوى مرافق" && (
         <>
           <div className="mb-3">
-            <label className="form-label">نوع المرفق *</label>
+            <label className="form-label">نوع المرفق </label>
             <select
               className="form-select custom-select-style"
               value={utilityType}
               onChange={(e) => setUtilityType(e.target.value)}
             >
-              <option value="">اختر نوع المرفق</option>
+              <option value="">  </option>
               <option value="كهرباء">كهرباء</option>
               <option value="مياه">مياه</option>
               <option value="غاز">غاز</option>
@@ -259,7 +259,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">العنوان التفصيلي *</label>
+            <label className="form-label">العنوان التفصيلي </label>
             <input
               type="text"
               className="form-control"
@@ -272,13 +272,13 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">نوع الشكوى *</label>
+            <label className="form-label">نوع الشكوى </label>
             <select
               className="form-select custom-select-style"
               value={complaintType}
               onChange={(e) => setComplaintType(e.target.value)}
             >
-              <option value="">اختر نوع الشكوى</option>
+              <option value="">  </option>
               <option value="cut">انقطاع الخدمة</option>
               <option value="highBill">فاتورة مرتفعة</option>
               <option value="leak">تسريب</option>
@@ -291,7 +291,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">وصف الشكوى *</label>
+            <label className="form-label">وصف الشكوى </label>
             <textarea
               className="form-control"
               rows="4"
@@ -304,7 +304,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">رقم المشترك *</label>
+            <label className="form-label">رقم المشترك </label>
             <input
               type="text"
               className="form-control"
@@ -317,7 +317,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">الاسم رباعي *</label>
+            <label className="form-label">الاسم رباعي </label>
             <input
               type="text"
               className="form-control"
@@ -330,7 +330,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">رقم الهاتف *</label>
+            <label className="form-label">رقم الهاتف </label>
             <input
               type="text"
               className="form-control"
@@ -341,7 +341,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">البريد الإلكتروني *</label>
+            <label className="form-label">البريد الإلكتروني </label>
             <input
               type="text"
               className="form-control"
@@ -356,13 +356,13 @@ const UtilityServices = forwardRef((props, ref) => {
       {card.title === "سداد فاتورة الغاز" && (
         <>
           <div className="mb-3">
-            <label className="form-label">اختر الشركة *</label>
+            <label className="form-label">اختر الشركة </label>
             <select
               className="form-select custom-select-style"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             >
-              <option value="">برجاء الاختيار</option>
+              <option value=""> </option>
               <option value="1">بتروتريد</option>
               <option value="2">نات جاس</option>
               <option value="3">شركة طاقة للغاز</option>
@@ -373,7 +373,7 @@ const UtilityServices = forwardRef((props, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك *</label>
+            <label className="form-label">ادخل رقم المشترك </label>
             <input
               type="text"
               className="form-control"
@@ -399,7 +399,7 @@ const UtilityServices = forwardRef((props, ref) => {
             formSubmitted ? "btn-success" : "btn-outline-secondry"
           }`}
         >
-          {formSubmitted ? "تم الإرسال بنجاح" : "ارسال"}
+          {formSubmitted ? "تم الإرسال بنجاح" : "التالي"}
         </button>
 
         {formSubmitted && (
@@ -407,7 +407,7 @@ const UtilityServices = forwardRef((props, ref) => {
             type="submit"
             className="btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2"
           >
-            ارسال
+            التالي
           </button>
         )}
       </div>

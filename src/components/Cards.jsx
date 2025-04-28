@@ -25,7 +25,7 @@ function Cards({ cardsData }) {
                 state={card.scrollTarget ? null : card}
                 className="text-decoration-none text-dark"
               >
-                <Card className="border-0 shadow-sm rounded-4 p-3 h-100">
+                <Card className="border-0 shadow-sm rounded-4 p-3 h-100 small-card">
                   <Card.Body>
                     {card.icon && (
                       <div
