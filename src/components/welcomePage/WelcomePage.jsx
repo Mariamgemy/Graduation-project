@@ -4,12 +4,12 @@ import rafikiImg from "../images/rafiki.svg";
 import MainComponent from "../MainComponent";
 import permitsImg from "../images/ChatGPT Image 6 أبريل 2025، 09_52_31 م.png";
 import ReverseSection from "../ReverseSection";
-import elctricImg from "../images/تصميم بدون عنوان.png";
-import houseImg from "../images/وحدة سكنيه.png";
+import elctricImg from "../images/electric.png";
+
 import trafficImg from "../images/تصميم بدون عنوان (1) (1).png";
 import Footer from "../Footer";
 import phoneImg from "../images/phone.png";
-
+import billImg from "../images/bill.png"
 function WelcomePage() {
   //اشهر الخدامات
   const services = [
@@ -117,41 +117,46 @@ function WelcomePage() {
     },
   ];
 
-  // خدمات الإسكان والمرافق
+  // خدمات الكهرباء والمرافق
   const housingServices = [
     {
       id: "housing-1",
       category: "housing",
-      title: "التقديم على وحدة سكنية",
-      description: "خدمة تقديم طلب للحصول على وحدة سكنية.",
+      title: "شهادة كفاءة الطاقة",
+      description:
+        "خدمة إصدار شهادة معتمدة توضح مدى كفاءة استهلاك الطاقة للعقارات أو الوحدات السكنية، لدعم جهود ترشيد الطاقة.",
     },
     {
       id: "housing-2",
       category: "housing",
-      title: "الاستعلام عن مشاريع إسكان",
-      description: "استعلام عن المشاريع السكنية المتاحة.",
+      title: "متابعة استهلاك المياه والكهرباء بشكل لحظي",
+      description:
+        "خدمة تمكّنك من متابعة استهلاكك الشهري واليومي للمياه والكهرباء عبر تقارير ورسوم بيانية تفصيلية، مع إشعارات في حال ارتفاع الاستهلاك.",
     },
     {
       id: "housing-3",
       category: "housing",
       title: "التقديم على عداد كهرباء / مياه",
-      description: "التقديم للحصول على عداد كهرباء أو مياه.",
+      description:
+        "خدمة إلكترونية تتيح لك تقديم طلب للحصول على عداد كهرباء أو مياه جديد بطريقة سهلة وسريعة.",
     },
     {
       id: "housing-4",
       category: "housing",
       title: "نقل ملكية عداد",
-      description: "خدمة نقل ملكية عداد كهرباء أو مياه.",
+      description:
+        "خدمة نقل ملكية عداد الكهرباء أو المياه من شخص إلى آخر بشكل رسمي، مع تحديث كافة بيانات المشترك.",
     },
     {
       id: "housing-5",
       category: "housing",
-      title: "تقديم شكوى للمرافق",
-      description: "خدمة تقديم شكوى لمرافق الكهرباء أو المياه.",
+      title: "تقديم شكوى مرافق",
+      description:
+        "خدمة تتيح لك تقديم شكوى رسمية بخصوص مشكلات المرافق مثل أعطال العدادات أو تسربات المياه والكهرباء.",
     },
   ];
 
-  // خدمات الكهرباء والمرافق والفواتير
+  // سداد الفواتير
   const utilityServices = [
     // {
     //   id: "utility-1",
@@ -183,12 +188,6 @@ function WelcomePage() {
       title: "سداد فاتورة الغاز",
       description: "سدد فاتورة الغاز الخاصة بك.",
     },
-    {
-      id: "utility-6",
-      category: "utility",
-      title: "تقديم شكوى مرافق",
-      description: "خدمة تقديم شكوى بخصوص أي مشكلة في المرافق.",
-    },
   ];
   const caption = [
     {
@@ -206,6 +205,13 @@ function WelcomePage() {
         cardsData={services}
       />
 
+      <div id="housing-section">
+        <ReverseSection
+          title=" خدمات الطاقة والمرافق "
+          image={elctricImg}
+          cardsData={housingServices}
+        />
+      </div>
       <div id="civil-section">
         <ReverseSection
           title=" الأحوال المدنية"
@@ -216,17 +222,9 @@ function WelcomePage() {
 
       <div id="utility-section">
         <MainComponent
-          title=" خدمات الكهرباء والمرافق والفواتير"
-          image={elctricImg}
+          title=" سداد الفواتير"
+          image={billImg}
           cardsData={utilityServices}
-        />
-      </div>
-
-      <div id="housing-section">
-        <ReverseSection
-          title=" خدمات الإسكان والمرافق "
-          image={houseImg}
-          cardsData={housingServices}
         />
       </div>
 
