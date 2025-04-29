@@ -8,7 +8,7 @@ import "../Css/UniqueCard.css";
 import "../Css/Form.css";
 import CivilServices from "./Services/CivilServices";
 import TrafficServices from "./Services/TrafficServices";
-
+import HousingServices from "./Services/HousingServices";
 
 function Formm() {
   const location = useLocation();
@@ -16,6 +16,7 @@ function Formm() {
   const utilityRef = useRef();
   const civilRef = useRef();
   const trafficRef = useRef();
+  const housingRef = useRef();
   const navigate = useNavigate();
   const captchaRef = useRef();
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -23,8 +24,8 @@ function Formm() {
   const isUtilityCard =
     card.title === "سداد فاتورة الكهرباء" ||
     card.title === "سداد فاتورة المياه" ||
-    card.title === "سداد فاتورة الغاز" ||
-    card.title === "تقديم شكوى مرافق";
+    card.title === "سداد فاتورة الغاز" ;
+
 
   const isCivilCard =
     card.title === "شهادة ميلاد" ||
@@ -41,6 +42,13 @@ function Formm() {
     card.title === "تجديد رخصة سيارة"||
     card.title === "بدل فاقد / تالف للرخص"||
     card.title === "مخالفات المرور ودفعها";
+
+const isHousingCard =
+    card.title === "شهادة كفاءة الطاقة" ||
+    card.title === "متابعة استهلاك المياه والكهرباء بشكل لحظي" ||
+    card.title ==="التقديم على عداد كهرباء / مياه"||
+    card.title==="نقل ملكية عداد"||
+    card.title === "تقديم شكوى مرافق";
 
 
     const handleSubmit = async (e) => {
@@ -64,6 +72,11 @@ function Formm() {
         const isValidTraffic = trafficRef.current?.validateForm();
         if (!isValidTraffic) isFormValid = false;
         else formData = trafficRef.current?.getFormData(); // نجمع البيانات هنا
+      }
+      if (isHousingCard) {
+        const isValidHousing = housingRef.current?.validateForm();
+        if (!isValidHousing) isFormValid = false;
+        else formData = housingRef.current?.getFormData(); // نجمع البيانات هنا
       }
     
       // const isCaptchaValid = captchaRef.current?.validateCaptchaField();
@@ -119,6 +132,7 @@ function Formm() {
       {isUtilityCard && <UtilityServices ref={utilityRef} />}
       {isCivilCard && <CivilServices ref={civilRef} />}
       {isTrafficCard && <TrafficServices ref={trafficRef} />}
+      {isHousingCard && <HousingServices ref={housingRef} />}
       {/* <CaptchaComponent ref={captchaRef} /> */}
 
       {/* <button

@@ -17,18 +17,9 @@ const CivilServices = forwardRef((props, ref) => {
   const [numberOfCopies, setNumberOfCopies] = useState("");
   const [quadriliteralName, setQuadriliteralName] = useState("");
   const [id, setId] = useState("");
-  const [familyName, setFamilyName] = useState("");
+
   const [gender, setGender] = useState("");
-  const [subscriberNumber, setSubscriberNumber] = useState("");
-  const [meterNumber, setMeterNumber] = useState("");
-  const [governorate, setGovernorate] = useState("");
-  const [detailedAddress, setDetailedAddress] = useState("");
-  const [complaintType, setComplaintType] = useState("");
-  const [complaintDescription, setComplaintDescription] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [utilityType, setUtilityType] = useState("");
+
   const [kinship, setKinship] = useState("");
 
   const [errors, setErrors] = useState({});
@@ -58,7 +49,13 @@ const CivilServices = forwardRef((props, ref) => {
     validateForm: () => {
       const newErrors = {};
 
-      if (card.title === "شهادة ميلاد" || card.title === "شهادة وفاة" || card.title === "قسيمة زواج" || card.title === "قسيمة طلاق" || card.title === "شهادة ميلاد مميكنة لأول مرة") {
+      if (
+        card.title === "شهادة ميلاد" ||
+        card.title === "شهادة وفاة" ||
+        card.title === "قسيمة زواج" ||
+        card.title === "قسيمة طلاق" ||
+        card.title === "شهادة ميلاد مميكنة لأول مرة"
+      ) {
         if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
         else if (!isValidMotherName(motherName)) {
           newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
@@ -86,24 +83,10 @@ const CivilServices = forwardRef((props, ref) => {
         if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
       }
 
-
-
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
     },
-    getFormData: () => ({
-      company,
-      subscriberNumber,
-      meterNumber,
-      governorate,
-      detailedAddress,
-      complaintType,
-      complaintDescription,
-      fullName,
-      phone,
-      email,
-      utilityType,
-    }),
+    getFormData: () => ({}),
   }));
 
   return (
@@ -317,7 +300,7 @@ const CivilServices = forwardRef((props, ref) => {
                     </div>
                   )}
                 </div>
-               
+
                 <div className="mb-3">
                   <label className="form-label">صلة القرابة </label>
                   <select
@@ -370,7 +353,6 @@ const CivilServices = forwardRef((props, ref) => {
                     <div className="text-danger">{errors.gender}</div>
                   )}
                 </div>
-            
               </div>
             </div>
           </div>
@@ -486,7 +468,7 @@ const CivilServices = forwardRef((props, ref) => {
           </div>
         </>
       )}
- {card.title === "قسيمة طلاق" && (
+      {card.title === "قسيمة طلاق" && (
         <>
           <div className="mb-3">
             <Steppar />
@@ -564,7 +546,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <h3 className="text-color mb-3">بيانات صاحب الوثيقة</h3>
                   <div className="col-md-6">
                     <div className="mb-3">
-                      <label className="form-label">الاسم رباعي للمطلق / المطلقة </label>
+                      <label className="form-label">
+                        الاسم رباعي للمطلق / المطلقة{" "}
+                      </label>
                       <input
                         type="text"
                         className="form-control"
@@ -589,7 +573,7 @@ const CivilServices = forwardRef((props, ref) => {
                         <div className="text-danger">{errors.id}</div>
                       )}
                     </div>
-                    
+
                     <div className="mb-3">
                       <label className="form-label">صلة القرابة </label>
                       <select
@@ -600,10 +584,9 @@ const CivilServices = forwardRef((props, ref) => {
                       >
                         <option value=""> </option>
                         <option value="dauter">ابنة مقدم الطلب</option>
-                    <option value="son">ابن مقدم الطلب</option>
-                    <option value="mother">والدة مقدم الطلب</option>
-                    <option value="father">والد مقدم الطلب</option>
-             
+                        <option value="son">ابن مقدم الطلب</option>
+                        <option value="mother">والدة مقدم الطلب</option>
+                        <option value="father">والد مقدم الطلب</option>
                       </select>
                       {errors.kinship && (
                         <div className="text-danger">{errors.kinship}</div>
@@ -611,7 +594,7 @@ const CivilServices = forwardRef((props, ref) => {
                     </div>
                   </div>
                   <div className="col-md-6">
-                  <div className="mb-3">
+                    <div className="mb-3">
                       <label className="form-label">
                         اسم الام لصاحب الوثيقة
                       </label>
@@ -627,7 +610,7 @@ const CivilServices = forwardRef((props, ref) => {
                         </div>
                       )}
                     </div>
-              
+
                     <div className="mb-3">
                       <label className="form-label">النوع </label>
                       <select
@@ -671,7 +654,7 @@ const CivilServices = forwardRef((props, ref) => {
           </div>
         </>
       )}
- {card.title === "قسيمة زواج" && (
+      {card.title === "قسيمة زواج" && (
         <>
           <div className="mb-3">
             <Steppar />
@@ -800,11 +783,11 @@ const CivilServices = forwardRef((props, ref) => {
                       >
                         <option value=""> </option>
                         <option value="dauter">ابنة مقدم الطلب</option>
-                    <option value="son">ابن مقدم الطلب</option>
-                    <option value="mother">والدة مقدم الطلب</option>
-                    <option value="father">والد مقدم الطلب</option>
-                    <option value="wife">زوجة مقدم الطلب</option>
-                    <option value="husband">زوج مقدم الطلب</option>
+                        <option value="son">ابن مقدم الطلب</option>
+                        <option value="mother">والدة مقدم الطلب</option>
+                        <option value="father">والد مقدم الطلب</option>
+                        <option value="wife">زوجة مقدم الطلب</option>
+                        <option value="husband">زوج مقدم الطلب</option>
                       </select>
                       {errors.kinship && (
                         <div className="text-danger">{errors.kinship}</div>
@@ -812,10 +795,9 @@ const CivilServices = forwardRef((props, ref) => {
                     </div>
                   </div>
                   <div className="col-md-6">
-                    
                     <div className="mb-3">
                       <label className="form-label">
-                        اسم زوج / زوجة صاحب القسيمة  
+                        اسم زوج / زوجة صاحب القسيمة
                       </label>
                       <input
                         type="text"
@@ -824,9 +806,7 @@ const CivilServices = forwardRef((props, ref) => {
                         onChange={(e) => setPartnerName(e.target.value)}
                       />
                       {errors.partnerName && (
-                        <div className="text-danger">
-                          {errors.partnerName}
-                        </div>
+                        <div className="text-danger">{errors.partnerName}</div>
                       )}
                     </div>
                     <div className="mb-3">

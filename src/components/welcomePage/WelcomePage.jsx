@@ -14,8 +14,8 @@ function WelcomePage() {
   //اشهر الخدامات
   const services = [
     {
-      icon: "🏠",
-      title: "خدمات الاسكان ",
+      icon: "💡",
+      title: "خدمات الطاقة والمرافق ",
       scrollTarget: "housing-section",
     },
     {
@@ -25,7 +25,7 @@ function WelcomePage() {
     },
     {
       icon: "🧾",
-      title: "خدمات الكهرباء",
+      title: "سداد الفواتير",
       scrollTarget: "utility-section",
     },
     {

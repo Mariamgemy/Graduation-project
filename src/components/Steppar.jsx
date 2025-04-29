@@ -4,7 +4,7 @@ import "../Css/Steppar.css"; // تأكد من وجود هذا الملف
 
 const Steppar = () => {
   const [active, setActive] = useState(1);
-  const stepsCount = 4; // عدد الخطوات كما في الصورة
+  const stepsCount = 3; // عدد الخطوات كما في الصورة
 
   const handleStepClick = stepNumber => {
     setActive(stepNumber);
