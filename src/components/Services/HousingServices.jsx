@@ -9,7 +9,13 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 const HousingServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
-
+const [utilityType , setUtilityType] = useState("");
+const [governorate , setGovernorate] = useState("");
+const [detailedAddress , setDetailedAddress] = useState("");
+const [complaintType , setComplaintType] = useState("");
+const [complaintDescription , setComplaintDescription] = useState("");
+const [subscriberNumber , setSubscriberNumber] = useState("");
+const [fullName, setFullName] = useState("");
   const [motherName, setMotherName] = useState("");
   const [personalPhoto , setPersonalPhoto] = useState("");
   const [anotherMotherName, setAnotherMotherName] = useState("");
@@ -18,7 +24,8 @@ const HousingServices = forwardRef((props, ref) => {
   const [numberOfCopies, setNumberOfCopies] = useState("");
   const [quadriliteralName, setQuadriliteralName] = useState("");
   const [id, setId] = useState("");
-
+  const [phone , setPhone] = useState("");
+const [email , setEmail] = useState("");
   const [gender, setGender] = useState("");
 
   const [kinship, setKinship] = useState("");
@@ -82,6 +89,30 @@ const HousingServices = forwardRef((props, ref) => {
         if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
         if (!gender) newErrors.gender = "هذا الحقل مطلوب";
         if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+      }
+      if (card.title === "تقديم شكوى مرافق") {
+        if (!utilityType) newErrors.utilityType = "هذا الحقل مطلوب";
+        if (!governorate) newErrors.governorate = "هذا الحقل مطلوب";
+        if (!detailedAddress) newErrors.detailedAddress = "هذا الحقل مطلوب";
+        if (!complaintType) newErrors.complaintType = "هذا الحقل مطلوب";
+        if (!complaintDescription)
+          newErrors.complaintDescription = "هذا الحقل مطلوب";
+        if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
+        if (!fullName) {
+          newErrors.fullName = "هذا الحقل مطلوب";
+        } else if (!isValidName(fullName)) {
+          newErrors.fullName = "الاسم غير صالح";
+        }
+        if (!phone) {
+          newErrors.phone = "هذا الحقل مطلوب";
+        } else if (!isValidPhoneNumber(phone)) {
+          newErrors.phone = "الرقم غير صالح";
+        }
+        if (!email) {
+          newErrors.email = "هذا الحقل مطلوب";
+        } else if (!isValidEmail(email)) {
+          newErrors.email = "البريد الالكتروني غير صالح";
+        }
       }
 
       setErrors(newErrors);
@@ -366,113 +397,162 @@ const HousingServices = forwardRef((props, ref) => {
           </div>
         </>
       )}
-      {card.title === "شهادة وفاة" && (
+      {card.title === "تقديم شكوى مرافق" && (
         <>
           <div className="mb-3">
-            <Steppar />
-            <NavigationButtons />
+            <label className="form-label">نوع المرفق </label>
+            <select
+              className="form-select custom-select-style"
+              value={utilityType}
+              onChange={(e) => setUtilityType(e.target.value)}
+            >
+              <option value="">  </option>
+              <option value="كهرباء">كهرباء</option>
+              <option value="مياه">مياه</option>
+              <option value="غاز">غاز</option>
+            </select>
+            {errors.utilityType && (
+              <div className="text-danger">{errors.utilityType}</div>
+            )}
           </div>
 
-          <div className=" mt-3 p-3">
-            <div className="row">
-              <h3 className="text-color mb-3">بيانات المتوفي </h3>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label"> الاسم رباعي للمتوفي</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={quadriliteralName}
-                    onChange={(e) => setQuadriliteralName(e.target.value)}
-                  />
-                  {errors.quadriliteralName && (
-                    <div className="text-danger">
-                      {errors.quadriliteralName}
-                    </div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">الرقم القومي </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
-                  />
-                  {errors.id && <div className="text-danger">{errors.id}</div>}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">صلة القرابة </label>
-                  <select
-                    type="text"
-                    className="form-select custom-select"
-                    value={kinship}
-                    onChange={(e) => setKinship(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="dauter">ابنة مقدم الطلب</option>
-                    <option value="son">ابن مقدم الطلب</option>
-                    <option value="mother">والدة مقدم الطلب</option>
-                    <option value="father">والد مقدم الطلب</option>
-                    <option value="wife">زوجة مقدم الطلب</option>
-                    <option value="husband">زوج مقدم الطلب</option>
-                  </select>
-                  {errors.kinship && (
-                    <div className="text-danger">{errors.kinship}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">اسم الام للمتوفي </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={anotherMotherName}
-                    onChange={(e) => setAnotherMotherName(e.target.value)}
-                  />
-                  {errors.anotherMotherName && (
-                    <div className="text-danger">
-                      {errors.anotherMotherName}
-                    </div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">النوع </label>
-                  <select
-                    type="text"
-                    className="form-select custom-select"
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="female">أنثي</option>
-                    <option value="male">ذكر</option>
-                  </select>
-                  {errors.gender && (
-                    <div className="text-danger">{errors.gender}</div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">عدد النسخ </label>
-                  <select
-                    className="form-select custom-select"
-                    value={numberOfCopies}
-                    onChange={(e) => setNumberOfCopies(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                  </select>
-                  {errors.numberOfCopies && (
-                    <div className="text-danger">{errors.numberOfCopies}</div>
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className="mb-3">
+            <label className="form-label">المحافظة</label>
+            <select
+              className="form-select custom-select-style"
+              value={governorate}
+              onChange={(e) => setGovernorate(e.target.value)}
+            >
+              <option value=""> </option>
+              <option value="القاهرة">القاهرة</option>
+              <option value="الإسكندرية">الإسكندرية</option>
+              <option value="الجيزة">الجيزة</option>
+              <option value="الدقهلية">الدقهلية</option>
+              <option value="الشرقية">الشرقية</option>
+              <option value="القليوبية">القليوبية</option>
+              <option value="المنوفية">المنوفية</option>
+              <option value="الغربية">الغربية</option>
+              <option value="المنيا">المنيا</option>
+              <option value="أسيوط">أسيوط</option>
+              <option value="سوهاج">سوهاج</option>
+              <option value="قنا">قنا</option>
+              <option value="أسوان">أسوان</option>
+              <option value="الأقصر">الأقصر</option>
+              <option value="البحر الأحمر">البحر الأحمر</option>
+              <option value="شمال سيناء">شمال سيناء</option>
+              <option value="جنوب سيناء">جنوب سيناء</option>
+              <option value="الفيوم">الفيوم</option>
+              <option value="بني سويف">بني سويف</option>
+              <option value="سوهاج">سوهاج</option>
+              <option value="الوادى الجديد">الوادى الجديد</option>
+              <option value="كفر الشيخ">كفر الشيخ</option>
+              <option value="دمياط">دمياط</option>
+              <option value="بورسعيد">بورسعيد</option>
+              <option value="السويس">السويس</option>
+              <option value="الإسماعيلية">الإسماعيلية</option>
+              <option value="الجيزة">الجيزة</option>
+              <option value="شمال سيناء">شمال سيناء</option>
+              <option value="جنوب سيناء">جنوب سيناء</option>
+              <option value="الشرقية">الشرقية</option>
+              <option value="البحيرة">البحيرة</option>
+              <option value="المنوفية">المنوفية</option>
+            </select>
+            {errors.governorate && (
+              <div className="text-danger">{errors.governorate}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">العنوان التفصيلي </label>
+            <input
+              type="text"
+              className="form-control"
+              value={detailedAddress}
+              onChange={(e) => setDetailedAddress(e.target.value)}
+            />
+            {errors.detailedAddress && (
+              <div className="text-danger">{errors.detailedAddress}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">نوع الشكوى </label>
+            <select
+              className="form-select custom-select-style"
+              value={complaintType}
+              onChange={(e) => setComplaintType(e.target.value)}
+            >
+              <option value="">  </option>
+              <option value="cut">انقطاع الخدمة</option>
+              <option value="highBill">فاتورة مرتفعة</option>
+              <option value="leak">تسريب</option>
+              <option value="badService">خدمة سيئة</option>
+              <option value="other">أخرى</option>
+            </select>
+            {errors.complaintType && (
+              <div className="text-danger">{errors.complaintType}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">وصف الشكوى </label>
+            <textarea
+              className="form-control"
+              rows="4"
+              value={complaintDescription}
+              onChange={(e) => setComplaintDescription(e.target.value)}
+            ></textarea>
+            {errors.complaintDescription && (
+              <div className="text-danger">{errors.complaintDescription}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">رقم المشترك </label>
+            <input
+              type="text"
+              className="form-control"
+              value={subscriberNumber}
+              onChange={(e) => setSubscriberNumber(e.target.value)}
+            />
+            {errors.subscriberNumber && (
+              <div className="text-danger">{errors.subscriberNumber}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">الاسم رباعي </label>
+            <input
+              type="text"
+              className="form-control"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+            />
+            {errors.fullName && (
+              <div className="text-danger">{errors.fullName}</div>
+            )}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">رقم الهاتف </label>
+            <input
+              type="text"
+              className="form-control"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            {errors.phone && <div className="text-danger">{errors.phone}</div>}
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">البريد الإلكتروني </label>
+            <input
+              type="text"
+              className="form-control"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {errors.email && <div className="text-danger">{errors.email}</div>}
           </div>
         </>
       )}
