@@ -1,6 +1,6 @@
 import Line from "../components/Line";
 import Suggest from "../components/images/Suggest.png";
-import CaptchaComponent from "../components/captcha";
+import CaptchaComponent from "../components/captcha"
 import Footer from "../components/Footer";
 import "../Css/Suggestions.css";
 import { useState } from "react";

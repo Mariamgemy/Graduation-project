@@ -1,0 +1,21 @@
+.custom-input{
+    display: block;
+    width: 90% !important;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+    background-clip: padding-box;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    border-radius: 30px !important;
+    height: 3.4375rem;
+}
+.customW{
+    width: 90% !important;
+}

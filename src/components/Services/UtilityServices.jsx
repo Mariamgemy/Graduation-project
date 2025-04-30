@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle } from "react";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
-import CaptchaComponent from "../Captcha";
+import CaptchaComponent from "../captcha";
 import { useRef } from "react";
 
 const UtilityServices = forwardRef((props, ref) => {

@@ -58,11 +58,7 @@ const [email , setEmail] = useState("");
       const newErrors = {};
 
       if (
-        card.title === "شهادة ميلاد" ||
-        card.title === "شهادة وفاة" ||
-        card.title === "قسيمة زواج" ||
-        card.title === "قسيمة طلاق" ||
-        card.title === "شهادة ميلاد مميكنة لأول مرة"
+        card.title ==="شهادة كفاءة الطاقة" 
       ) {
         if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
         else if (!isValidMotherName(motherName)) {
@@ -89,6 +85,7 @@ const [email , setEmail] = useState("");
         if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
         if (!gender) newErrors.gender = "هذا الحقل مطلوب";
         if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+        if(!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
       }
       if (card.title === "تقديم شكوى مرافق") {
         if (!utilityType) newErrors.utilityType = "هذا الحقل مطلوب";
@@ -136,7 +133,9 @@ const [email , setEmail] = useState("");
                   <label className="form-label"> الاسم رباعي </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input ${
+                      errors.quadriliteralName ? "is-invalid" : ""
+                    }`}
                     value={quadriliteralName}
                     onChange={(e) => setQuadriliteralName(e.target.value)}
                   />
@@ -150,7 +149,9 @@ const [email , setEmail] = useState("");
                   <label className="form-label">الرقم القومي </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input ${
+                      errors.quadriliteralName ? "is-invalid" : ""
+                    }`}
                     value={id}
                     onChange={(e) => setId(e.target.value)}
                   />
@@ -160,7 +161,9 @@ const [email , setEmail] = useState("");
                   <label className="form-label">العنوان بالتفصيل</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input ${
+                      errors.quadriliteralName ? "is-invalid" : ""
+                    }`}
                     value={id}
                     onChange={(e) => setId(e.target.value)}
                   />
@@ -170,7 +173,9 @@ const [email , setEmail] = useState("");
                   <label className="form-label">رقم الهاتف </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input ${
+                      errors.quadriliteralName ? "is-invalid" : ""
+                    }`}
                     value={anotherMotherName}
                     onChange={(e) => setAnotherMotherName(e.target.value)}
                   />
@@ -187,7 +192,9 @@ const [email , setEmail] = useState("");
                   <label className="form-label">نوع المنشأة </label>
                   <select
                     type="text"
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.governorate ? "is-invalid" : ""
+                    }`}
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
@@ -204,7 +211,9 @@ const [email , setEmail] = useState("");
                   <label className="form-label">الغرض من استخراج الشهادة</label>
                   <select
                     type="text"
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.governorate ? "is-invalid" : ""
+                    }`}
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
@@ -223,12 +232,15 @@ const [email , setEmail] = useState("");
               <input
                 type="file"
                 id="personalPhoto"
+              
                 accept="image/*"
                 onChange={(e) => {
                   setPersonalPhoto(e.target.files[0]);
                 }}
               />
-              <label htmlFor="personalPhoto" className="file-input-label">
+              <label htmlFor="personalPhoto" className={` file-input-label ${
+                      errors.personalPhoto ? "is-invalid" : ""
+                    }`}>
                 <span className="file-name">
                   {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
                 </span>
@@ -250,7 +262,9 @@ const [email , setEmail] = useState("");
                   setPersonalPhoto(e.target.files[0]);
                 }}
               />
-              <label htmlFor="personalPhoto" className="file-input-label">
+              <label htmlFor="personalPhoto" className={`file-input-label ${
+                      errors.personalPhoto ? "is-invalid" : ""
+                    }`}>
                 <span className="file-name">
                   {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
                 </span>
@@ -402,7 +416,9 @@ const [email , setEmail] = useState("");
           <div className="mb-3">
             <label className="form-label">نوع المرفق </label>
             <select
-              className="form-select custom-select-style"
+              className={`form-select custom-select-style custom-input ${
+                errors.utilityType ? "is-invalid" : ""
+              }`}
               value={utilityType}
               onChange={(e) => setUtilityType(e.target.value)}
             >
@@ -419,7 +435,9 @@ const [email , setEmail] = useState("");
           <div className="mb-3">
             <label className="form-label">المحافظة</label>
             <select
-              className="form-select custom-select-style"
+              className={`form-select custom-select-style custom-input ${
+                errors.governorate ? "is-invalid" : ""
+              }`}
               value={governorate}
               onChange={(e) => setGovernorate(e.target.value)}
             >
@@ -466,7 +484,9 @@ const [email , setEmail] = useState("");
             <label className="form-label">العنوان التفصيلي </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.detailedAddress ? "is-invalid" : ""
+              }`}
               value={detailedAddress}
               onChange={(e) => setDetailedAddress(e.target.value)}
             />
@@ -478,7 +498,9 @@ const [email , setEmail] = useState("");
           <div className="mb-3">
             <label className="form-label">نوع الشكوى </label>
             <select
-              className="form-select custom-select-style"
+              className={`form-select custom-select-style custom-input ${
+                errors.complaintType ? "is-invalid" : ""
+              }`}
               value={complaintType}
               onChange={(e) => setComplaintType(e.target.value)}
             >
@@ -497,7 +519,9 @@ const [email , setEmail] = useState("");
           <div className="mb-3">
             <label className="form-label">وصف الشكوى </label>
             <textarea
-              className="form-control"
+              className={`form-control customW ${
+                errors.complaintDescription ? "is-invalid" : ""
+              }`}
               rows="4"
               value={complaintDescription}
               onChange={(e) => setComplaintDescription(e.target.value)}
@@ -511,7 +535,9 @@ const [email , setEmail] = useState("");
             <label className="form-label">رقم المشترك </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.subscriberNumber ? "is-invalid" : ""
+              }`}
               value={subscriberNumber}
               onChange={(e) => setSubscriberNumber(e.target.value)}
             />
@@ -524,7 +550,9 @@ const [email , setEmail] = useState("");
             <label className="form-label">الاسم رباعي </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.fullName ? "is-invalid" : ""
+              }`}
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
             />
@@ -537,7 +565,9 @@ const [email , setEmail] = useState("");
             <label className="form-label">رقم الهاتف </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.phone ? "is-invalid" : ""
+              }`}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
@@ -548,7 +578,9 @@ const [email , setEmail] = useState("");
             <label className="form-label">البريد الإلكتروني </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.email ? "is-invalid" : ""
+              }`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />

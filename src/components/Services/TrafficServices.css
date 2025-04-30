@@ -81,6 +81,7 @@
 .file-input-container {
   position: relative;
   width: 100%;
+  
 }
 
 .file-input-container input[type="file"] {
@@ -90,6 +91,7 @@
   opacity: 0;
   cursor: pointer;
   z-index: 2;
+
 }
 
 .file-input-container .file-input-label {
@@ -99,8 +101,13 @@
   padding: 0.5rem 0.75rem;
   background-color: #fff;
   border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  min-height: 38px;
+  background-clip: padding-box;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  border-radius: 30px !important;
+  height: 3.4375rem !important;
+  width: 90% !important;
+
+  /* min-height: 38px; */
 }
 
 .file-input-container .file-input-label .file-name {
@@ -116,7 +123,8 @@
   
   background-color: #f8f9fa;
   border: 1px solid #ced4da;
-  border-radius: 0.25rem;
+  border-radius: 15px !important;
+
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   color: #495057;
