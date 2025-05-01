@@ -9,30 +9,34 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 const HousingServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
-const [utilityType , setUtilityType] = useState("");
-const [governorate , setGovernorate] = useState("");
-const [detailedAddress , setDetailedAddress] = useState("");
-const [complaintType , setComplaintType] = useState("");
-const [complaintDescription , setComplaintDescription] = useState("");
-const [subscriberNumber , setSubscriberNumber] = useState("");
-const [fullName, setFullName] = useState("");
+  const [utilityType, setUtilityType] = useState("");
+  const [governorate, setGovernorate] = useState("");
+  const [detailedAddress, setDetailedAddress] = useState("");
+  const [complaintType, setComplaintType] = useState("");
+  const [complaintDescription, setComplaintDescription] = useState("");
+  const [subscriberNumber, setSubscriberNumber] = useState("");
+  const [fullName, setFullName] = useState("");
   const [motherName, setMotherName] = useState("");
-  const [personalPhoto , setPersonalPhoto] = useState("");
+  const [personalPhoto, setPersonalPhoto] = useState("");
   const [anotherMotherName, setAnotherMotherName] = useState("");
   const [partnerName, setPartnerName] = useState("");
   const [isSelf, setIsSelf] = useState("");
   const [numberOfCopies, setNumberOfCopies] = useState("");
   const [quadriliteralName, setQuadriliteralName] = useState("");
+  const [certificateType, setCertificateType] = useState("");
+  const [facilityType, setFacilityType] = useState("");
   const [id, setId] = useState("");
-  const [phone , setPhone] = useState("");
-const [email , setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [elctricBill, setElctricBill] = useState("");
   const [gender, setGender] = useState("");
+  const [idPhoto, setIdPhoto] = useState("");
 
   const [kinship, setKinship] = useState("");
 
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
-  
+
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
     return phoneRegex.test(phoneNumber);
@@ -58,21 +62,7 @@ const [email , setEmail] = useState("");
     validateForm: () => {
       const newErrors = {};
 
-      if (
-        card.title ==="شهادة كفاءة الطاقة" 
-      ) {
-        if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
-        else if (!isValidMotherName(motherName)) {
-          newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
-        if (!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
-        else if (!isValidMotherName(partnerName)) {
-          newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
-        if (!anotherMotherName) newErrors.anotherMotherName = "هذا الحقل مطلوب";
-        else if (!isValidMotherName(anotherMotherName)) {
-          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
+      if (card.title === "شهادة كفاءة الطاقة") {
         if (!quadriliteralName) newErrors.quadriliteralName = "هذا الحقل مطلوب";
         else if (!isValidMotherName(quadriliteralName)) {
           newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
@@ -83,10 +73,13 @@ const [email , setEmail] = useState("");
           newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
         }
         if (!isSelf) newErrors.isSelf = " اختار اولاً ";
-        if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
-        if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-        if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-        if(!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
+        if (!detailedAddress) newErrors.detailedAddress = "هذا الحقل مطلوب";
+        if (!phone) newErrors.phone = "هذا الحقل مطلوب";
+        else if (!isValidPhoneNumber(phone)) newErrors.phone = "الرقم غير صالح";
+        if (!facilityType) newErrors.facilityType = "هذا الحقل مطلوب";
+        if (!certificateType) newErrors.certificateType = "هذا الحقل مطلوب";
+        if (!elctricBill) newErrors.elctricBill = "هذا الحقل مطلوب";
+        if (!idPhoto) newErrors.idPhoto = "هذا الحقل مطلوب";
       }
       if (card.title === "تقديم شكوى مرافق") {
         if (!utilityType) newErrors.utilityType = "هذا الحقل مطلوب";
@@ -123,9 +116,7 @@ const [email , setEmail] = useState("");
     <>
       {card.title === "شهادة كفاءة الطاقة" && (
         <>
-          <div className="mb-3">
-        
-          </div>
+          <div className="mb-3"></div>
 
           <div className="mt-3 p-3">
             <div className="row">
@@ -151,7 +142,7 @@ const [email , setEmail] = useState("");
                   <input
                     type="text"
                     className={`form-control custom-input ${
-                      errors.quadriliteralName ? "is-invalid" : ""
+                      errors.id ? "is-invalid" : ""
                     }`}
                     value={id}
                     onChange={(e) => setId(e.target.value)}
@@ -163,30 +154,29 @@ const [email , setEmail] = useState("");
                   <input
                     type="text"
                     className={`form-control custom-input ${
-                      errors.quadriliteralName ? "is-invalid" : ""
+                      errors.detailedAddress ? "is-invalid" : ""
                     }`}
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
+                    value={detailedAddress}
+                    onChange={(e) => setDetailedAddress(e.target.value)}
                   />
-                  {errors.id && <div className="text-danger">{errors.id}</div>}
+                  {errors.detailedAddress && (
+                    <div className="text-danger">{errors.detailedAddress}</div>
+                  )}
                 </div>
                 <div className="mb-3">
                   <label className="form-label">رقم الهاتف </label>
                   <input
                     type="text"
                     className={`form-control custom-input ${
-                      errors.quadriliteralName ? "is-invalid" : ""
+                      errors.phone ? "is-invalid" : ""
                     }`}
-                    value={anotherMotherName}
-                    onChange={(e) => setAnotherMotherName(e.target.value)}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                   />
-                  {errors.anotherMotherName && (
-                    <div className="text-danger">
-                      {errors.anotherMotherName}
-                    </div>
+                  {errors.phone && (
+                    <div className="text-danger">{errors.phone}</div>
                   )}
                 </div>
-               
               </div>
               <div className="col-md-6">
                 <div className="mb-3">
@@ -194,18 +184,18 @@ const [email , setEmail] = useState("");
                   <select
                     type="text"
                     className={`form-select custom-select-style custom-input ${
-                      errors.governorate ? "is-invalid" : ""
+                      errors.facilityType ? "is-invalid" : ""
                     }`}
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
+                    value={facilityType}
+                    onChange={(e) => setFacilityType(e.target.value)}
                   >
                     <option value=""> </option>
                     <option value="Residential">سكني</option>
                     <option value="Commercial">تجاري</option>
                     <option value="Industrial">صناعي</option>
                   </select>
-                  {errors.gender && (
-                    <div className="text-danger">{errors.gender}</div>
+                  {errors.facilityType && (
+                    <div className="text-danger">{errors.facilityType}</div>
                   )}
                 </div>
                 <div className="mb-3">
@@ -213,69 +203,74 @@ const [email , setEmail] = useState("");
                   <select
                     type="text"
                     className={`form-select custom-select-style custom-input ${
-                      errors.governorate ? "is-invalid" : ""
+                      errors.certificateType ? "is-invalid" : ""
                     }`}
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
+                    value={certificateType}
+                    onChange={(e) => setCertificateType(e.target.value)}
                   >
                     <option value=""> </option>
                     <option value="Residential">بيع عقار</option>
                     <option value="Commercial">تأجير</option>
                     <option value="Industrial">تسجيل رسمي</option>
                   </select>
-                  {errors.gender && (
-                    <div className="text-danger">{errors.gender}</div>
+                  {errors.certificateType && (
+                    <div className="text-danger">{errors.certificateType}</div>
                   )}
                 </div>
                 <div className="mb-3">
-            <label className="form-label">صورة اخر فاتورة كهرباء</label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="personalPhoto"
-              
-                accept="image/*"
-                onChange={(e) => {
-                  setPersonalPhoto(e.target.files[0]);
-                }}
-              />
-              <label htmlFor="personalPhoto" className={` file-input-label ${
-                      errors.personalPhoto ? "is-invalid" : ""
-                    }`}>
-                <span className="file-name">
-                  {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
-            </div>
-            {errors.personalPhoto && (
-              <div className="text-danger">{errors.personalPhoto}</div>
-            )}
-          </div>
+                  <label className="form-label">صورة اخر فاتورة كهرباء</label>
+                  <div className="file-input-container">
+                    <input
+                      type="file"
+                      id="elctricBill"
+                      accept="image/*"
+                      onChange={(e) => {
+                        setElctricBill(e.target.files[0]);
+                      }}
+                    />
+                    <label
+                      htmlFor="elctricBill"
+                      className={` file-input-label ${
+                        errors.elctricBill ? "is-invalid" : ""
+                      }`}
+                    >
+                      <span className="file-name">
+                        {elctricBill ? elctricBill.name : "لم يتم اختيار ملف"}
+                      </span>
+                      <span className="browse-button">اختر ملف</span>
+                    </label>
+                  </div>
+                  {errors.elctricBill && (
+                    <div className="text-danger">{errors.elctricBill}</div>
+                  )}
+                </div>
                 <div className="mb-3">
-            <label className="form-label">صورة بطاقة الرقم القومي</label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="personalPhoto"
-                accept="image/*"
-                onChange={(e) => {
-                  setPersonalPhoto(e.target.files[0]);
-                }}
-              />
-              <label htmlFor="personalPhoto" className={`file-input-label ${
-                      errors.personalPhoto ? "is-invalid" : ""
-                    }`}>
-                <span className="file-name">
-                  {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
-            </div>
-            {errors.personalPhoto && (
-              <div className="text-danger">{errors.personalPhoto}</div>
-            )}
-          </div>
+                  <label className="form-label">صورة بطاقة الرقم القومي</label>
+                  <div className="file-input-container">
+                    <input
+                      type="file"
+                      id="idPhoto"
+                      accept="image/*"
+                      onChange={(e) => {
+                        setIdPhoto(e.target.files[0]);
+                      }}
+                    />
+                    <label
+                      htmlFor="idPhoto"
+                      className={`file-input-label ${
+                        errors.idPhoto ? "is-invalid" : ""
+                      }`}
+                    >
+                      <span className="file-name">
+                        {idPhoto ? idPhoto.name : "لم يتم اختيار ملف"}
+                      </span>
+                      <span className="browse-button">اختر ملف</span>
+                    </label>
+                  </div>
+                  {errors.idPhoto && (
+                    <div className="text-danger">{errors.idPhoto}</div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -289,9 +284,7 @@ const [email , setEmail] = useState("");
                   <ul className="list-unstyled">
                     <li className="mb-3 d-flex align-items-start">
                       <span className="me-2 text-warning">💡</span>
-                      <span>
-                        يجب أن يكون مقدم الطلب هو صاحب العداد .
-                      </span>
+                      <span>يجب أن يكون مقدم الطلب هو صاحب العداد .</span>
                     </li>
                     <li className="mb-3 d-flex align-items-start">
                       <span className="me-2 text-warning">💡</span>
@@ -321,7 +314,6 @@ const [email , setEmail] = useState("");
                         يتطلب زيارة ميدانية أحيانًا حسب القوانين).
                       </span>
                     </li>
-                 
                   </ul>
                 </div>
               </div>
@@ -329,7 +321,7 @@ const [email , setEmail] = useState("");
           </div>
         </>
       )}
-      {card.title === "شهادة ميلاد مميكنة لأول مرة" && (
+      {card.title === "التقديم على عداد كهرباء / مياه" && (
         <>
           <div className="mb-3">
             <Steppar />
@@ -423,7 +415,7 @@ const [email , setEmail] = useState("");
               value={utilityType}
               onChange={(e) => setUtilityType(e.target.value)}
             >
-              <option value="">  </option>
+              <option value=""> </option>
               <option value="كهرباء">كهرباء</option>
               <option value="مياه">مياه</option>
               <option value="غاز">غاز</option>
@@ -505,7 +497,7 @@ const [email , setEmail] = useState("");
               value={complaintType}
               onChange={(e) => setComplaintType(e.target.value)}
             >
-              <option value="">  </option>
+              <option value=""> </option>
               <option value="cut">انقطاع الخدمة</option>
               <option value="highBill">فاتورة مرتفعة</option>
               <option value="leak">تسريب</option>

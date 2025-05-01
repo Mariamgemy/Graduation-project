@@ -1,28 +1,65 @@
 .navigation-container {
-    position: relative; /* لجعل الخط الفاصل في موضع مطلق بالنسبة لهذه الحاوية */
-    margin-bottom: 20px; /* مساحة أسفل المجموعة بالكامل */
-  }
-  
-  .navigation-container .d-flex {
-    /* يمكنك الاحتفاظ بأنماط التوزيع للأزرار هنا أو نقلها إلى .navigation-container */
-  }
-  
-  .separator-line {
-    position: absolute; /* لوضع الخط بشكل مستقل */
-    bottom: 0; /* لجعله يلتصق بالجزء السفلي من الحاوية */
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: #ccc; /* لون الخط */
-  }
-  
-  .active-button {
-    border-bottom: 3px solid #3373a3 !important;
-    color: #212529 !important;
-    font-weight: bold;
-  }
-  
-  /* يمكنك إضافة بعض التباعد السفلي للأزرار لكي لا تتداخل مع الخط */
-  .navigation-container .btn {
-    margin-bottom: -1px; /* لتعويض سمك الخط وجعل الحافة السفلية للأزرار فوق الخط */
-  }
+  position: relative; /* لجعل الخط الفاصل في موضع مطلق بالنسبة لهذه الحاوية */
+  margin-bottom: 20px; /* مساحة أسفل المجموعة بالكامل */
+}
+
+.navigation-container .d-flex {
+  /* يمكنك الاحتفاظ بأنماط التوزيع للأزرار هنا أو نقلها إلى .navigation-container */
+}
+
+.separator-line {
+  position: absolute; /* لوضع الخط بشكل مستقل */
+  bottom: 0; /* لجعله يلتصق بالجزء السفلي من الحاوية */
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #dee2e6;
+  margin-top: 10px;
+}
+
+/* .active-button {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #28a745;
+  font-weight: bold;
+  position: relative;
+} */
+
+.active-button::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #3373a3;
+  border-radius: 2px;
+}
+
+
+.disabled {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #adb5bd;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* يمكنك إضافة بعض التباعد السفلي للأزرار لكي لا تتداخل مع الخط */
+.navigation-container .btn {
+  margin-bottom: -1px; /* لتعويض سمك الخط وجعل الحافة السفلية للأزرار فوق الخط */
+}
+
+.btn-light {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  color: #6c757d;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.btn-light:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
