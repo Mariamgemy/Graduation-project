@@ -99,7 +99,9 @@ const CivilServices = forwardRef((props, ref) => {
             <label className="form-label ">اسم الأم لمقدم الطلب</label>
             <input
               type="text"
-              className="form-control w-25"
+              className={`form-control custom-input  ${
+                errors.motherName ? "is-invalid" : ""
+              }`}
               value={motherName}
               onChange={(e) => setMotherName(e.target.value)}
             />
@@ -146,7 +148,9 @@ const CivilServices = forwardRef((props, ref) => {
               <div className="mt-3">
                 <label className="form-label">عدد النسخ المطلوبة </label>
                 <select
-                  className="form-select w-25 custom-select"
+                  className={`form-select custom-select-style custom-input ${
+                    errors.numberOfCopies ? "is-invalid" : ""
+                  }`}
                   value={numberOfCopies}
                   onChange={(e) => setNumberOfCopies(e.target.value)}
                 >
@@ -172,7 +176,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">الاسم رباعي</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input ${
+                          errors.quadriliteralName ? "is-invalid" : ""
+                        }`}
                         value={quadriliteralName}
                         onChange={(e) => setQuadriliteralName(e.target.value)}
                       />
@@ -186,7 +192,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">الرقم القومي </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input ${
+                          errors.id ? "is-invalid" : ""
+                        }`}
                         value={id}
                         onChange={(e) => setId(e.target.value)}
                       />
@@ -198,7 +206,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">صلة القرابة </label>
                       <select
                         type="text"
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.kinship ? "is-invalid" : ""
+                        }`}
                         value={kinship}
                         onChange={(e) => setKinship(e.target.value)}
                       >
@@ -218,11 +228,13 @@ const CivilServices = forwardRef((props, ref) => {
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">
-                        اسم الام لصاحب الشهادة{" "}
+                        اسم الام لصاحب الشهادة
                       </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input ${
+                          errors.anotherMotherName ? "is-invalid" : ""
+                        }`}
                         value={anotherMotherName}
                         onChange={(e) => setAnotherMotherName(e.target.value)}
                       />
@@ -236,7 +248,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">النوع </label>
                       <select
                         type="text"
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.gender ? "is-invalid" : ""
+                        }`}
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
                       >
@@ -251,7 +265,9 @@ const CivilServices = forwardRef((props, ref) => {
                     <div className="mb-3">
                       <label className="form-label">عدد النسخ </label>
                       <select
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.numberOfCopies ? "is-invalid" : ""
+                        }`}
                         value={numberOfCopies}
                         onChange={(e) => setNumberOfCopies(e.target.value)}
                       >
@@ -290,7 +306,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label"> الاسم رباعي </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                errors.quadriliteralName ? "is-invalid" : ""
+              }`}
                     value={quadriliteralName}
                     onChange={(e) => setQuadriliteralName(e.target.value)}
                   />
@@ -305,7 +323,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">صلة القرابة </label>
                   <select
                     type="text"
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.kinship ? "is-invalid" : ""
+                    }`}
                     value={kinship}
                     onChange={(e) => setKinship(e.target.value)}
                   >
@@ -327,7 +347,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">اسم الام لصاحب الوثيقة </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                      errors.anotherMotherName ? "is-invalid" : ""
+                    }`}
                     value={anotherMotherName}
                     onChange={(e) => setAnotherMotherName(e.target.value)}
                   />
@@ -341,7 +363,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">النوع </label>
                   <select
                     type="text"
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.gender ? "is-invalid" : ""
+                    }`}
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
@@ -373,7 +397,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label"> الاسم رباعي للمتوفي</label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                errors.quadriliteralName ? "is-invalid" : ""
+              }`}
                     value={quadriliteralName}
                     onChange={(e) => setQuadriliteralName(e.target.value)}
                   />
@@ -387,7 +413,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">الرقم القومي </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                errors.id ? "is-invalid" : ""
+              }`}
                     value={id}
                     onChange={(e) => setId(e.target.value)}
                   />
@@ -397,7 +425,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">صلة القرابة </label>
                   <select
                     type="text"
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.kinship ? "is-invalid" : ""
+                    }`}
                     value={kinship}
                     onChange={(e) => setKinship(e.target.value)}
                   >
@@ -419,7 +449,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">اسم الام للمتوفي </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                errors.anotherMotherName ? "is-invalid" : ""
+              }`}
                     value={anotherMotherName}
                     onChange={(e) => setAnotherMotherName(e.target.value)}
                   />
@@ -433,7 +465,9 @@ const CivilServices = forwardRef((props, ref) => {
                   <label className="form-label">النوع </label>
                   <select
                     type="text"
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.gender ? "is-invalid" : ""
+                    }`}
                     value={gender}
                     onChange={(e) => setGender(e.target.value)}
                   >
@@ -448,7 +482,9 @@ const CivilServices = forwardRef((props, ref) => {
                 <div className="mb-3">
                   <label className="form-label">عدد النسخ </label>
                   <select
-                    className="form-select custom-select"
+                    className={`form-select custom-select-style custom-input ${
+                      errors.numberOfCopies ? "is-invalid" : ""
+                    }`}
                     value={numberOfCopies}
                     onChange={(e) => setNumberOfCopies(e.target.value)}
                   >
@@ -476,7 +512,9 @@ const CivilServices = forwardRef((props, ref) => {
             <label className="form-label ">اسم الأم لمقدم الطلب</label>
             <input
               type="text"
-              className="form-control w-25"
+              className={`form-control custom-input  ${
+                errors.motherName ? "is-invalid" : ""
+              }`}
               value={motherName}
               onChange={(e) => setMotherName(e.target.value)}
             />
@@ -523,7 +561,9 @@ const CivilServices = forwardRef((props, ref) => {
               <div className="mt-3">
                 <label className="form-label">عدد النسخ المطلوبة </label>
                 <select
-                  className="form-select w-25 custom-select"
+                  className={`form-select custom-select-style custom-input ${
+                    errors.numberOfCopies ? "is-invalid" : ""
+                  }`}
                   value={numberOfCopies}
                   onChange={(e) => setNumberOfCopies(e.target.value)}
                 >
@@ -547,11 +587,13 @@ const CivilServices = forwardRef((props, ref) => {
                   <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">
-                        الاسم رباعي للمطلق / المطلقة{" "}
+                        الاسم رباعي للمطلق / المطلقة
                       </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.quadriliteralName ? "is-invalid" : ""
+              }`}
                         value={quadriliteralName}
                         onChange={(e) => setQuadriliteralName(e.target.value)}
                       />
@@ -565,7 +607,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">الرقم القومي </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.id ? "is-invalid" : ""
+              }`}
                         value={id}
                         onChange={(e) => setId(e.target.value)}
                       />
@@ -578,7 +622,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">صلة القرابة </label>
                       <select
                         type="text"
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.kinship ? "is-invalid" : ""
+                        }`}
                         value={kinship}
                         onChange={(e) => setKinship(e.target.value)}
                       >
@@ -600,7 +646,9 @@ const CivilServices = forwardRef((props, ref) => {
                       </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.anotherMotherName ? "is-invalid" : ""
+              }`}
                         value={anotherMotherName}
                         onChange={(e) => setAnotherMotherName(e.target.value)}
                       />
@@ -615,7 +663,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">النوع </label>
                       <select
                         type="text"
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.gender ? "is-invalid" : ""
+                        }`}
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
                       >
@@ -630,7 +680,9 @@ const CivilServices = forwardRef((props, ref) => {
                     <div className="mb-3">
                       <label className="form-label">عدد النسخ </label>
                       <select
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.numberOfCopies ? "is-invalid" : ""
+                        }`}
                         value={numberOfCopies}
                         onChange={(e) => setNumberOfCopies(e.target.value)}
                       >
@@ -662,7 +714,9 @@ const CivilServices = forwardRef((props, ref) => {
             <label className="form-label ">اسم الأم لمقدم الطلب</label>
             <input
               type="text"
-              className="form-control w-25"
+              className={`form-control custom-input  ${
+                errors.motherName ? "is-invalid" : ""
+              }`}
               value={motherName}
               onChange={(e) => setMotherName(e.target.value)}
             />
@@ -709,7 +763,9 @@ const CivilServices = forwardRef((props, ref) => {
               <div className="mt-3">
                 <label className="form-label">عدد النسخ المطلوبة </label>
                 <select
-                  className="form-select w-25 custom-select"
+                  className={`form-select custom-select-style custom-input ${
+                    errors.numberOfCopies ? "is-invalid" : ""
+                  }`}
                   value={numberOfCopies}
                   onChange={(e) => setNumberOfCopies(e.target.value)}
                 >
@@ -735,7 +791,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">الاسم رباعي</label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.quadriliteralName ? "is-invalid" : ""
+              }`}
                         value={quadriliteralName}
                         onChange={(e) => setQuadriliteralName(e.target.value)}
                       />
@@ -749,7 +807,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">الرقم القومي </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.id ? "is-invalid" : ""
+              }`}
                         value={id}
                         onChange={(e) => setId(e.target.value)}
                       />
@@ -763,7 +823,9 @@ const CivilServices = forwardRef((props, ref) => {
                       </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.anotherMotherName ? "is-invalid" : ""
+              }`}
                         value={anotherMotherName}
                         onChange={(e) => setAnotherMotherName(e.target.value)}
                       />
@@ -777,7 +839,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">صلة القرابة </label>
                       <select
                         type="text"
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.kinship ? "is-invalid" : ""
+                        }`}
                         value={kinship}
                         onChange={(e) => setKinship(e.target.value)}
                       >
@@ -801,7 +865,9 @@ const CivilServices = forwardRef((props, ref) => {
                       </label>
                       <input
                         type="text"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                errors.partnerName ? "is-invalid" : ""
+              }`}
                         value={partnerName}
                         onChange={(e) => setPartnerName(e.target.value)}
                       />
@@ -813,7 +879,9 @@ const CivilServices = forwardRef((props, ref) => {
                       <label className="form-label">النوع </label>
                       <select
                         type="text"
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.gender ? "is-invalid" : ""
+                        }`}
                         value={gender}
                         onChange={(e) => setGender(e.target.value)}
                       >
@@ -828,7 +896,9 @@ const CivilServices = forwardRef((props, ref) => {
                     <div className="mb-3">
                       <label className="form-label">عدد النسخ </label>
                       <select
-                        className="form-select custom-select"
+                        className={`form-select custom-select-style custom-input ${
+                          errors.numberOfCopies ? "is-invalid" : ""
+                        }`}
                         value={numberOfCopies}
                         onChange={(e) => setNumberOfCopies(e.target.value)}
                       >

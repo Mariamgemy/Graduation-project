@@ -11,30 +11,11 @@ const UtilityServices = forwardRef((props, ref) => {
   const [company, setCompany] = useState("");
   const [subscriberNumber, setSubscriberNumber] = useState("");
   const [meterNumber, setMeterNumber] = useState("");
-  const [governorate, setGovernorate] = useState("");
-  const [detailedAddress, setDetailedAddress] = useState("");
-  const [complaintType, setComplaintType] = useState("");
-  const [complaintDescription, setComplaintDescription] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [utilityType, setUtilityType] = useState("");
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const captchaRef = useRef();
 
-  const isValidPhoneNumber = (phoneNumber) => {
-    const phoneRegex = /^01[0-25]\d{8}$/;
-    return phoneRegex.test(phoneNumber);
-  };
-  const isValidEmail = (Email) => {
-    const emailRegex = /^[\w]+@([\w]+\.)+[\w]+$/;
-    return emailRegex.test(Email);
-  };
-  const isValidName = (name) => {
-    const nameRegex = /^[a-zA-Z\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
-    return nameRegex.test(name);
-  };
+
 
   useImperativeHandle(ref, () => ({
     validateForm: () => {
@@ -66,14 +47,6 @@ const UtilityServices = forwardRef((props, ref) => {
       company,
       subscriberNumber,
       meterNumber,
-      governorate,
-      detailedAddress,
-      complaintType,
-      complaintDescription,
-      fullName,
-      phone,
-      email,
-      utilityType,
     }),
   }));
 
@@ -84,11 +57,13 @@ const UtilityServices = forwardRef((props, ref) => {
           <div className="mb-3">
             <label className="form-label">اختر الشركة </label>
             <select
-              className="form-select custom-select-style"
+              className={`form-select custom-select-style custom-input ${
+                errors.company ? "is-invalid" : ""
+              }`}
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             >
-              <option value="">برجاء الاختيار</option>
+              <option value=""> </option>
               <option value="كهرباء شمال القاهرة">كهرباء شمال القاهرة</option>
               <option value="كهرباء جنوب القاهرة">كهرباء جنوب القاهرة</option>
               <option value="كهرباء جنوب الدلتا">كهرباء جنوب الدلتا</option>
@@ -105,7 +80,9 @@ const UtilityServices = forwardRef((props, ref) => {
             <label className="form-label">ادخل رقم السداد الالكتروني </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.subscriberNumber ? "is-invalid" : ""
+              }`}
               value={subscriberNumber}
               onChange={(e) => setSubscriberNumber(e.target.value)}
             />
@@ -121,7 +98,9 @@ const UtilityServices = forwardRef((props, ref) => {
           <div className="mb-3">
             <label className="form-label">اختر الشركة </label>
             <select
-              className="form-select custom-select-style"
+              className={`form-select custom-select-style custom-input ${
+                errors.company ? "is-invalid" : ""
+              }`}
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             >
@@ -146,7 +125,9 @@ const UtilityServices = forwardRef((props, ref) => {
             <label className="form-label">ادخل رقم العداد </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.meterNumber ? "is-invalid" : ""
+              }`}
               value={meterNumber}
               onChange={(e) => setMeterNumber(e.target.value)}
             />
@@ -159,7 +140,9 @@ const UtilityServices = forwardRef((props, ref) => {
             <label className="form-label">ادخل رقم المشترك </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.subscriberNumber ? "is-invalid" : ""
+              }`}
               value={subscriberNumber}
               onChange={(e) => setSubscriberNumber(e.target.value)}
             />
@@ -177,7 +160,9 @@ const UtilityServices = forwardRef((props, ref) => {
           <div className="mb-3">
             <label className="form-label">اختر الشركة </label>
             <select
-              className="form-select custom-select-style"
+              className={`form-select custom-select-style custom-input ${
+                errors.company ? "is-invalid" : ""
+              }`}
               value={company}
               onChange={(e) => setCompany(e.target.value)}
             >
@@ -195,7 +180,9 @@ const UtilityServices = forwardRef((props, ref) => {
             <label className="form-label">ادخل رقم المشترك </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input ${
+                errors.subscriberNumber ? "is-invalid" : ""
+              }`}
               placeholder="ادخل الارقام من المحافظة حتى الفرعي"
               value={subscriberNumber}
               onChange={(e) => setSubscriberNumber(e.target.value)}

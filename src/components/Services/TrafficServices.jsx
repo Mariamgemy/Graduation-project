@@ -11,6 +11,7 @@ const TrafficServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentBill,setPaymentBill] = useState("")
   const [isSelf, setIsSelf] = useState("");
   const [vehicleType, setVehicleType] = useState("");
   const [currentLicenseNumber, setCurrentLicenseNumber] = useState("");
@@ -165,6 +166,7 @@ const [fineAmount , setFineAmount] = useState("");
 
       if (card.title === "مخالفات المرور ودفعها") {
        if(!violationNumber) newErrors.violationNumber = "هذا الحقل مطلوب";
+       if(!paymentBill) newErrors.paymentBill = "هذا الحقل مطلوب";
        if(!violationType) newErrors.violationType = "هذا الحقل مطلوب";
        if(!plateNumber) newErrors.plateNumber = "هذا الحقل مطلوب";
        if(!fineAmount) newErrors.fineAmount = "هذا الحقل مطلوب"; 
@@ -401,7 +403,9 @@ const [fineAmount , setFineAmount] = useState("");
                   <label className="form-label">رقم المخالفة </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                      errors.violationNumber ? "is-invalid" : ""
+                    }`}
                     value={violationNumber}
                     onChange={(e) => setViolationNumber(e.target.value)}
                   />
@@ -413,7 +417,9 @@ const [fineAmount , setFineAmount] = useState("");
                   <label className="form-label">رقم اللوحة </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                      errors.plateNumber ? "is-invalid" : ""
+                    }`}
                     value={plateNumber}
                     onChange={(e) => setPlateNumber(e.target.value)}
                   />
@@ -423,7 +429,10 @@ const [fineAmount , setFineAmount] = useState("");
                 </div>
                 <div className="mb-3">
                   <label className="form-label">نوع المخالفة</label>
-                  <select className="form-select" value={violationType } onChange={(e) => setViolationType (e.target.value)}>
+                  <select className={`form-select custom-select-style custom-input ${
+                    errors.violationType ? "is-invalid" : ""
+                  }`}
+                  value={violationType } onChange={(e) => setViolationType (e.target.value)}>
                     <option value=""> </option>
                     <option value="1">إشارة حمراء</option>
                     <option value="2">سرعة زائدة</option>
@@ -440,7 +449,9 @@ const [fineAmount , setFineAmount] = useState("");
                   <label className="form-label mt-3">تاريخ المخالفة </label>
                   <input
                     type="date"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                      errors.violationDate ? "is-invalid" : ""
+                    }`}
                     value={violationDate}
                     onChange={(e) => setViolationDate(e.target.value)}
                   />
@@ -452,7 +463,9 @@ const [fineAmount , setFineAmount] = useState("");
                   <label className="form-label">مبلغ الغرامة </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control custom-input  ${
+                      errors.fineAmount ? "is-invalid" : ""
+                    }`}
                     value={fineAmount}
                     onChange={(e) => setFineAmount(e.target.value)}
                   />
@@ -511,26 +524,28 @@ const [fineAmount , setFineAmount] = useState("");
                     <div className="file-input-container">
                       <input
                         type="file"
-                        id="personalPhoto"
+                        id="paymentBill"
                         accept="image/*"
                         onChange={(e) => {
-                          setPersonalPhoto(e.target.files[0]);
+                          setPaymentBill(e.target.files[0]);
                         }}
                       />
                       <label
-                        htmlFor="personalPhoto"
-                        className="file-input-label"
+                        htmlFor="paymentBill"
+                        className={`file-input-label ${
+                          errors.paymentBill ? "is-invalid" : ""
+                        }`}
                       >
                         <span className="file-name">
-                          {personalPhoto
-                            ? personalPhoto.name
+                          {paymentBill
+                            ? paymentBill.name
                             : "لم يتم اختيار ملف"}
                         </span>
                         <span className="browse-button">اختر ملف</span>
                       </label>
                     </div>
-                    {errors.personalPhoto && (
-                      <div className="text-danger">{errors.personalPhoto}</div>
+                    {errors.paymentBill && (
+                      <div className="text-danger">{errors.paymentBill}</div>
                     )}
                   </div>
                 )}
@@ -544,7 +559,9 @@ const [fineAmount , setFineAmount] = useState("");
           <div className="mb-3">
             <label className="form-label">نوع الرخصة </label>
             <select
-              className="form-select"
+              className={`form-select custom-select-style custom-input ${
+                errors.licenseType ? "is-invalid" : ""
+              }`}
               value={licenseType}
               onChange={(e) => setLicenseType(e.target.value)}
             >
@@ -561,7 +578,9 @@ const [fineAmount , setFineAmount] = useState("");
             <label className="form-label">رقم الرخصة الأصلية </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input  ${
+                errors.currentLicenseNumber ? "is-invalid" : ""
+              }`}
               value={currentLicenseNumber}
               onChange={(e) => setCurrentLicenseNumber(e.target.value)}
             />
@@ -636,7 +655,9 @@ const [fineAmount , setFineAmount] = useState("");
                       setPersonalPhoto(e.target.files[0]);
                     }}
                   />
-                  <label htmlFor="personalPhoto" className="file-input-label">
+                  <label htmlFor="personalPhoto" className={`file-input-label${
+                errors.personalPhoto ? "is-invalid" : ""
+              }`}>
                     <span className="file-name">
                       {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
                     </span>
@@ -850,7 +871,9 @@ const [fineAmount , setFineAmount] = useState("");
             <label className="form-label">الرقم القومي </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input  ${
+                errors.id ? "is-invalid" : ""
+              }`}
               value={id}
               onChange={(e) => setId(e.target.value)}
             />
@@ -865,7 +888,9 @@ const [fineAmount , setFineAmount] = useState("");
                     <label className="form-label">رقم الرخصة الحالية </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control custom-input  ${
+                        errors.currentLicenseNumber ? "is-invalid" : ""
+                      }`}
                       value={currentLicenseNumber}
                       onChange={(e) => setCurrentLicenseNumber(e.target.value)}
                     />
@@ -879,7 +904,9 @@ const [fineAmount , setFineAmount] = useState("");
                     <label className="form-label">تاريخ الانتهاء الحالي </label>
                     <input
                       type="date"
-                      className="form-control"
+                      className={`form-control custom-input  ${
+                        errors.currentLicenseExpiryDate ? "is-invalid" : ""
+                      }`}
                       value={currentLicenseExpiryDate}
                       onChange={(e) =>
                         setCurrentLicenseExpiryDate(e.target.value)
@@ -892,48 +919,10 @@ const [fineAmount , setFineAmount] = useState("");
                     )}
                   </div>
                   <div className="mb-3">
-                    <label className="form-label ">طريقة الدفع </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
+               
+                 <PaymentMethods/>
                     {errors.paymentMethod && (
                       <div className="text-danger">{errors.paymentMethod}</div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">
-                      هل يلزم إجراء فحص طبي ؟
-                    </label>
-
-                    <div className="d-flex gap-5">
-                      <div className="form-check">
-                        <input
-                          type="radio"
-                          name="isSelf"
-                          className="form-check-input"
-                          value="yes"
-                          checked={isSelf === true}
-                          onChange={(e) => setIsSelf(true)}
-                        />
-                        <label className="form-check-label">نعم</label>
-                      </div>
-                      <div className="form-check">
-                        <input
-                          type="radio"
-                          name="isSelf"
-                          className="form-check-input"
-                          value="no"
-                          checked={isSelf === false}
-                          onChange={(e) => setIsSelf(false)}
-                        />
-                        <label className="form-check-label">لا</label>
-                      </div>
-                    </div>
-                    {errors.isSelf && (
-                      <div className="text-danger ">{errors.isSelf}</div>
                     )}
                   </div>
                 </div>
@@ -969,7 +958,9 @@ const [fineAmount , setFineAmount] = useState("");
                     <label className="form-label">تاريخ التجديد </label>
                     <input
                       type="date"
-                      className="form-control"
+                      className={`form-control custom-input  ${
+                        errors.issueDate ? "is-invalid" : ""
+                      }`}
                       value={issueDate}
                       onChange={(e) => setIssueDate(e.target.value)}
                     />
@@ -982,7 +973,9 @@ const [fineAmount , setFineAmount] = useState("");
                     <label className="form-label">تاريخ الانتهاء الجديد </label>
                     <input
                       type="date"
-                      className="form-control"
+                      className={`form-control custom-input  ${
+                        errors.expiryDate ? "is-invalid" : ""
+                      }`}
                       value={expiryDate}
                       onChange={(e) => setExpiryDate(e.target.value)}
                     />
@@ -990,130 +983,44 @@ const [fineAmount , setFineAmount] = useState("");
                       <div className="text-danger">{errors.expiryDate}</div>
                     )}
                   </div>
+                      <div className="mb-3">
+                        <label className="form-label">
+                          هل يلزم إجراء فحص طبي ؟
+                        </label>
+                      
+                        <div className="d-flex gap-5">
+                          <div className="form-check">
+                            <input
+                              type="radio"
+                              name="isSelf"
+                              className="form-check-input"
+                              value="yes"
+                              checked={isSelf === true}
+                              onChange={(e) => setIsSelf(true)}
+                            />
+                            <label className="form-check-label">نعم</label>
+                          </div>
+                          <div className="form-check">
+                            <input
+                              type="radio"
+                              name="isSelf"
+                              className="form-check-input"
+                              value="no"
+                              checked={isSelf === false}
+                              onChange={(e) => setIsSelf(false)}
+                            />
+                            <label className="form-check-label">لا</label>
+                          </div>
+                        </div>
+                        {errors.isSelf && (
+                          <div className="text-danger ">{errors.isSelf}</div>
+                        )}
+                      </div>
                 </div>
               </div>
             </div>
 
-            {/* {isSelf === true && (
-             
-            )} */}
-
-            {/* {isSelf === false && (
-           <div className="card mt-3 p-3">
-           <div className="row">
-           <h2 className="text-color mb-3">  تفاصيل الشاحنة</h2>
-             <div className="col-md-6">
-               <div className="mb-3">
-                 <label className="form-label">الطراز </label>
-                 <input
-                   type="text"
-                   className="form-control"
-                   value={quadriliteralName}
-                   onChange={(e) => setQuadriliteralName(e.target.value)}
-                 />
-               </div>
-               <div className="mb-3">
-                 <label className="form-label">اللون   </label>
-                 <input
-                   type="text"
-                   className="form-control"
-                   value={id}
-                   onChange={(e) => setId(e.target.value)}
-                 />
-               </div>
-               <div className="mb-3">
-                 <label className="form-label">سنة الصنع   </label>
-                 <input 
-                   type="number"
-                   min="1900" max="2025" step="1"
-                   className="form-control"
-                   value={familyName}
-                   onChange={(e) => setFamilyName(e.target.value)}
-                 />
-             <div className="mb-3">
-                 <label className="form-label mt-3">رقم الهيكل</label>
-                 <input
-                   type="text"
-                   className="form-control"
-                   value={motherName}
-                   onChange={(e) => setMotherName(e.target.value)}
-                 />
-               </div>
-             
-               </div>
-             </div>
-             <div className="col-md-6">
-               
-               <div className="mb-3">
-         <label className="form-label">تقرير الفحص  </label>
-         <div className="file-input-container">
-           <input
-             type="file"
-             id="personalPhoto"
-             accept="image/*"
-             onChange={(e) => {
-               setPersonalPhoto(e.target.files[0]);
-             }}
-           />
-           <label htmlFor="personalPhoto" className="file-input-label">
-             <span className="file-name">
-               {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
-             </span>
-             <span className="browse-button">اختر ملف</span>
-           </label>
-         </div>
-         {errors.personalPhoto && (
-           <div className="text-danger">{errors.personalPhoto}</div>
-         )}
-       </div>
-               <div className="mb-3">
-         <label className="form-label">تقرير الفحص  </label>
-         <div className="file-input-container">
-           <input
-             type="file"
-             id="personalPhoto"
-             accept="image/*"
-             onChange={(e) => {
-               setPersonalPhoto(e.target.files[0]);
-             }}
-           />
-           <label htmlFor="personalPhoto" className="file-input-label">
-             <span className="file-name">
-               {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
-             </span>
-             <span className="browse-button">اختر ملف</span>
-           </label>
-         </div>
-         {errors.personalPhoto && (
-           <div className="text-danger">{errors.personalPhoto}</div>
-         )}
-       </div>
-               <div className="mb-3">
-         <label className="form-label">تقرير الفحص  </label>
-         <div className="file-input-container">
-           <input
-             type="file"
-             id="personalPhoto"
-             accept="image/*"
-             onChange={(e) => {
-               setPersonalPhoto(e.target.files[0]);
-             }}
-           />
-           <label htmlFor="personalPhoto" className="file-input-label">
-             <span className="file-name">
-               {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
-             </span>
-             <span className="browse-button">اختر ملف</span>
-           </label>
-         </div>
-         {errors.personalPhoto && (
-           <div className="text-danger">{errors.personalPhoto}</div>
-         )}
-       </div>
-             </div>
-           </div>
-         </div>
-            )} */}
+        
           </div>
         </>
       )}
@@ -1128,7 +1035,9 @@ const [fineAmount , setFineAmount] = useState("");
             <label className="form-label"> رقم اللوحة </label>
             <input
               type="text"
-              className="form-control "
+              className={`form-control custom-input  ${
+                errors.plateNumber ? "is-invalid" : ""
+              }`}
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value)}
             />
@@ -1141,7 +1050,9 @@ const [fineAmount , setFineAmount] = useState("");
             <label className="form-label">رقم تسجيل السيارة  </label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control custom-input  ${
+                errors.vehicleRegistrationNumber ? "is-invalid" : ""
+              }`}
               value={vehicleRegistrationNumber}
               onChange={(e) => setVehicleRegistrationNumber(e.target.value)}
             />
@@ -1239,7 +1150,9 @@ const [fineAmount , setFineAmount] = useState("");
                       <label className="form-label">تاريخ التجديد </label>
                       <input
                         type="date"
-                        className="form-control"
+                        className={`form-control custom-input  ${
+                          errors.expiryDate ? "is-invalid" : ""
+                        }`}
                         value={expiryDate}
                         onChange={(e) => setExpiryDate(e.target.value)}
                         />

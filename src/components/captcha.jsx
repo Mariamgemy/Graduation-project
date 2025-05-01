@@ -101,7 +101,7 @@ const CaptchaComponent = forwardRef((props, ref) => {
   return (
     <div className="mb-3">
       <label htmlFor="captchaInput" className="form-label">
-        رمز التحقق*
+        رمز التحقق
       </label>
       <canvas
         ref={captchaCanvas}
