@@ -8,6 +8,7 @@ const UtilityServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
 
+  const [activeStep, setActiveStep] = useState(1);
   const [company, setCompany] = useState("");
   const [subscriberNumber, setSubscriberNumber] = useState("");
   const [meterNumber, setMeterNumber] = useState("");
@@ -39,6 +40,8 @@ const UtilityServices = forwardRef((props, ref) => {
         if (!company) newErrors.company = "هذا الحقل مطلوب";
         if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
       }
+
+      
 
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;

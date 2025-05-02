@@ -18,6 +18,20 @@ const Steppar = ({ active, setActive, formData }) => {
       anotherMotherName,
       kinship,
       gender,
+phone,
+      idPhoto,
+      certificateType,
+      facilityType,
+      elctricBill,
+
+      detailedAddress,
+      subscriberNumber,
+      fullName,
+      email,
+      complaintType,
+      governorate,
+      complaintDescription,
+      utilityType,
     } = formData;
 
     if (
@@ -42,7 +56,9 @@ const Steppar = ({ active, setActive, formData }) => {
       card.title === "شهادة وفاة"
     ) {
       if (!quadriliteralName || !kinship|| !anotherMotherName || !gender ||!id || !numberOfCopies) return false;
-    }
+    } else if (card.title === "شهادة كفاءة الطاقة" || card.title === "تقديم شكوى مرافق") {
+if(    !quadriliteralName || !id || !detailedAddress || !phone || !facilityType || !certificateType || !elctricBill || !idPhoto ||!email || !subscriberNumber || !fullName || !complaintType || !governorate || !complaintDescription || !utilityType)
+return false;    }
 
     return true;
   };
