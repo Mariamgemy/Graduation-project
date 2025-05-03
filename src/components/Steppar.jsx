@@ -18,7 +18,7 @@ const Steppar = ({ active, setActive, formData }) => {
       anotherMotherName,
       kinship,
       gender,
-phone,
+      phone,
       idPhoto,
       certificateType,
       facilityType,
@@ -55,10 +55,42 @@ phone,
       card.title === "شهادة ميلاد مميكنة لأول مرة" ||
       card.title === "شهادة وفاة"
     ) {
-      if (!quadriliteralName || !kinship|| !anotherMotherName || !gender ||!id || !numberOfCopies) return false;
-    } else if (card.title === "شهادة كفاءة الطاقة" || card.title === "تقديم شكوى مرافق") {
-if(    !quadriliteralName || !id || !detailedAddress || !phone || !facilityType || !certificateType || !elctricBill || !idPhoto ||!email || !subscriberNumber || !fullName || !complaintType || !governorate || !complaintDescription || !utilityType)
-return false;    }
+      if (
+        !quadriliteralName ||
+        !kinship ||
+        !anotherMotherName ||
+        !gender ||
+        !id ||
+        !numberOfCopies
+      )
+        return false;
+    } else if (card.title === "شهادة كفاءة الطاقة"){
+      if (  !quadriliteralName ||
+        !id ||
+        !detailedAddress ||
+        !phone ||
+        !facilityType ||
+        !certificateType ||
+        !elctricBill ||
+        !idPhoto ) return false;
+    }
+    else if (card.title === "تقديم شكوى مرافق"){
+      if(!email ||
+        !subscriberNumber ||
+        !fullName ||
+        !complaintType ||
+        !governorate ||
+        !complaintDescription ||
+        !utilityType)  return false;
+    }
+    else if (card.title === "التقديم على عداد كهرباء / مياه"){
+      if(!email ||
+        !phone ||
+        !fullName ||
+        !id)  return false;
+
+  }
+    
 
     return true;
   };

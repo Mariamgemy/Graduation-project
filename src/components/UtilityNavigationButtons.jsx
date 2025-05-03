@@ -6,7 +6,7 @@ const UtilityNavigationButtons = ({ activeStep, setActiveStep, formData }) => {
   const buttons = [
     { label: "بيانات مقدم الطلب", icon: <FaUser /> },
     { label: "بيانات العداد والعقار", icon: <FaFileAlt /> },
-    { label: "نتيجة الطلب", icon: <FaCheck /> },
+    { label: "تأكيد الطلب", icon: <FaCheck /> },
   ];
 
   const isStep1Completed = () => {
@@ -14,10 +14,10 @@ const UtilityNavigationButtons = ({ activeStep, setActiveStep, formData }) => {
 
     const {
       card,
-   
+
       quadriliteralName,
       id,
-phone,
+      phone,
       idPhoto,
       certificateType,
       facilityType,
@@ -32,16 +32,32 @@ phone,
       utilityType,
     } = formData;
 
-   
-      if (card.title === "شهادة كفاءة الطاقة" || card.title === "تقديم شكوى مرافق") {
-        if(    !quadriliteralName || !id || !detailedAddress || !phone || !facilityType || !certificateType || !elctricBill || !idPhoto ||!email || !subscriberNumber || !fullName || !complaintType || !governorate || !complaintDescription || !utilityType)
-        return false;  }
-     else if (
-      card.title === "شهادة ميلاد مميكنة لأول مرة" ||
-      card.title === "شهادة وفاة"
-    ) {
-      if (!quadriliteralName || !kinship) return false;
+    if (card.title === "شهادة كفاءة الطاقة"){
+      if (  !quadriliteralName ||
+        !id ||
+        !detailedAddress ||
+        !phone ||
+        !facilityType ||
+        !certificateType ||
+        !elctricBill ||
+        !idPhoto ) return false;
     }
+    else if (card.title === "تقديم شكوى مرافق"){
+      if(!email ||
+        !subscriberNumber ||
+        !fullName ||
+        !complaintType ||
+        !governorate ||
+        !complaintDescription ||
+        !utilityType)  return false;
+    }
+    else if (card.title === "التقديم على عداد كهرباء / مياه"){
+      if(!email ||
+        !phone ||
+        !fullName ||
+        !id)  return false;
+
+  }
 
     return true;
   };
@@ -94,11 +110,8 @@ phone,
               className={`btn btn-light border rounded-0 ${
                 activeStep === index + 1 ? "active-button" : ""
               } ${isDisabled ? "disabled" : ""} `}
-             
               onClick={() => handleButtonClick(index)}
               disabled={isDisabled}
-         
-
             >
               {button.icon} {button.label}
             </button>
