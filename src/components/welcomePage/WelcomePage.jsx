@@ -1,15 +1,15 @@
 import "./welcomePage.css";
 import React from "react";
-import rafikiImg from "../images/rafiki.svg";
+import rafikiImg from "../images/amico.svg";
 import MainComponent from "../MainComponent";
-import permitsImg from "../images/ChatGPT Image 6 أبريل 2025، 09_52_31 م.png";
+import permitsImg from "../images/Printing invoices-amico.svg"
 import ReverseSection from "../ReverseSection";
-import elctricImg from "../images/electric.png";
+import elctricImg from "../images/freepik__background__21709.png";
 
-import trafficImg from "../images/تصميم بدون عنوان (1) (1).png";
+import trafficImg from "../images/freepik__background__3598.png";
 import Footer from "../Footer";
 import phoneImg from "../images/phone.png";
-import billImg from "../images/bill.png"
+import billImg from "../images/freepik__background__59718.png"
 function WelcomePage() {
   //اشهر الخدامات
   const services = [
@@ -213,7 +213,7 @@ function WelcomePage() {
         />
       </div>
       <div id="civil-section">
-        <ReverseSection
+        <MainComponent
           title=" الأحوال المدنية"
           image={permitsImg}
           cardsData={certificates}
@@ -221,7 +221,7 @@ function WelcomePage() {
       </div>
 
       <div id="utility-section">
-        <MainComponent
+        <ReverseSection
           title=" سداد الفواتير"
           image={billImg}
           cardsData={utilityServices}
