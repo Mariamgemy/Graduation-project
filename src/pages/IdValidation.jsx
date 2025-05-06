@@ -14,8 +14,7 @@ function CustomModal({ show, handleClose }) {
       centered
       className="blur-background-modal"
       backdropClassName="custom-backdrop"
-      backdrop="static"
-      keyboard={false} 
+
     >
       <Modal.Body className=" p-4 rounded-4">
         <h3 className="mb-3">التحقق من الرقم القومي</h3>

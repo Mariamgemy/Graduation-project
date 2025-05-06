@@ -1,10 +1,10 @@
 import "./welcomePage.css";
 import React from "react";
-import rafikiImg from "../images/amico.svg";
+import rafikiImg from "../images/panaa.svg";
 import MainComponent from "../MainComponent";
 import permitsImg from "../images/Printing invoices-amico.svg"
 import ReverseSection from "../ReverseSection";
-import elctricImg from "../images/freepik__background__21709.png";
+import elctricImg from "../images/freepik__background__92199.png";
 
 import trafficImg from "../images/freepik__background__3598.png";
 import Footer from "../Footer";
@@ -76,41 +76,41 @@ function WelcomePage() {
   // خدمات المرور
   const trafficServices = [
     {
-      id: "1",
+      id: "traffic-1",
       category: "traffic",
       title: "استخراج رخصة قيادة",
       description:
         "هذه الخدمة تتيح لك استخراج رخصة قيادة خاصة أو مهنية لأول مرة بعد اجتياز الشروط والفحوصات اللازمة.",
     },
     {
-      id: "2",
+      id: "traffic-2",
       category: "traffic",
       title: "تجديد رخصة قيادة",
       description:
         "يمكنك تجديد رخصة القيادة الخاصة بك بسهولة من خلال هذه الخدمة.",
     },
     {
-      id: "3",
+      id: "traffic-3",
       category: "traffic",
       title: "استخراج رخصة سيارة",
       description: "خدمة لاستخراج رخصة سيارة جديدة سواء كانت ملاكي أو نقل.",
     },
     {
-      id: "4",
+      id: "traffic-4",
       category: "traffic",
       title: "تجديد رخصة سيارة",
       description:
         "خدمة لتجديد رخصة سيارتك الحالية دون الحاجة للذهاب إلى المرور.",
     },
     {
-      id: "5",
+      id: "traffic-5",
       category: "traffic",
       title: "بدل فاقد / تالف للرخص",
       description:
         "تساعدك هذه الخدمة على استخراج بدل فاقد أو تالف لرخصة القيادة أو السيارة.",
     },
     {
-      id: "6",
+      id: "traffic-6",
       category: "traffic",
       title: "مخالفات المرور ودفعها",
       description: "يمكنك الاستعلام عن مخالفات المرور ودفعها أونلاين بسهولة.",
@@ -120,7 +120,7 @@ function WelcomePage() {
   // خدمات الكهرباء والمرافق
   const housingServices = [
     {
-      id: "housing-1",
+      id: "energy-certificate",
       category: "housing",
       title: "شهادة كفاءة الطاقة",
       description:

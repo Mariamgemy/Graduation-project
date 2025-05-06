@@ -102,6 +102,8 @@ function App() {
             </Layout>
           }
         />
+     
+
         <Route
           path="/card/:id"
           element={

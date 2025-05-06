@@ -1,4 +1,5 @@
-import { useLocation } from "react-router-dom";
+import { useLocation  } from "react-router-dom";
+
 import React from 'react';
 import Sidebar from "../components/SideBar";
 import Formm from "../components/Formm";
@@ -8,10 +9,10 @@ import NavBar from "../components/NavBar";
 
 function CardDetails() {
   const location = useLocation();
-  const card = location.state;
+  const card = location.state
 
   if (!card) {
-    return <h2 className="text-center mt-5"> ستأتيكم قريباً </h2>;
+    return <p>لم يتم العثور على الخدمة.</p>;
   }
 
 

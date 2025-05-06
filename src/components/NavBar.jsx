@@ -9,6 +9,9 @@ import '../Css/test.css'
 import { IoSearch } from "react-icons/io5";
 import CustomModal from "../pages/IdValidation"
 import LoginCard from '../pages/LoginCard';
+import SearchBar from './SearchData';
+import SearchData from './SearchBox';
+import SearchBox from './SearchBox';
 
 const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -56,17 +59,7 @@ const NavBar = () => {
                 <Link to="popularServices" className="nav-link text-end"><FaChevronLeft className="ms-2" /> أشهر الخدمات </Link>
               </div>
             </Nav>
-            <div className="search-container search-Wel">
-              <input
-                className="form-control searchInput "
-                type="search"
-                placeholder="ابحث هنا ....  "
-                aria-label="Search"
-              />
-              <button className=" btn-search" type="button">
-                <IoSearch size={30} />
-              </button>
-            </div>
+    <SearchBox data={SearchData}/>
             <div className="d-flex mt-2">
               <button type='button' className="btn nav-btn btn-outline-success px-4 py-2 fs-5 mb-2" onClick={() => setShowModal(true)}>
                 <MdPerson size={30} /> تسجيل الدخول
