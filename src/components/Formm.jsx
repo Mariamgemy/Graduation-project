@@ -32,12 +32,9 @@ function Formm() {
     card.title === "شهادة وفاة" ||
     card.title === "قسيمة زواج" ||
     card.title === "قسيمة طلاق"||
-    card.title === "بدل فاقد لبطاقة الرقم القومي"||
     card.title === "شهادة ميلاد مميكنة لأول مرة";
 
   const isTrafficCard =
-    card.title === "استخراج رخصة قيادة" ||
-    card.title === "استخراج رخصة سيارة" ||
     card.title === "تجديد رخصة قيادة" ||
     card.title === "تجديد رخصة سيارة"||
     card.title === "بدل فاقد / تالف للرخص"||

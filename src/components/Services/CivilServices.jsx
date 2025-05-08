@@ -48,43 +48,43 @@ const CivilServices = forwardRef((props, ref) => {
     validateForm: () => {
       const newErrors = {};
 
-      if (activeStep === 1) {
-        if (
-          card.title === "شهادة ميلاد" ||
-          card.title === "شهادة وفاة" ||
-          card.title === "قسيمة زواج" ||
-          card.title === "قسيمة طلاق" ||
-          card.title === "شهادة ميلاد مميكنة لأول مرة"
-        ) {
-          if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
-          else if (!isValidMotherName(motherName)) {
-            newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-          if (!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
-          else if (!isValidMotherName(partnerName)) {
-            newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-          if (!anotherMotherName)
-            newErrors.anotherMotherName = "هذا الحقل مطلوب";
-          else if (!isValidMotherName(anotherMotherName)) {
-            newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-          if (!quadriliteralName)
-            newErrors.quadriliteralName = "هذا الحقل مطلوب";
-          else if (!isValidMotherName(quadriliteralName)) {
-            newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-          if (!id) {
-            newErrors.id = "هذا الحقل مطلوب";
-          } else if (!isValidId(id)) {
-            newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-          }
-          if (!isSelf) newErrors.isSelf = " اختار اولاً ";
-          if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
-          if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-          if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-        }
-      }
+      // if (activeStep === 1) {
+      //   if (
+      //     card.title === "شهادة ميلاد" ||
+      //     card.title === "شهادة وفاة" ||
+      //     card.title === "قسيمة زواج" ||
+      //     card.title === "قسيمة طلاق" ||
+      //     card.title === "شهادة ميلاد مميكنة لأول مرة"
+      //   ) {
+      //     if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
+      //     else if (!isValidMotherName(motherName)) {
+      //       newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      //     }
+      //     if (!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
+      //     else if (!isValidMotherName(partnerName)) {
+      //       newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      //     }
+      //     if (!anotherMotherName)
+      //       newErrors.anotherMotherName = "هذا الحقل مطلوب";
+      //     else if (!isValidMotherName(anotherMotherName)) {
+      //       newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      //     }
+      //     if (!quadriliteralName)
+      //       newErrors.quadriliteralName = "هذا الحقل مطلوب";
+      //     else if (!isValidMotherName(quadriliteralName)) {
+      //       newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      //     }
+      //     if (!id) {
+      //       newErrors.id = "هذا الحقل مطلوب";
+      //     } else if (!isValidId(id)) {
+      //       newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+      //     }
+      //     if (!isSelf) newErrors.isSelf = " اختار اولاً ";
+      //     if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
+      //     if (!gender) newErrors.gender = "هذا الحقل مطلوب";
+      //     if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+      //   }
+      // }
 
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;

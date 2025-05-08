@@ -12,11 +12,16 @@ const UtilityServices = forwardRef((props, ref) => {
   const [company, setCompany] = useState("");
   const [subscriberNumber, setSubscriberNumber] = useState("");
   const [meterNumber, setMeterNumber] = useState("");
+  const [id, setId] = useState("");
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const captchaRef = useRef();
 
 
+  const isValidId = (id) => {
+    const idRegex = /^\d{14}$/;
+    return idRegex.test(id);
+  }; 
 
   useImperativeHandle(ref, () => ({
     validateForm: () => {
@@ -26,12 +31,22 @@ const UtilityServices = forwardRef((props, ref) => {
       if (card.title === "سداد فاتورة الكهرباء") {
         if (!company) newErrors.company = "هذا الحقل مطلوب";
         if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
+        if (!id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
       }
 
       if (card.title === "سداد فاتورة المياه") {
         if (!company) newErrors.company = "هذا الحقل مطلوب";
         if (!meterNumber) newErrors.meterNumber = "هذا الحقل مطلوب";
         if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
+        if (!id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
       }
 
     
@@ -39,6 +54,11 @@ const UtilityServices = forwardRef((props, ref) => {
       if (card.title === "سداد فاتورة الغاز") {
         if (!company) newErrors.company = "هذا الحقل مطلوب";
         if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
+        if (!id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
       }
 
       
@@ -93,6 +113,19 @@ const UtilityServices = forwardRef((props, ref) => {
               <div className="text-danger">{errors.subscriberNumber}</div>
             )}
           </div>
+          <div className="mb-3">
+            <label className="form-label">الرقم القومي </label>
+            <input
+              type="text"
+              className={`form-control custom-input ${
+                errors.id ? "is-invalid" : ""
+              }`}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+            />
+            {errors.id && <div className="text-danger">{errors.id}</div>}
+          </div>
+
         </>
       )}
 
@@ -153,6 +186,19 @@ const UtilityServices = forwardRef((props, ref) => {
               <div className="text-danger">{errors.subscriberNumber}</div>
             )}
           </div>
+          <div className="mb-3">
+            <label className="form-label">الرقم القومي </label>
+            <input
+              type="text"
+              className={`form-control custom-input ${
+                errors.id ? "is-invalid" : ""
+              }`}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+            />
+            {errors.id && <div className="text-danger">{errors.id}</div>}
+          </div>
+
         </>
       )}
 
@@ -194,6 +240,19 @@ const UtilityServices = forwardRef((props, ref) => {
               <div className="text-danger">{errors.subscriberNumber}</div>
             )}
           </div>
+          <div className="mb-3">
+            <label className="form-label">الرقم القومي </label>
+            <input
+              type="text"
+              className={`form-control custom-input ${
+                errors.id ? "is-invalid" : ""
+              }`}
+              value={id}
+              onChange={(e) => setId(e.target.value)}
+            />
+            {errors.id && <div className="text-danger">{errors.id}</div>}
+          </div>
+
         </>
       )}
       <div className="mt-3">

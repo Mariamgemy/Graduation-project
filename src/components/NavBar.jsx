@@ -48,7 +48,7 @@ const NavBar = () => {
             <Nav className="ms-auto mt-2">
               <Link to="/" className="nav-link text-white focus-indicator" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>الرئيسية</Link>
               <Link to="/services" className="nav-link text-white focus-indicator"> خداماتنا </Link>
-              <Link to="#contact" className="nav-link text-white focus-indicator"> متابعة الطلبات </Link>
+              <Link to="/signUp" className="nav-link text-white focus-indicator"> متابعة الطلبات </Link>
 
               <div className="d-lg-none mt-3">
                 <h5 className='h5-color'>__________________________________________</h5>

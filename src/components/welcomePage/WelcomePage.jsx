@@ -60,12 +60,12 @@ function WelcomePage() {
       title: "قسيمة طلاق",
       description: "خدمة لاستخراج قسيمة طلاق معتمدة من السجل المدني.",
     },
-    {
-      id: "lost-id",
-      category: "civil",
-      title: "بدل فاقد لبطاقة الرقم القومي",
-      description: "تتيح لك هذه الخدمة استخراج بدل فاقد لبطاقتك الشخصية.",
-    },
+    // {
+    //   id: "lost-id",
+    //   category: "civil",
+    //   title: "بدل فاقد لبطاقة الرقم القومي",
+    //   description: "تتيح لك هذه الخدمة استخراج بدل فاقد لبطاقتك الشخصية.",
+    // },
     {
       id: "first-birth-cert",
       category: "civil",
@@ -75,13 +75,13 @@ function WelcomePage() {
   ];
   // خدمات المرور
   const trafficServices = [
-    {
-      id: "traffic-1",
-      category: "traffic",
-      title: "استخراج رخصة قيادة",
-      description:
-        "هذه الخدمة تتيح لك استخراج رخصة قيادة خاصة أو مهنية لأول مرة بعد اجتياز الشروط والفحوصات اللازمة.",
-    },
+    // {
+    //   id: "traffic-1",
+    //   category: "traffic",
+    //   title: "استخراج رخصة قيادة",
+    //   description:
+    //     "هذه الخدمة تتيح لك استخراج رخصة قيادة خاصة أو مهنية لأول مرة بعد اجتياز الشروط والفحوصات اللازمة.",
+    // },
     {
       id: "traffic-2",
       category: "traffic",
@@ -89,12 +89,12 @@ function WelcomePage() {
       description:
         "يمكنك تجديد رخصة القيادة الخاصة بك بسهولة من خلال هذه الخدمة.",
     },
-    {
-      id: "traffic-3",
-      category: "traffic",
-      title: "استخراج رخصة سيارة",
-      description: "خدمة لاستخراج رخصة سيارة جديدة سواء كانت ملاكي أو نقل.",
-    },
+    // {
+    //   id: "traffic-3",
+    //   category: "traffic",
+    //   title: "استخراج رخصة سيارة",
+    //   description: "خدمة لاستخراج رخصة سيارة جديدة سواء كانت ملاكي أو نقل.",
+    // },
     {
       id: "traffic-4",
       category: "traffic",

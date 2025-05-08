@@ -1,7 +1,5 @@
 import "./App.css";
-
 import { Route, Router, Routes } from "react-router";
-
 import WelcomePage from "./components/welcomePage/WelcomePage";
 import SignUp from "./pages/signUp";
 import ScrollToTopButton from "./components/scrolling/ScrollBtn";
@@ -15,12 +13,19 @@ import BackendPage from "./pages/Backend";
 import PopularServices from "./pages/PopularServices";
 import Suggestions from "./pages/Suggestions";
 import ComplaintDone from "./pages/complaintDone";
+import PaymentSuccess from "./components/PaymentSuccess";
+import StripePaymentForm from "./components/StripePaymentForm";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+// Initialize Stripe - replace with your publishable key
+const stripePromise = loadStripe("your_stripe_publishable_key");
 
 function App() {
   return (
     <>
       <ScrollToTopButton />
-
+    
       <Routes>
         <Route
           path="/"
@@ -112,7 +117,28 @@ function App() {
             </Layout>
           }
         />
+           {/* Payment routes */}
+           <Route 
+          path="/payment" 
+          element={
+            <Elements stripe={stripePromise}>
+              <Layout>
+                <StripePaymentForm />
+              </Layout>
+            </Elements>
+          } 
+        />
+        <Route
+          path="/payment-success"
+          element={
+            <Layout>
+              <PaymentSuccess />
+            </Layout>
+          }
+        />
+        
       </Routes>
+  
     </>
   );
 }

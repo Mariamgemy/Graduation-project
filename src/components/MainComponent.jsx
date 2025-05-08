@@ -14,7 +14,7 @@ function MainComponent({ title, image, cardsData }) {
             <img
               src={image}
               alt="صورة الويب سايت"
-              className="img-fluid w-100 mt-5"
+              className="img-fluid img-services mt-5"
             />
           </div>
 

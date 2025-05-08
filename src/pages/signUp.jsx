@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../Css/signUp.css";
 import panaImage from "../components/images/pana.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -11,78 +11,91 @@ const SignUp = () => {
     confirmPassword: "",
   });
 
-  const [errors, setErrors] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [flag, setFlag] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [apiError, setApiError] = useState("");
+  const [apiSuccess, setApiSuccess] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" }); // Clear individual field error on change
   };
 
-  const validateName = (name) => {
-    return name.length > 1;
-  };
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
+  const validateForm = () => {
+    const newErrors = {};
 
-  const validatePassword = (password) => {
-    return password.length >= 8;
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    let newErrors = {};
-
-    // التحقق من صحة البريد الإلكتروني
-    if (!validateName(formData.name)) {
+    if (formData.name.trim().length < 2) {
       newErrors.name = "يرجى إدخال أسم صحيح";
     }
-    // التحقق من صحة البريد الإلكتروني
-    if (!validateEmail(formData.email)) {
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
       newErrors.email = "يرجى إدخال بريد إلكتروني صحيح";
     }
 
-    // التحقق من كلمة المرور
-    if (!validatePassword(formData.password)) {
+    if (formData.password.length < 8) {
       newErrors.password = "يجب أن تحتوي كلمة المرور على 8 أحرف على الأقل";
     }
 
-    // التحقق من تطابق كلمتي المرور
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "كلمتا المرور غير متطابقتين!";
     }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setFlag(false);
-      return;
-    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-    console.log("بيانات المستخدم:", formData);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setApiError("");
+    setApiSuccess("");
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("YOUR_API_ENDPOINT/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "فشل في إنشاء الحساب");
+      }
+
+      setApiSuccess("تم إنشاء الحساب بنجاح! سيتم تحويلك لصفحة تسجيل الدخول.");
+      setTimeout(() => navigate("/login"), 2000); // تحويل بعد ثانيتين
+    } catch (error) {
+      setApiError(error.message || "حدث خطأ أثناء إنشاء الحساب.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="container-fluid vh-100">
       <div className="row h-100">
-        {/* القسم الأيسر (الصورة) */}
         <div className="col-md-6 d-none d-md-flex align-items-center justify-content-center bg-light">
-          <img
-            src={panaImage}
-            alt="صورة الويب سايت"
-            className="img-fluid w-75"
-          />
+          <img src={panaImage} alt="صورة" className="img-fluid w-75" />
         </div>
-
-        {/* القسم الأيمن (نموذج التسجيل) */}
         <div className="col-md-6 d-flex align-items-center justify-content-center">
           <div className="w-75">
             <h3 className="text-center mb-4 textP">إنشاء حساب</h3>
+
+            {apiError && <div className="alert alert-danger">{apiError}</div>}
+            {apiSuccess && <div className="alert alert-success">{apiSuccess}</div>}
+
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label">الاسم الكامل</label>
@@ -90,71 +103,60 @@ const SignUp = () => {
                   type="text"
                   className={`form-control ${errors.name ? "is-invalid" : ""}`}
                   name="name"
-                  placeholder="أدخل اسمك"
                   value={formData.name}
                   onChange={handleChange}
+                  placeholder="أدخل اسمك"
+                  disabled={isLoading}
                 />
-                {errors.name && (
-                  <div className="invalid-feedback" style={{ color: "red" }}>
-                    {errors.name}
-                  </div>
-                )}
+                {errors.name && <div className="text-danger">{errors.name}</div>}
               </div>
+
               <div className="mb-3">
                 <label className="form-label">البريد الإلكتروني</label>
                 <input
                   type="email"
                   className={`form-control ${errors.email ? "is-invalid" : ""}`}
                   name="email"
-                  placeholder="example@email.com"
                   value={formData.email}
                   onChange={handleChange}
+                  placeholder="example@email.com"
+                  disabled={isLoading}
                 />
-                {errors.email && (
-                  <div className="invalid-feedback" style={{ color: "red" }}>
-                    {errors.email}
-                  </div>
-                )}
+                {errors.email && <div className="text-danger">{errors.email}</div>}
               </div>
+
               <div className="mb-3">
                 <label className="form-label">كلمة المرور</label>
                 <input
                   type="password"
-                  className={`form-control ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.password ? "is-invalid" : ""}`}
                   name="password"
-                  placeholder="********"
                   value={formData.password}
                   onChange={handleChange}
+                  placeholder="********"
+                  disabled={isLoading}
                 />
-                {errors.password && (
-                  <div className="invalid-feedback" style={{ color: "red" }}>
-                    {errors.password}
-                  </div>
-                )}
+                {errors.password && <div className="text-danger">{errors.password}</div>}
               </div>
+
               <div className="mb-3">
                 <label className="form-label">تأكيد كلمة المرور</label>
                 <input
                   type="password"
-                  className={`form-control ${
-                    errors.confirmPassword ? "is-invalid" : ""
-                  }`}
+                  className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
                   name="confirmPassword"
-                  placeholder="********"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  placeholder="********"
+                  disabled={isLoading}
                 />
-                {errors.confirmPassword && (
-                  <div className="invalid-feedback" style={{ color: "red" }}>
-                    {errors.confirmPassword}
-                  </div>
-                )}
+                {errors.confirmPassword && <div className="text-danger">{errors.confirmPassword}</div>}
               </div>
-              <button type="submit" className="btn btn-secondary w-100">
-                تسجيل
+
+              <button type="submit" className="btn btn-secondary w-100" disabled={isLoading}>
+                {isLoading ? "جاري التسجيل..." : "تسجيل"}
               </button>
+
               <p className="text-center mt-3">
                 لديك حساب؟ <Link to="/login">تسجيل الدخول</Link>
               </p>
