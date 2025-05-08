@@ -134,7 +134,7 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="fw-bold">الموبايل</label>
+            <label className="fw-bold form-label">الموبايل</label>
             <PhoneInput
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
@@ -150,7 +150,7 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
           </div>
 
           <div className="mb-3">
-            <label className="fw-bold">كلمة المرور</label>
+            <label className="fw-bold form-label">كلمة المرور</label>
             <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -3,7 +3,7 @@ import { Route, Router, Routes } from "react-router";
 import WelcomePage from "./components/welcomePage/WelcomePage";
 import SignUp from "./pages/signUp";
 import ScrollToTopButton from "./components/scrolling/ScrollBtn";
-import Login from "./pages/Login";
+import Login from "./pages/Phone";
 import Services from "./pages/services";
 import Questions from "./pages/Questions";
 import CardDetails from "./pages/ServicesSteps";
@@ -17,6 +17,7 @@ import PaymentSuccess from "./components/PaymentSuccess";
 import StripePaymentForm from "./components/StripePaymentForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import Phone from "./pages/ComplaintDone";
 
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
@@ -104,6 +105,14 @@ function App() {
           element={
             <Layout>
               <ComplaintDone/>
+            </Layout>
+          }
+        />
+        <Route
+          path="phone"
+          element={
+            <Layout>
+              <Phone/>
             </Layout>
           }
         />

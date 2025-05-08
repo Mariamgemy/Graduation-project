@@ -1,5 +1,5 @@
 import "../Css/IdValidation.css";
-import { useNavigate } from "react-router-dom"; // ⬅️ إضافة دا
+import { useNavigate } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import { useState, useEffect, forwardRef, useImperativeHandle, useRef } from "react";
 import CaptchaComponent from "../components/captcha";
@@ -12,7 +12,7 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const captchaRef = useRef();
-  const navigate = useNavigate(); // ⬅️ خطوة مهمة جدًا
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!show) resetForm();
@@ -27,6 +27,7 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
   };
 
   const isValidId = (id) => /^\d{14}$/.test(id);
+  const isValidFactoryNumber= (factoryNumber) => /^[A-Z]{2}[0-9]{7}$/.test(factoryNumber);
 
   const validateForm = () => {
     const newErrors = {};
@@ -37,7 +38,7 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
     else if (!isValidId(id)) newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
 
     if (!factoryNumber) newErrors.factoryNumber = "هذا الحقل مطلوب";
-    else if (factoryNumber.length < 6) newErrors.factoryNumber = "رقم المصنع يجب أن يكون 6 أحرف على الأقل";
+    else if (!isValidFactoryNumber(factoryNumber)) newErrors.factoryNumber = "رقم المصنع غير صحيح"
 
     if (!isCaptchaValid) newErrors.captcha = "رمز التحقق غير صحيح";
 
@@ -68,9 +69,9 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
         throw new Error(data.message || "حدث خطأ أثناء التحقق من الرقم القومي");
       }
 
-      // ✅ لو التحقق نجح
-      handleClose(); // نغلق المودال
-      navigate("/signUp"); // ننتقل لصفحة إنشاء حساب
+     
+      handleClose();
+      navigate("/phone"); 
 
     } catch (error) {
       setApiError(error.message || "حدث خطأ أثناء التحقق");
@@ -92,13 +93,13 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="fw-bold">الرقم القومي</label>
+            <label className="fw-bold form-label">الرقم القومي</label>
             <input className="form-control mb-2" type="text" value={id} onChange={(e) => setId(e.target.value)} placeholder="ادخل الرقم القومي" disabled={isLoading} />
             {errors.id && <div className="text-danger">{errors.id}</div>}
           </div>
 
           <div className="mb-3">
-            <label className="fw-bold">رقم المصنع</label>
+            <label className="fw-bold form-label">رقم المصنع</label>
             <input className="form-control mb-2" type="text" value={factoryNumber} onChange={(e) => setFactoryNumber(e.target.value)} placeholder="ادخل رقم المصنع" disabled={isLoading} />
             {errors.factoryNumber && <div className="text-danger">{errors.factoryNumber}</div>}
           </div>

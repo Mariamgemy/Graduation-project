@@ -22,6 +22,19 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
       anotherMotherName,
       kinship,
       gender,
+      phone,
+      idPhoto,
+      certificateType,
+      facilityType,
+      elctricBill,
+      detailedAddress,
+      subscriberNumber,
+      fullName,
+      email,
+      complaintType,
+      governorate,
+      complaintDescription,
+      utilityType,
     } = formData;
 
     if (
@@ -46,6 +59,20 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
       card.title === "شهادة وفاة"
     ) {
       if (!quadriliteralName || !kinship) return false;
+    }
+    else if (card.title === "شهادة كفاءة الطاقة") {
+
+      if (!quadriliteralName ||!id ||!detailedAddress ||!phone || !facilityType || !certificateType || !elctricBill || !idPhoto) return false
+    }
+    
+    else if (card.title === "تقديم شكوى مرافق" ) {
+      if (!fullName || !subscriberNumber || !complaintType || !complaintDescription || !governorate || !utilityType || !detailedAddress || !phone || !email) return false
+    }
+
+    
+    else if(card.title ==="التقديم على عداد كهرباء / مياه"){
+      if (!id || !email || !phone || !fullName) return false
+
     }
 
     return true;

@@ -8,7 +8,7 @@ import "../Css/UniqueCard.css";
 import "../Css/Form.css";
 import CivilServices from "./Services/CivilServices";
 import TrafficServices from "./Services/TrafficServices";
-import HousingServices from "./Services/HousingServices";
+import EnergyServices from "./Services/EnergyServices";
 
 function Formm() {
   const location = useLocation();
@@ -16,7 +16,7 @@ function Formm() {
   const utilityRef = useRef();
   const civilRef = useRef();
   const trafficRef = useRef();
-  const housingRef = useRef();
+  const energyRef = useRef();
   const navigate = useNavigate();
   const captchaRef = useRef();
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -40,7 +40,7 @@ function Formm() {
     card.title === "بدل فاقد / تالف للرخص"||
     card.title === "مخالفات المرور ودفعها";
 
-const isHousingCard =
+const isEnergyCard =
     card.title === "شهادة كفاءة الطاقة" ||
     card.title === "متابعة استهلاك المياه والكهرباء بشكل لحظي" ||
     card.title ==="التقديم على عداد كهرباء / مياه"||
@@ -70,10 +70,10 @@ const isHousingCard =
         if (!isValidTraffic) isFormValid = false;
         else formData = trafficRef.current?.getFormData(); // نجمع البيانات هنا
       }
-      if (isHousingCard) {
-        const isValidHousing = housingRef.current?.validateForm();
-        if (!isValidHousing) isFormValid = false;
-        else formData = housingRef.current?.getFormData(); // نجمع البيانات هنا
+      if (isEnergyCard) {
+        const isValidEnergy = energyRef.current?.validateForm();
+        if (!isValidEnergy) isFormValid = false;
+        else formData = energyRef.current?.getFormData(); // نجمع البيانات هنا
       }
     
       // const isCaptchaValid = captchaRef.current?.validateCaptchaField();
@@ -129,7 +129,7 @@ const isHousingCard =
       {isUtilityCard && <UtilityServices ref={utilityRef} />}
       {isCivilCard && <CivilServices ref={civilRef} />}
       {isTrafficCard && <TrafficServices ref={trafficRef} />}
-      {isHousingCard && <HousingServices ref={housingRef} />}
+      {isEnergyCard && <EnergyServices ref={energyRef} />}
       {/* <CaptchaComponent ref={captchaRef} /> */}
 
       {/* <button

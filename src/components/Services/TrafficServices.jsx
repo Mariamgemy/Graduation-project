@@ -179,16 +179,16 @@ const TrafficServices = forwardRef((props, ref) => {
           }
         }
 
-        if (card.title === "مخالفات المرور ودفعها") {
-          if (!violationNumber) newErrors.violationNumber = "هذا الحقل مطلوب";
-          if (!paymentBill) newErrors.paymentBill = "هذا الحقل مطلوب";
-          if (!violationType) newErrors.violationType = "هذا الحقل مطلوب";
-          if (!plateNumber) newErrors.plateNumber = "هذا الحقل مطلوب";
-          if (!fineAmount) newErrors.fineAmount = "هذا الحقل مطلوب";
-          if (!violationDate) newErrors.violationDate = "هذا الحقل مطلوب";
-          if (!isSelf) newErrors.isSelf = "هذا الحقل مطلوب";
-          if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
-        }
+        // if (card.title === "مخالفات المرور ودفعها") {
+        //   if (!violationNumber) newErrors.violationNumber = "هذا الحقل مطلوب";
+        //   if (!paymentBill) newErrors.paymentBill = "هذا الحقل مطلوب";
+        //   if (!violationType) newErrors.violationType = "هذا الحقل مطلوب";
+        //   if (!plateNumber) newErrors.plateNumber = "هذا الحقل مطلوب";
+        //   if (!fineAmount) newErrors.fineAmount = "هذا الحقل مطلوب";
+        //   if (!violationDate) newErrors.violationDate = "هذا الحقل مطلوب";
+        //   if (!isSelf) newErrors.isSelf = "هذا الحقل مطلوب";
+        //   if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
+        // }
       }
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
