@@ -32,6 +32,7 @@ const Steppar = ({ active, setActive, formData }) => {
       governorate,
       complaintDescription,
       utilityType,
+      meterNumber,
     } = formData;
 
     if (
@@ -88,7 +89,14 @@ const Steppar = ({ active, setActive, formData }) => {
         !phone ||
         !fullName ||
         !id)  return false;
-
+      }
+   else if (card.title === "نقل ملكية عداد"){
+          if(!fullName ||
+            !id ||
+            !phone ||
+            !meterNumber ||
+            !detailedAddress)  return false;
+        
   }
     
 

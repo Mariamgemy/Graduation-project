@@ -5,6 +5,7 @@ import "./Civil.css";
 import Steppar from "../Steppar";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import NavigationButtons from "../NavigationButtons";
+import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
 
 const EnergyServices = forwardRef((props, ref) => {
   const location = useLocation();
@@ -14,11 +15,15 @@ const EnergyServices = forwardRef((props, ref) => {
 
   const [quadriliteralName, setQuadriliteralName] = useState("");
   const [id, setId] = useState("");
+  const [id2, setId2] = useState("");
 
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [utilityType, setUtilityType] = useState("");
   const [governorate, setGovernorate] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [relationshipType, setRelationshipType] = useState("");
+
   const [detailedAddress, setDetailedAddress] = useState("");
   const [complaintType, setComplaintType] = useState("");
   const [complaintDescription, setComplaintDescription] = useState("");
@@ -26,13 +31,15 @@ const EnergyServices = forwardRef((props, ref) => {
   const [fullName, setFullName] = useState("");
   const [idPhoto, setIdPhoto] = useState("");
   const [personalPhoto, setPersonalPhoto] = useState("");
-
+  const [meterNumber, setMeterNumber] = useState("");
   const [certificateType, setCertificateType] = useState("");
   const [facilityType, setFacilityType] = useState("");
 
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [elctricBill, setElctricBill] = useState("");
+  const [relationship, setRelationship] = useState("");
+
 
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
@@ -139,6 +146,7 @@ const EnergyServices = forwardRef((props, ref) => {
       governorate,
       complaintDescription,
       utilityType,
+      meterNumber,
     }),
   }));
 
@@ -163,9 +171,7 @@ const EnergyServices = forwardRef((props, ref) => {
         if (!certificateType) newErrors.certificateType = "هذا الحقل مطلوب";
         if (!elctricBill) newErrors.elctricBill = "هذا الحقل مطلوب";
         if (!idPhoto) newErrors.idPhoto = "هذا الحقل مطلوب";
-      }
-      
-      else if (card.title === "تقديم شكوى مرافق" ) {
+      } else if (card.title === "تقديم شكوى مرافق") {
         if (!fullName) newErrors.fullName = "هذا الحقل مطلوب";
         else if (!isValidMotherName(fullName)) {
           newErrors.fullName = "يجب ان لا يقل طول الحقل عن 3 احرف";
@@ -183,10 +189,7 @@ const EnergyServices = forwardRef((props, ref) => {
         }
         if (!phone) newErrors.phone = "هذا الحقل مطلوب";
         else if (!isValidPhoneNumber(phone)) newErrors.phone = "الرقم غير صالح";
-      }
-
-
-      else if(card.title ==="التقديم على عداد كهرباء / مياه"){
+      } else if (card.title === "التقديم على عداد كهرباء / مياه") {
         if (!id) {
           newErrors.id = "هذا الحقل مطلوب";
         } else if (!isValidId(id)) {
@@ -202,6 +205,20 @@ const EnergyServices = forwardRef((props, ref) => {
         else if (!isValidMotherName(fullName)) {
           newErrors.fullName = "يجب ان لا يقل طول الحقل عن 3 احرف";
         }
+      } else if (card.title === "نقل ملكية عداد") {
+        if (!fullName) newErrors.fullName = "هذا الحقل مطلوب";
+        else if (!isValidMotherName(fullName)) {
+          newErrors.fullName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+        if (!id) newErrors.id = "هذا الحقل مطلوب";
+        else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
+
+        if (!phone) newErrors.phone = "هذا الحقل مطلوب";
+        else if (!isValidPhoneNumber(phone)) newErrors.phone = "الرقم غير صالح";
+        if (!meterNumber) newErrors.meterNumber = "هذا الحقل مطلوب";
+        if (!detailedAddress) newErrors.detailedAddress = "هذا الحقل مطلوب";
       }
     }
 
@@ -211,31 +228,34 @@ const EnergyServices = forwardRef((props, ref) => {
       if (activeStep === 1) {
         // Check if all required fields for step 1 are filled
         let step1Completed = true;
-          if (card.title === "شهادة كفاءة الطاقة"){
-            if (  !quadriliteralName ||
-              !id ||
-              !detailedAddress ||
-              !phone ||
-              !facilityType ||
-              !certificateType ||
-              !elctricBill ||
-              !idPhoto ) step1Completed = false;
-          }
-          else if (card.title === "تقديم شكوى مرافق"){
-            if(!email ||
-              !subscriberNumber ||
-              !fullName ||
-              !complaintType ||
-              !governorate ||
-              !complaintDescription ||
-              !utilityType)  step1Completed = false;
-          }
-          else if (card.title === "التقديم على عداد كهرباء / مياه"){
-            if(!email ||
-              !phone ||
-              !fullName ||
-              !id)  step1Completed = false;
-
+        if (card.title === "شهادة كفاءة الطاقة") {
+          if (
+            !quadriliteralName ||
+            !id ||
+            !detailedAddress ||
+            !phone ||
+            !facilityType ||
+            !certificateType ||
+            !elctricBill ||
+            !idPhoto
+          )
+            step1Completed = false;
+        } else if (card.title === "تقديم شكوى مرافق") {
+          if (
+            !email ||
+            !subscriberNumber ||
+            !fullName ||
+            !complaintType ||
+            !governorate ||
+            !complaintDescription ||
+            !utilityType
+          )
+            step1Completed = false;
+        } else if (card.title === "التقديم على عداد كهرباء / مياه") {
+          if (!email || !phone || !fullName || !id) step1Completed = false;
+        } else if (card.title === "نقل ملكية عداد") {
+          if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
+            step1Completed = false;
         }
         if (step1Completed && activeStep < 3) {
           setActiveStep(activeStep + 1);
@@ -245,7 +265,38 @@ const EnergyServices = forwardRef((props, ref) => {
       }
     }
   };
+  const navigationSteps = {
+    "شهادة كفاءة الطاقة": [
+      { label: "بيانات المالك والمنشأة", icon: <FaUser /> },
+      { label: "بيانات الفحص والمرفقات", icon: <FaFileAlt /> },
+      { label: "تأكيد الطلب", icon: <FaCheck /> },
+    ],
+    "تقديم شكوى مرافق": [
+      { label: "بيانات الشكوى والمبلغ", icon: <FaUser /> },
+      { label: "تفاصيل إضافية", icon: <FaFileAlt /> },
+      { label: "ملخص الشكوى", icon: <FaCheck /> },
+    ],
+    "التقديم على عداد كهرباء / مياه": [
+      { label: "بيانات المتقدم", icon: <FaUser /> },
+      { label: "بيانات العقار", icon: <FaFileAlt /> },
+      { label: "تأكيد البيانات", icon: <FaCheck /> },
+    ],
+    "نقل ملكية عداد": [
+      { label: "بيانات المالك الحالي", icon: <FaUser /> },
+      { label: "بيانات المالك الجديد", icon: <FaFileAlt /> },
+      { label: "تأكيد النقل", icon: <FaCheck /> },
+    ],
+  };
 
+  const currentStepLabels = navigationSteps[card?.title] || [
+    { label: "الخطوة 1", icon: <FaUser /> },
+    { label: "الخطوة 2", icon: <FaFileAlt /> },
+    { label: "الخطوة 3", icon: <FaCheck /> },
+  ];
+  const handleRelationshipChange = (e) => {
+    setRelationship(e.target.value);
+  };
+  
   const renderStepContent = () => {
     switch (activeStep) {
       case 1:
@@ -672,9 +723,7 @@ const EnergyServices = forwardRef((props, ref) => {
                     onChange={(e) => setFullName(e.target.value)}
                   />
                   {errors.fullName && (
-                    <div className="text-danger">
-                      {errors.fullName}
-                    </div>
+                    <div className="text-danger">{errors.fullName}</div>
                   )}
                 </div>
                 <div className="mb-3">
@@ -719,18 +768,175 @@ const EnergyServices = forwardRef((props, ref) => {
                 </div>
               </>
             )}
-            {card.title ==="نقل ملكية عداد"  && (
-<>
-
-</>
+            {card.title === "نقل ملكية عداد" && (
+              <>
+                <h3 className="text-color mb-3">بيانات المالك الحالي</h3>
+                <div className="mb-3">
+                  <label className="form-label">الاسم رباعي</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input ${
+                      errors.fullName ? "is-invalid" : ""
+                    }`}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                  />
+                  {errors.fullName && (
+                    <div className="text-danger">{errors.fullName}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">رقم القومي </label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input  ${
+                      errors.id ? "is-invalid" : ""
+                    }`}
+                    value={id}
+                    onChange={(e) => setId(e.target.value)}
+                  />
+                  {errors.id && <div className="text-danger">{errors.id}</div>}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">رقم الهاتف</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input  ${
+                      errors.phone ? "is-invalid" : ""
+                    }`}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
+                  {errors.phone && (
+                    <div className="text-danger">{errors.phone}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">رقم العداد</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input  ${
+                      errors.meterNumber ? "is-invalid" : ""
+                    }`}
+                    value={meterNumber}
+                    onChange={(e) => setMeterNumber(e.target.value)}
+                  />
+                  {errors.meterNumber && (
+                    <div className="text-danger">{errors.meterNumber}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">عنوان تركيب العداد</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input  ${
+                      errors.detailedAddress ? "is-invalid" : ""
+                    }`}
+                    value={detailedAddress}
+                    onChange={(e) => setDetailedAddress(e.target.value)}
+                  />
+                  {errors.detailedAddress && (
+                    <div className="text-danger">{errors.detailedAddress}</div>
+                  )}
+                </div>
+               
+              </>
             )}
           </div>
         );
       case 2:
         return (
           <div className="mt-3 p-3">
-            <h3 className="text-color mb-3">بيانات العداد والعقار</h3>
-            {/* Add delivery information form fields here */}
+            <h3 className="text-color mb-3">بيانات المالك الجديد</h3>
+            {card.title === "نقل ملكية عداد" && (
+              <>
+                <div className="mb-3">
+                  <label className="form-label">الاسم رباعي</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input ${
+                      errors.quadriliteralName ? "is-invalid" : ""
+                    }`}
+                    value={quadriliteralName}
+                    onChange={(e) => setQuadriliteralName(e.target.value)}
+                  />
+                  {errors.quadriliteralName && (
+                    <div className="text-danger">
+                      {errors.quadriliteralName}
+                    </div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">رقم القومي </label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input  ${
+                      errors.id2 ? "is-invalid" : ""
+                    }`}
+                    value={id2}
+                    onChange={(e) => setId(e.target.value)}
+                  />
+                  {errors.id2 && (
+                    <div className="text-danger">{errors.id2}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">رقم الهاتف</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input  ${
+                      errors.phoneNumber ? "is-invalid" : ""
+                    }`}
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                  {errors.phoneNumber && (
+                    <div className="text-danger">{errors.phoneNumber}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <select
+                    className={`form-select custom-select-style custom-input ${
+                      errors.relationshipType ? "is-invalid" : ""
+                    }`}
+                    name="relationshipType"
+                    value={relationship}
+                    onChange={handleRelationshipChange}
+                  >
+                    <option value="">سبب نقل الملكية</option>
+                    <option value="شراء">شراء</option>
+                    <option value="إيجار">إيجار</option>
+                    <option value="ورث">ورث</option>
+                  </select>
+                  {errors.relationshipType && (
+                    <div className="text-danger">{errors.relationshipType}</div>
+                  )}
+                </div>
+                {relationshipType === "ورث" && (
+                  <>
+                    <div className="form-group">
+                      <label>إعلام الوراثة الرسمي (PDF أو صورة):</label>
+                      <input type="file" accept=".pdf,image/*" required />
+                    </div>
+
+                    <div className="form-group">
+                      <label>موافقة باقي الورثة (إن وجدت):</label>
+                      <input type="file" accept=".pdf,image/*" />
+                    </div>
+
+                    <div className="form-group">
+                      <label>هل لديك توكيل من باقي الورثة؟</label>
+                      <select required>
+                        <option value="">اختر</option>
+                        <option value="نعم">نعم</option>
+                        <option value="لا">لا</option>
+                      </select>
+                    </div>
+                  </>
+                )}
+               
+              </>
+            )}
           </div>
         );
       case 3:
@@ -769,6 +975,7 @@ const EnergyServices = forwardRef((props, ref) => {
             governorate,
             complaintDescription,
             utilityType,
+            meterNumber,
           }}
         />
         <NavigationButtons
@@ -792,7 +999,9 @@ const EnergyServices = forwardRef((props, ref) => {
             governorate,
             complaintDescription,
             utilityType,
+            meterNumber,
           }}
+          stepLabels={currentStepLabels}
         />
       </div>
 

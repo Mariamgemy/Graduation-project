@@ -1,12 +1,14 @@
 import React from "react";
-import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
+import { FaArrowRightLong } from "react-icons/fa6";
 import "../Css/NavigationButtons.css";
+import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
 
-const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
-  const buttons = [
-    { label: "بيانات الطلب", icon: <FaUser /> },
-    { label: "بيانات الاستلام", icon: <FaFileAlt /> },
-    { label: "نتيجة الطلب", icon: <FaCheck /> },
+const NavigationButtons = ({ activeStep, setActiveStep, formData, stepLabels }) => {
+
+  const currentLabels = stepLabels || [
+    { label: "الخطوة 1", icon: <FaUser /> },
+    { label: "الخطوة 2", icon: <FaFileAlt /> },
+    { label: "الخطوة 3", icon: <FaCheck /> },
   ];
 
   const isStep1Completed = () => {
@@ -35,6 +37,7 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
       governorate,
       complaintDescription,
       utilityType,
+      meterNumber,
     } = formData;
 
     if (
@@ -61,18 +64,23 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
       if (!quadriliteralName || !kinship) return false;
     }
     else if (card.title === "شهادة كفاءة الطاقة") {
-
       if (!quadriliteralName ||!id ||!detailedAddress ||!phone || !facilityType || !certificateType || !elctricBill || !idPhoto) return false
     }
-    
+
     else if (card.title === "تقديم شكوى مرافق" ) {
       if (!fullName || !subscriberNumber || !complaintType || !complaintDescription || !governorate || !utilityType || !detailedAddress || !phone || !email) return false
     }
 
-    
+
     else if(card.title ==="التقديم على عداد كهرباء / مياه"){
       if (!id || !email || !phone || !fullName) return false
-
+    }
+    else if (card.title === "نقل ملكية عداد"){
+      if(!fullName ||
+        !id ||
+        !phone ||
+        !meterNumber ||
+        !detailedAddress)  return false;
     }
 
     return true;
@@ -98,23 +106,19 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
   };
 
   const handleButtonClick = (index) => {
-    // منع الانتقال إلى الخطوة 2 إذا لم تكتمل الخطوة 1
     if (index === 1 && !isStep1Completed()) {
       return;
     }
-
-    // منع الانتقال إلى الخطوة 3 إذا لم تكتمل الخطوة 2
     if (index === 2 && !isStep2Completed()) {
       return;
     }
-
     setActiveStep(index + 1);
   };
 
   return (
     <div className="navigation-container">
       <div className="d-flex justify-content-around align-items-center">
-        {buttons.map((button, index) => {
+        {currentLabels.map((button, index) => {
           const isDisabled =
             (index === 1 && !isStep1Completed()) ||
             (index === 2 && !isStep2Completed());
@@ -126,11 +130,8 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData }) => {
               className={`btn btn-light border rounded-0 ${
                 activeStep === index + 1 ? "active-button" : ""
               } ${isDisabled ? "disabled" : ""} `}
-             
               onClick={() => handleButtonClick(index)}
               disabled={isDisabled}
-         
-
             >
               {button.icon} {button.label}
             </button>
