@@ -5,10 +5,14 @@ import "./Civil.css";
 import NavigationButtons from "../NavigationButtons";
 import Steppar from "../Steppar";
 import { FaArrowLeftLong } from "react-icons/fa6";
-
+import Button from "../Button";
+import { useNavigate } from "react-router-dom";
+import { Alert } from "react-bootstrap";
+import { useAuth } from "../../context/AuthContext";
 const CivilServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
+  const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = useState(1);
   const [motherName, setMotherName] = useState("");
@@ -22,6 +26,25 @@ const CivilServices = forwardRef((props, ref) => {
   const [kinship, setKinship] = useState("");
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [authError, setAuthError] = useState(null);
+  const [governorate, setGovernorate] = useState("");
+  const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
+  const [detailedAddress, setDetailedAddress] = useState("");
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    NID: "",
+    birthDate: "",
+    address: "",
+    phoneNumber: "",
+    governorate: "",
+    city: "",
+    district: "",
+    detailedAddress: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { user } = useAuth();
 
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
@@ -44,62 +67,111 @@ const CivilServices = forwardRef((props, ref) => {
     return idRegex.test(id);
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const isValidGovernorate = (governorate) => {
+    const governorateRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
+    return governorateRegex.test(governorate);
+  };
+
+  const isValidCity = (city) => {
+    const cityRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
+    return cityRegex.test(city);
+  };
+
+  const isValidDistrict = (district) => {
+    const districtRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
+    return districtRegex.test(district);
+  };
+
+  const isValidDetailedAddress = (address) => {
+    return address.length >= 10;
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "الاسم مطلوب";
+    }
+
+    if (!formData.NID || formData.NID.length !== 14) {
+      newErrors.NID = "الرقم القومي يجب أن يكون 14 رقم";
+    }
+
+    if (!formData.birthDate) {
+      newErrors.birthDate = "تاريخ الميلاد مطلوب";
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = "العنوان مطلوب";
+    }
+
+    if (!formData.phoneNumber || formData.phoneNumber.length !== 11) {
+      newErrors.phoneNumber = "رقم الهاتف يجب أن يكون 11 رقم";
+    }
+
+    if (activeStep === 2) {
+      if (!formData.governorate) {
+        newErrors.governorate = "المحافظة مطلوبة";
+      } else if (!isValidGovernorate(formData.governorate)) {
+        newErrors.governorate = "يرجى إدخال اسم المحافظة بشكل صحيح";
+      }
+
+      if (!formData.city) {
+        newErrors.city = "المدينة مطلوبة";
+      } else if (!isValidCity(formData.city)) {
+        newErrors.city = "يرجى إدخال اسم المدينة بشكل صحيح";
+      }
+
+      if (!formData.district) {
+        newErrors.district = "الحي / المركز مطلوب";
+      } else if (!isValidDistrict(formData.district)) {
+        newErrors.district = "يرجى إدخال اسم الحي / المركز بشكل صحيح";
+      }
+
+      if (!formData.detailedAddress) {
+        newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
+      } else if (!isValidDetailedAddress(formData.detailedAddress)) {
+        newErrors.detailedAddress =
+          "يرجى إدخال العنوان التفصيلي بشكل كامل (10 أحرف على الأقل)";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!user) {
+      setAuthError("يجب تسجيل الدخول أولاً للقيام بهذه العملية");
+      return;
+    }
+
+    setAuthError(null);
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    try {
+      // هنا يتم إرسال البيانات للباك إند
+      console.log("تم إرسال البيانات:", formData);
+      // بعد نجاح الإرسال
+      alert("تم تقديم الطلب بنجاح");
+    } catch (error) {
+      console.error("خطأ في إرسال البيانات:", error);
+      alert("حدث خطأ أثناء إرسال البيانات");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useImperativeHandle(ref, () => ({
-    validateForm: () => {
-      const newErrors = {};
-
-      // if (activeStep === 1) {
-      //   if (
-      //     card.title === "شهادة ميلاد" ||
-      //     card.title === "شهادة وفاة" ||
-      //     card.title === "قسيمة زواج" ||
-      //     card.title === "قسيمة طلاق" ||
-      //     card.title === "شهادة ميلاد مميكنة لأول مرة"
-      //   ) {
-      //     if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
-      //     else if (!isValidMotherName(motherName)) {
-      //       newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-      //     }
-      //     if (!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
-      //     else if (!isValidMotherName(partnerName)) {
-      //       newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-      //     }
-      //     if (!anotherMotherName)
-      //       newErrors.anotherMotherName = "هذا الحقل مطلوب";
-      //     else if (!isValidMotherName(anotherMotherName)) {
-      //       newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-      //     }
-      //     if (!quadriliteralName)
-      //       newErrors.quadriliteralName = "هذا الحقل مطلوب";
-      //     else if (!isValidMotherName(quadriliteralName)) {
-      //       newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-      //     }
-      //     if (!id) {
-      //       newErrors.id = "هذا الحقل مطلوب";
-      //     } else if (!isValidId(id)) {
-      //       newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-      //     }
-      //     if (!isSelf) newErrors.isSelf = " اختار اولاً ";
-      //     if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
-      //     if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-      //     if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-      //   }
-      // }
-
-      setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-    },
-    getFormData: () => ({
-      motherName,
-      anotherMotherName,
-      partnerName,
-      isSelf,
-      numberOfCopies,
-      quadriliteralName,
-      id,
-      gender,
-      kinship,
-    }),
+    validateForm,
+    getFormData: () => formData,
   }));
 
   const handleNext = () => {
@@ -141,7 +213,7 @@ const CivilServices = forwardRef((props, ref) => {
           if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
           if (!gender) newErrors.gender = "هذا الحقل مطلوب";
           if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-          if(!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
+          if (!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
           else if (!isValidName(partnerName)) {
             newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
           }
@@ -150,11 +222,11 @@ const CivilServices = forwardRef((props, ref) => {
         card.title === "شهادة ميلاد مميكنة لأول مرة" ||
         card.title === "شهادة وفاة"
       ) {
-        if(!id) newErrors.id = "هذا الحقل مطلوب";
+        if (!id) newErrors.id = "هذا الحقل مطلوب";
         else if (!isValidId(id)) {
           newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
         }
-        if(!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+        if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
         if (!anotherMotherName) newErrors.anotherMotherName = "هذا الحقل مطلوب";
         else if (!isValidMotherName(anotherMotherName)) {
           newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
@@ -167,49 +239,48 @@ const CivilServices = forwardRef((props, ref) => {
 
         if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
       }
+
+      setErrors(newErrors);
+
+      if (Object.keys(newErrors).length === 0) {
+        setActiveStep(2);
+      }
     }
+    if (activeStep === 2) {
+      if (!governorate) {
+        newErrors.governorate = "المحافظة مطلوبة";
+      } else if (!isValidGovernorate(governorate)) {
+        newErrors.governorate = "يرجى إدخال اسم المحافظة بشكل صحيح";
+      }
+      if (!city) {
+        newErrors.city = "المدينة مطلوبة";
+      } else if (!isValidCity(city)) {
+        newErrors.city = "يرجى إدخال اسم المدينة بشكل صحيح";
+      }
+      if (!district) {
+        newErrors.district = "الحي / المركز مطلوب";
+      } else if (!isValidDistrict(district)) {
+        newErrors.district = "يرجى إدخال اسم الحي / المركز بشكل صحيح";
+      }
+      if (!detailedAddress) {
+        newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
+      } else if (!isValidDetailedAddress(detailedAddress)) {
+        newErrors.detailedAddress =
+          "يرجى إدخال العنوان التفصيلي بشكل كامل (10 أحرف على الأقل)";
+      }
 
-    setErrors(newErrors);
+      setErrors(newErrors);
 
-    // Only proceed to next step if there are no errors and step 1 is completed
-    if (Object.keys(newErrors).length === 0) {
-      if (activeStep === 1) {
-        // Check if all required fields for step 1 are filled
-        let step1Completed = true;
-
-        if (
-          card.title === "شهادة ميلاد" ||
-          card.title === "قسيمة زواج" ||
-          card.title === "قسيمة طلاق"
-        ) {
-          if (
-            !motherName ||
-            !isSelf ||
-            (isSelf === true && !numberOfCopies) ||
-            (isSelf === false &&
-              (!quadriliteralName ||
-                !id ||
-                !anotherMotherName ||
-                !kinship ||
-                !gender ||
-                !numberOfCopies))
-          ) {
-            step1Completed = false;
-          }
-        } else if (
-          card.title === "شهادة ميلاد مميكنة لأول مرة" ||
-          card.title === "شهادة وفاة"
-        ) {
-          if (!quadriliteralName || !kinship || !anotherMotherName || !gender ||!id || !numberOfCopies) {
-            step1Completed = false;
-          }
-        }
-
-        if (step1Completed && activeStep < 3) {
-          setActiveStep(activeStep + 1);
-        }
-      } else if (activeStep < 3) {
-        setActiveStep(activeStep + 1);
+      if (Object.keys(newErrors).length === 0) {
+        // Update formData with the address information
+        setFormData((prev) => ({
+          ...prev,
+          governorate,
+          city,
+          district,
+          detailedAddress,
+        }));
+        setActiveStep(3);
       }
     }
   };
@@ -424,215 +495,248 @@ const CivilServices = forwardRef((props, ref) => {
                     </div>
                   )}
                 </div>
+                <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
+                  <h5 className="mb-3">
+                    ضوابط استخراج شهادة ميلاد من خلال الانترنت
+                  </h5>
+                  <ul className="list-unstyled">
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>
+                        يتم استخراج شهادة الميلاد المميكنة لثانى مرة بشرط
+                        استخراج شهادة ميلاد مميكنة مطبوعة سابقاً
+                      </span>
+                    </li>
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>
+                        يجب كتابة اسم المستفيد واسم الام له بطريقة صحيحة حيث ان
+                        المستفيد هو الشخص الذي سوف يتم طباعه الشهادة له.
+                      </span>
+                    </li>
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>
+                        يجب ان يكون مقدم الطلب هو صاحب الشأن او لاحد اقرباء
+                        الدرجة الأولى.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             )}
-              {card.title === "شهادة ميلاد مميكنة لأول مرة" && (
-        <>
-       
+            {card.title === "شهادة ميلاد مميكنة لأول مرة" && (
+              <>
+                <div className=" mt-3 p-3">
+                  <div className="row">
+                    <h3 className="text-color mb-3">بيانات صاحب الوثيقة </h3>
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label"> الاسم رباعي </label>
+                        <input
+                          type="text"
+                          className={`form-control custom-input  ${
+                            errors.quadriliteralName ? "is-invalid" : ""
+                          }`}
+                          value={quadriliteralName}
+                          onChange={(e) => setQuadriliteralName(e.target.value)}
+                        />
+                        {errors.quadriliteralName && (
+                          <div className="text-danger">
+                            {errors.quadriliteralName}
+                          </div>
+                        )}
+                      </div>
 
-          <div className=" mt-3 p-3">
-            <div className="row">
-              <h3 className="text-color mb-3">بيانات صاحب الوثيقة </h3>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label"> الاسم رباعي </label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                errors.quadriliteralName ? "is-invalid" : ""
-              }`}
-                    value={quadriliteralName}
-                    onChange={(e) => setQuadriliteralName(e.target.value)}
-                  />
-                  {errors.quadriliteralName && (
-                    <div className="text-danger">
-                      {errors.quadriliteralName}
+                      <div className="mb-3">
+                        <label className="form-label">صلة القرابة </label>
+                        <select
+                          type="text"
+                          className={`form-select custom-select-style custom-input ${
+                            errors.kinship ? "is-invalid" : ""
+                          }`}
+                          value={kinship}
+                          onChange={(e) => setKinship(e.target.value)}
+                        >
+                          <option value=""> </option>
+                          <option value="dauter">ابنة مقدم الطلب</option>
+                          <option value="son">ابن مقدم الطلب</option>
+                          <option value="mother">والدة مقدم الطلب</option>
+                          <option value="father">والد مقدم الطلب</option>
+                          <option value="wife">زوجة مقدم الطلب</option>
+                          <option value="husband">زوج مقدم الطلب</option>
+                        </select>
+                        {errors.kinship && (
+                          <div className="text-danger">{errors.kinship}</div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">صلة القرابة </label>
-                  <select
-                    type="text"
-                    className={`form-select custom-select-style custom-input ${
-                      errors.kinship ? "is-invalid" : ""
-                    }`}
-                    value={kinship}
-                    onChange={(e) => setKinship(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="dauter">ابنة مقدم الطلب</option>
-                    <option value="son">ابن مقدم الطلب</option>
-                    <option value="mother">والدة مقدم الطلب</option>
-                    <option value="father">والد مقدم الطلب</option>
-                    <option value="wife">زوجة مقدم الطلب</option>
-                    <option value="husband">زوج مقدم الطلب</option>
-                  </select>
-                  {errors.kinship && (
-                    <div className="text-danger">{errors.kinship}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">اسم الام لصاحب الوثيقة </label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                      errors.anotherMotherName ? "is-invalid" : ""
-                    }`}
-                    value={anotherMotherName}
-                    onChange={(e) => setAnotherMotherName(e.target.value)}
-                  />
-                  {errors.anotherMotherName && (
-                    <div className="text-danger">
-                      {errors.anotherMotherName}
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          اسم الام لصاحب الوثيقة{" "}
+                        </label>
+                        <input
+                          type="text"
+                          className={`form-control custom-input  ${
+                            errors.anotherMotherName ? "is-invalid" : ""
+                          }`}
+                          value={anotherMotherName}
+                          onChange={(e) => setAnotherMotherName(e.target.value)}
+                        />
+                        {errors.anotherMotherName && (
+                          <div className="text-danger">
+                            {errors.anotherMotherName}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">النوع </label>
+                        <select
+                          type="text"
+                          className={`form-select custom-select-style custom-input ${
+                            errors.gender ? "is-invalid" : ""
+                          }`}
+                          value={gender}
+                          onChange={(e) => setGender(e.target.value)}
+                        >
+                          <option value=""> </option>
+                          <option value="female">أنثي</option>
+                          <option value="male">ذكر</option>
+                        </select>
+                        {errors.gender && (
+                          <div className="text-danger">{errors.gender}</div>
+                        )}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">النوع </label>
-                  <select
-                    type="text"
-                    className={`form-select custom-select-style custom-input ${
-                      errors.gender ? "is-invalid" : ""
-                    }`}
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="female">أنثي</option>
-                    <option value="male">ذكر</option>
-                  </select>
-                  {errors.gender && (
-                    <div className="text-danger">{errors.gender}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-              {card.title === "شهادة وفاة" && (
-        <>
-         
-
-          <div className=" mt-3 p-3">
-            <div className="row">
-              <h3 className="text-color mb-3">بيانات المتوفي </h3>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label"> الاسم رباعي للمتوفي</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                errors.quadriliteralName ? "is-invalid" : ""
-              }`}
-                    value={quadriliteralName}
-                    onChange={(e) => setQuadriliteralName(e.target.value)}
-                  />
-                  {errors.quadriliteralName && (
-                    <div className="text-danger">
-                      {errors.quadriliteralName}
+              </>
+            )}
+            {card.title === "شهادة وفاة" && (
+              <>
+                <div className=" mt-3 p-3">
+                  <div className="row">
+                    <h3 className="text-color mb-3">بيانات المتوفي </h3>
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          {" "}
+                          الاسم رباعي للمتوفي
+                        </label>
+                        <input
+                          type="text"
+                          className={`form-control custom-input  ${
+                            errors.quadriliteralName ? "is-invalid" : ""
+                          }`}
+                          value={quadriliteralName}
+                          onChange={(e) => setQuadriliteralName(e.target.value)}
+                        />
+                        {errors.quadriliteralName && (
+                          <div className="text-danger">
+                            {errors.quadriliteralName}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">الرقم القومي </label>
+                        <input
+                          type="text"
+                          className={`form-control custom-input  ${
+                            errors.id ? "is-invalid" : ""
+                          }`}
+                          value={id}
+                          onChange={(e) => setId(e.target.value)}
+                        />
+                        {errors.id && (
+                          <div className="text-danger">{errors.id}</div>
+                        )}
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">صلة القرابة </label>
+                        <select
+                          type="text"
+                          className={`form-select custom-select-style custom-input ${
+                            errors.kinship ? "is-invalid" : ""
+                          }`}
+                          value={kinship}
+                          onChange={(e) => setKinship(e.target.value)}
+                        >
+                          <option value=""> </option>
+                          <option value="dauter">ابنة مقدم الطلب</option>
+                          <option value="son">ابن مقدم الطلب</option>
+                          <option value="mother">والدة مقدم الطلب</option>
+                          <option value="father">والد مقدم الطلب</option>
+                          <option value="wife">زوجة مقدم الطلب</option>
+                          <option value="husband">زوج مقدم الطلب</option>
+                        </select>
+                        {errors.kinship && (
+                          <div className="text-danger">{errors.kinship}</div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">الرقم القومي </label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                errors.id ? "is-invalid" : ""
-              }`}
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
-                  />
-                  {errors.id && <div className="text-danger">{errors.id}</div>}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">صلة القرابة </label>
-                  <select
-                    type="text"
-                    className={`form-select custom-select-style custom-input ${
-                      errors.kinship ? "is-invalid" : ""
-                    }`}
-                    value={kinship}
-                    onChange={(e) => setKinship(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="dauter">ابنة مقدم الطلب</option>
-                    <option value="son">ابن مقدم الطلب</option>
-                    <option value="mother">والدة مقدم الطلب</option>
-                    <option value="father">والد مقدم الطلب</option>
-                    <option value="wife">زوجة مقدم الطلب</option>
-                    <option value="husband">زوج مقدم الطلب</option>
-                  </select>
-                  {errors.kinship && (
-                    <div className="text-danger">{errors.kinship}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">اسم الام للمتوفي </label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                errors.anotherMotherName ? "is-invalid" : ""
-              }`}
-                    value={anotherMotherName}
-                    onChange={(e) => setAnotherMotherName(e.target.value)}
-                  />
-                  {errors.anotherMotherName && (
-                    <div className="text-danger">
-                      {errors.anotherMotherName}
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">اسم الام للمتوفي </label>
+                        <input
+                          type="text"
+                          className={`form-control custom-input  ${
+                            errors.anotherMotherName ? "is-invalid" : ""
+                          }`}
+                          value={anotherMotherName}
+                          onChange={(e) => setAnotherMotherName(e.target.value)}
+                        />
+                        {errors.anotherMotherName && (
+                          <div className="text-danger">
+                            {errors.anotherMotherName}
+                          </div>
+                        )}
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">النوع </label>
+                        <select
+                          type="text"
+                          className={`form-select custom-select-style custom-input ${
+                            errors.gender ? "is-invalid" : ""
+                          }`}
+                          value={gender}
+                          onChange={(e) => setGender(e.target.value)}
+                        >
+                          <option value=""> </option>
+                          <option value="female">أنثي</option>
+                          <option value="male">ذكر</option>
+                        </select>
+                        {errors.gender && (
+                          <div className="text-danger">{errors.gender}</div>
+                        )}
+                      </div>
+                      <div className="mb-3">
+                        <label className="form-label">عدد النسخ </label>
+                        <select
+                          className={`form-select custom-select-style custom-input ${
+                            errors.numberOfCopies ? "is-invalid" : ""
+                          }`}
+                          value={numberOfCopies}
+                          onChange={(e) => setNumberOfCopies(e.target.value)}
+                        >
+                          <option value=""> </option>
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                        </select>
+                        {errors.numberOfCopies && (
+                          <div className="text-danger">
+                            {errors.numberOfCopies}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-                <div className="mb-3">
-                  <label className="form-label">النوع </label>
-                  <select
-                    type="text"
-                    className={`form-select custom-select-style custom-input ${
-                      errors.gender ? "is-invalid" : ""
-                    }`}
-                    value={gender}
-                    onChange={(e) => setGender(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="female">أنثي</option>
-                    <option value="male">ذكر</option>
-                  </select>
-                  {errors.gender && (
-                    <div className="text-danger">{errors.gender}</div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">عدد النسخ </label>
-                  <select
-                    className={`form-select custom-select-style custom-input ${
-                      errors.numberOfCopies ? "is-invalid" : ""
-                    }`}
-                    value={numberOfCopies}
-                    onChange={(e) => setNumberOfCopies(e.target.value)}
-                  >
-                    <option value=""> </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                  </select>
-                  {errors.numberOfCopies && (
-                    <div className="text-danger">{errors.numberOfCopies}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+              </>
+            )}
             {card.title === "قسيمة طلاق" && (
               <div>
                 <div className="mb-3">
@@ -1075,7 +1179,74 @@ const CivilServices = forwardRef((props, ref) => {
         return (
           <div className="mt-3 p-3">
             <h3 className="text-color mb-3">بيانات الاستلام</h3>
-            {/* Add delivery information form fields here */}
+            <Alert variant="secondary" className="mb-4">
+              <p className="mb-0">
+                💡 يرجى إدخال بيانات الاستلام بشكل صحيح لتسهيل عملية توصيل
+                الوثيقة
+              </p>
+            </Alert>
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label">المحافظة</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input ${
+                      errors.governorate ? "is-invalid" : ""
+                    }`}
+                    value={governorate}
+                    onChange={(e) => setGovernorate(e.target.value)}
+                  />
+                  {errors.governorate && (
+                    <div className="text-danger">{errors.governorate}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">المدينة</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input ${
+                      errors.city ? "is-invalid" : ""
+                    }`}
+                    value={city}
+                    onChange={(e) => setCity(e.target.value)}
+                  />
+                  {errors.city && (
+                    <div className="text-danger">{errors.city}</div>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label">الحي / المركز</label>
+                  <input
+                    type="text"
+                    className={`form-control custom-input ${
+                      errors.district ? "is-invalid" : ""
+                    }`}
+                    value={district}
+                    onChange={(e) => setDistrict(e.target.value)}
+                  />
+                  {errors.district && (
+                    <div className="text-danger">{errors.district}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">العنوان بالتفصيل</label>
+                  <textarea
+                    className={`form-control custom-input ${
+                      errors.detailedAddress ? "is-invalid" : ""
+                    }`}
+                    rows="3"
+                    value={detailedAddress}
+                    onChange={(e) => setDetailedAddress(e.target.value)}
+                  />
+                  {errors.detailedAddress && (
+                    <div className="text-danger">{errors.detailedAddress}</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         );
       case 3:
@@ -1106,6 +1277,10 @@ const CivilServices = forwardRef((props, ref) => {
             anotherMotherName,
             kinship,
             gender,
+            governorate,
+            city,
+            district,
+            detailedAddress,
           }}
         />
         <NavigationButtons
@@ -1121,23 +1296,41 @@ const CivilServices = forwardRef((props, ref) => {
             anotherMotherName,
             kinship,
             gender,
+            governorate,
+            city,
+            district,
+            detailedAddress,
           }}
         />
       </div>
 
       {renderStepContent()}
 
-      {activeStep < 3 && (
+      {activeStep < 3 && <Button handleNext={handleNext} />}
+
+      {activeStep === 3 && (
         <div className="text-start">
           <button
-            type="button"
             className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-            onClick={handleNext}
+            onClick={handleSubmit}
+            disabled={isSubmitting}
           >
-            التالي &nbsp; <FaArrowLeftLong size={20} />
+            {isSubmitting ? (
+              "جاري المعالجة..."
+            ) : (
+              <>
+                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+              </>
+            )}
           </button>
         </div>
       )}
+
+      {/* {authError && (
+        <Alert variant="warning" className="mb-3">
+          <p className="mb-0">{authError}</p>
+        </Alert>
+      )} */}
     </>
   );
 });

@@ -17,16 +17,17 @@ import PaymentSuccess from "./components/PaymentSuccess";
 import StripePaymentForm from "./components/StripePaymentForm";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import Phone from "./pages/ComplaintDone";
+// import Phone from "./pages/ComplaintDone";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <ScrollToTopButton />
-    
+
       <Routes>
         <Route
           path="/"
@@ -104,19 +105,18 @@ function App() {
           path="complaintDone"
           element={
             <Layout>
-              <ComplaintDone/>
+              <ComplaintDone />
             </Layout>
           }
         />
-        <Route
+        {/* <Route
           path="phone"
           element={
             <Layout>
-              <Phone/>
+              <Phone />
             </Layout>
           }
-        />
-     
+        /> */}
 
         <Route
           path="/card/:id"
@@ -126,16 +126,16 @@ function App() {
             </Layout>
           }
         />
-           {/* Payment routes */}
-           <Route 
-          path="/payment" 
+        {/* Payment routes */}
+        <Route
+          path="/payment"
           element={
             <Elements stripe={stripePromise}>
               <Layout>
                 <StripePaymentForm />
               </Layout>
             </Elements>
-          } 
+          }
         />
         <Route
           path="/payment-success"
@@ -145,10 +145,8 @@ function App() {
             </Layout>
           }
         />
-        
       </Routes>
-  
-    </>
+    </AuthProvider>
   );
 }
 

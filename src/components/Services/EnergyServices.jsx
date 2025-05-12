@@ -6,10 +6,16 @@ import Steppar from "../Steppar";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import NavigationButtons from "../NavigationButtons";
 import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
+import Button from "../Button";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Alert } from "react-bootstrap";
 
 const EnergyServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = useState(1);
 
@@ -38,8 +44,71 @@ const EnergyServices = forwardRef((props, ref) => {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [elctricBill, setElctricBill] = useState("");
-  const [relationship, setRelationship] = useState("");
 
+  const [formData, setFormData] = useState({
+    fullName: "",
+    NID: "",
+    address: "",
+    phoneNumber: "",
+    meterNumber: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authError, setAuthError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "الاسم مطلوب";
+    }
+
+    if (!formData.NID || formData.NID.length !== 14) {
+      newErrors.NID = "الرقم القومي يجب أن يكون 14 رقم";
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = "العنوان مطلوب";
+    }
+
+    if (!formData.phoneNumber || formData.phoneNumber.length !== 11) {
+      newErrors.phoneNumber = "رقم الهاتف يجب أن يكون 11 رقم";
+    }
+
+    if (!formData.meterNumber.trim()) {
+      newErrors.meterNumber = "رقم العداد مطلوب";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!user) {
+      setAuthError("يجب تسجيل الدخول أولاً للقيام بهذه العملية");
+      return;
+    }
+
+    setAuthError(null);
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    try {
+      // هنا يتم إرسال البيانات للباك إند
+      console.log("تم إرسال البيانات:", formData);
+      // بعد نجاح الإرسال
+      alert("تم تقديم الطلب بنجاح");
+    } catch (error) {
+      console.error("خطأ في إرسال البيانات:", error);
+      alert("حدث خطأ أثناء إرسال البيانات");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
@@ -294,9 +363,9 @@ const EnergyServices = forwardRef((props, ref) => {
     { label: "الخطوة 3", icon: <FaCheck /> },
   ];
   const handleRelationshipChange = (e) => {
-    setRelationship(e.target.value);
+    setRelationshipType(e.target.value);
   };
-  
+
   const renderStepContent = () => {
     switch (activeStep) {
       case 1:
@@ -839,7 +908,6 @@ const EnergyServices = forwardRef((props, ref) => {
                     <div className="text-danger">{errors.detailedAddress}</div>
                   )}
                 </div>
-               
               </>
             )}
           </div>
@@ -895,15 +963,16 @@ const EnergyServices = forwardRef((props, ref) => {
                   )}
                 </div>
                 <div className="mb-3">
+                  <label className="form-label">سبب نقل الملكية</label>
+
                   <select
                     className={`form-select custom-select-style custom-input ${
                       errors.relationshipType ? "is-invalid" : ""
                     }`}
-                    name="relationshipType"
-                    value={relationship}
+                    value={relationshipType}
                     onChange={handleRelationshipChange}
                   >
-                    <option value="">سبب نقل الملكية</option>
+                    <option value=""></option>
                     <option value="شراء">شراء</option>
                     <option value="إيجار">إيجار</option>
                     <option value="ورث">ورث</option>
@@ -934,7 +1003,6 @@ const EnergyServices = forwardRef((props, ref) => {
                     </div>
                   </>
                 )}
-               
               </>
             )}
           </div>
@@ -1007,15 +1075,27 @@ const EnergyServices = forwardRef((props, ref) => {
 
       {renderStepContent()}
 
-      {activeStep < 3 && (
+      {activeStep < 3 && <Button handleNext={handleNext} />}
+
+      {/* {authError && (
+        <Alert variant="warning" className="mb-3">
+          <p className="mb-0">{authError}</p>
+        </Alert>
+      )} */}
+
+{activeStep === 3 && (
         <div className="text-start">
-          <button
-            type="button"
-            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-            onClick={handleNext}
-          >
-            التالي &nbsp; <FaArrowLeftLong size={20} />
-          </button>
+        <button
+          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? ("جاري المعالجة...") :  (
+                  <>
+                    تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+                  </>
+                )}
+        </button>
         </div>
       )}
     </>

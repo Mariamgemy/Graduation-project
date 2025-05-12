@@ -111,14 +111,14 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
             {/* {errors.captcha && <div className="text-danger">{errors.captcha}</div>} */}
           </div>
 
-          <button type="submit" className="w-100 btn btn-outline-secondry border-0" disabled={isLoading}>
+          <button type="submit" className="w-100 btn btn-outline-secondry border-0 mt-2 mb-3" disabled={isLoading}>
             {isLoading ? "جاري التحقق ..." : "تحقق"}
           </button>
         </form>
       </Modal.Body>
-      <Modal.Footer>
+      {/* <Modal.Footer>
         <Button variant="secondary" onClick={handleClose} disabled={isLoading}>إغلاق</Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   );
 });

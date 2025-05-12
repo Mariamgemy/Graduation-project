@@ -3,17 +3,20 @@ import { Link } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
 import CustomModal from "./IdValidation";
 import { useState, useEffect } from "react";
-import PhoneInput from "../components/PhoneInput";
 import PasswordInput from "../components/PasswordInput";
+import EmailInput from "../components/EmailInput";
 import { forwardRef, useImperativeHandle, useRef } from "react";
+import { API_CONFIG } from "../api/config";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   const [showModal, setShowModal] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
+  const { login } = useAuth();
 
   // Reset form when modal is closed
   useEffect(() => {
@@ -23,26 +26,26 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   }, [show]);
 
   const resetForm = () => {
-    setPhoneNumber("");
+    setEmail("");
     setPassword("");
     setErrors({});
     setApiError("");
     setIsLoading(false);
   };
 
-  const isValidPhoneNumber = (phoneNumber) => {
-    const phoneRegex = /^01[0-25]\d{8}$/;
-    return phoneRegex.test(phoneNumber);
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   const validateForm = () => {
     const newErrors = {};
     setApiError("");
 
-    if (!phoneNumber) {
-      newErrors.phoneNumber = "رقم الهاتف مطلوب";
-    } else if (!isValidPhoneNumber(phoneNumber)) {
-      newErrors.phoneNumber = "رقم الهاتف غير صحيح";
+    if (!email) {
+      newErrors.email = "البريد الإلكتروني مطلوب";
+    } else if (!isValidEmail(email)) {
+      newErrors.email = "البريد الإلكتروني غير صحيح";
     }
 
     if (!password) {
@@ -57,8 +60,10 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("بدء عملية تسجيل الدخول...");
 
     if (!validateForm()) {
+      console.log("فشل التحقق من صحة النموذج");
       return;
     }
 
@@ -66,31 +71,35 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
     setApiError("");
 
     try {
-      // TODO: Replace with your actual API endpoint
-      const response = await fetch("YOUR_API_ENDPOINT/login", {
+      console.log("جاري إرسال البيانات إلى API:", { email, password });
+      const response = await fetch(`${API_CONFIG.BASE_URL}/Account/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          phoneNumber,
+          email,
           password,
         }),
       });
 
+      console.log("تم استلام الرد من API:", response.status);
       const data = await response.json();
+      console.log("بيانات الرد:", data);
 
       if (!response.ok) {
-        throw new Error(data.message || "حدث خطأ أثناء تسجيل الدخول");
+        throw new Error(data.message || "اسم المستخدم خاطيء او كلمة المرور خاطئة");
       }
 
       // Handle successful login
-      // TODO: Store the token/user data as needed
+      console.log("تم تسجيل الدخول بنجاح، جاري حفظ البيانات...");
       localStorage.setItem("token", data.token);
+      login({ email, token: data.token }); // تحديث حالة المستخدم
+      console.log("تم حفظ بيانات المستخدم في localStorage و context");
 
-      // Close the modal and redirect or update UI as needed
       handleClose();
     } catch (error) {
+      console.error("حدث خطأ أثناء تسجيل الدخول:", error);
       setApiError(error.message || "حدث خطأ أثناء تسجيل الدخول");
     } finally {
       setIsLoading(false);
@@ -100,7 +109,7 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   useImperativeHandle(ref, () => ({
     validateForm,
     getFormData: () => ({
-      phoneNumber,
+      email,
       password,
     }),
   }));
@@ -134,18 +143,17 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label className="fw-bold form-label">الموبايل</label>
-            <PhoneInput
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              placeholder="ادخل رقم الهاتف"
+            <label className="fw-bold form-label">البريد الإلكتروني</label>
+        
+            <EmailInput
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ادخل البريد الالكتروني"
               disabled={isLoading}
             />
-            {errors.phoneNumber && (
-              <div className="text-danger">{errors.phoneNumber}</div>
-            )}
+            {errors.email && <div className="text-danger">{errors.email}</div>}
             <Link to="#">
-              <p className="text-color">*هل نسيت رقم الموبايل؟</p>
+              <p className="text-color">*هل نسيت البريد الإلكتروني؟</p>
             </Link>
           </div>
 
@@ -167,18 +175,18 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
 
           <button
             type="submit"
-            className="w-100 btn btn-outline-secondry border-0"
+            className="w-100 btn btn-outline-secondry border-0 mt-2 mb-3"
             disabled={isLoading}
           >
             {isLoading ? "جاري تسجيل الدخول..." : "تسجيل دخول"}
           </button>
         </form>
       </Modal.Body>
-      <Modal.Footer>
+      {/* <Modal.Footer>
         <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
           إغلاق
         </Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   );
 });

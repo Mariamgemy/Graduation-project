@@ -65,40 +65,35 @@ const Steppar = ({ active, setActive, formData }) => {
         !numberOfCopies
       )
         return false;
-    } else if (card.title === "شهادة كفاءة الطاقة"){
-      if (  !quadriliteralName ||
+    } else if (card.title === "شهادة كفاءة الطاقة") {
+      if (
+        !quadriliteralName ||
         !id ||
         !detailedAddress ||
         !phone ||
         !facilityType ||
         !certificateType ||
         !elctricBill ||
-        !idPhoto ) return false;
-    }
-    else if (card.title === "تقديم شكوى مرافق"){
-      if(!email ||
+        !idPhoto
+      )
+        return false;
+    } else if (card.title === "تقديم شكوى مرافق") {
+      if (
+        !email ||
         !subscriberNumber ||
         !fullName ||
         !complaintType ||
         !governorate ||
         !complaintDescription ||
-        !utilityType)  return false;
+        !utilityType
+      )
+        return false;
+    } else if (card.title === "التقديم على عداد كهرباء / مياه") {
+      if (!email || !phone || !fullName || !id) return false;
+    } else if (card.title === "نقل ملكية عداد") {
+      if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
+        return false;
     }
-    else if (card.title === "التقديم على عداد كهرباء / مياه"){
-      if(!email ||
-        !phone ||
-        !fullName ||
-        !id)  return false;
-      }
-   else if (card.title === "نقل ملكية عداد"){
-          if(!fullName ||
-            !id ||
-            !phone ||
-            !meterNumber ||
-            !detailedAddress)  return false;
-        
-  }
-    
 
     return true;
   };
@@ -106,20 +101,22 @@ const Steppar = ({ active, setActive, formData }) => {
   const isStep2Completed = () => {
     if (!formData) return false;
 
-    const { deliveryInfo } = formData;
-
-    // التحقق من اكتمال بيانات الاستلام
+    const {card, governorate, city, district, detailedAddress } = formData;
     if (
-      !deliveryInfo ||
-      !deliveryInfo.name ||
-      !deliveryInfo.phone ||
-      !deliveryInfo.address ||
-      !deliveryInfo.governorate
+      card.title === "شهادة ميلاد" ||
+      card.title === "شهادة وفاة" ||
+      card.title === "شهادة ميلاد مميكنة لأول مرة" ||
+      card.title === "قسيمة زواج" ||
+      card.title === "قسيمة طلاق"
     ) {
-      return false;
+      if (!governorate || !city || !district || !detailedAddress) {
+        return false;
+      }
     }
 
     return true;
+  
+
   };
 
   const handleStepClick = (stepNumber) => {
@@ -147,6 +144,8 @@ const Steppar = ({ active, setActive, formData }) => {
           key={i}
           className={`step-circle ${active === i ? "active" : ""} ${
             isDisabled ? "disabled" : ""
+          } ${isStep1Completed() && i === 2 ? "completed" : ""} ${
+            isStep2Completed() && i === 3 ? "completed" : ""
           }`}
           onClick={() => handleStepClick(i)}
           style={{ cursor: isDisabled ? "not-allowed" : "pointer" }}
@@ -158,13 +157,17 @@ const Steppar = ({ active, setActive, formData }) => {
         steps.push(
           <div
             key={`line-${i}`}
-            className={`step-line ${isDisabled ? "disabled" : ""}`}
+            className={`step-line ${isDisabled ? "disabled" : ""} ${
+              isStep1Completed() && i === 2 ? "completed" : ""
+            } ${isStep2Completed() && i === 3 ? "completed" : ""}`}
           />
         );
       }
     }
     return steps;
+
   };
+
 
   return (
     <CDBContainer>

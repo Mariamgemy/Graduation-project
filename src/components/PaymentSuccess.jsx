@@ -30,7 +30,7 @@ function PaymentSuccess() {
       )}
       
       <button 
-        className="btn btn-primary mt-4"
+        className="btn nav-btn btn-outline-secondry mt-4"
         onClick={() => window.location.href = "/"}
       >
         العودة للصفحة الرئيسية

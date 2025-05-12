@@ -25,10 +25,10 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
   const cardElementOptions = {
     style: {
       base: {
-        color: "#32325d",
+        color: "red",
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSmoothing: "antialiased",
-        fontSize: "16px",
+        fontSize: "18px",
         "::placeholder": {
           color: "#aab7c4",
         },
@@ -355,7 +355,7 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
       
       <Form.Group className="mb-3">
         <Form.Label>تفاصيل البطاقة</Form.Label>
-        <div className="card-element-container">
+        <div className="card-element-container mt-2">
           <CardElement 
             options={cardElementOptions} 
             onChange={handleChange}
@@ -367,7 +367,7 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
         variant="primary"
         type="submit"
         disabled={disabled || processing || succeeded}
-        className="w-100 mt-3 py-2"
+        className="w-100 btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
       >
         {processing ? (
           <>
@@ -375,7 +375,7 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
             جاري المعالجة...
           </>
         ) : (
-          "دفع الآن"
+          "ادفع الآن"
         )}
       </Button>
       

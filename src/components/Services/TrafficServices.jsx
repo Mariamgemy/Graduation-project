@@ -8,10 +8,16 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import PaymentMethods from "../PaymentMethod";
 import TrafficNavigationButtons from "../TrafficNavigationButtons";
 import TrafficStepper from "../TrafficStepper";
+import Button from "../Button";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Alert } from "react-bootstrap";
 
 const TrafficServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [activeStep, setActiveStep] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -23,7 +29,7 @@ const TrafficServices = forwardRef((props, ref) => {
 
   const [modelName, setModelName] = useState("");
   const [id, setId] = useState("");
-  const [medicalExamination , setMedicalExamination] = useState(null);
+  const [medicalExamination, setMedicalExamination] = useState(null);
   const [violationNumber, setViolationNumber] = useState("");
   const [violationType, setViolationType] = useState("");
   const [plateNumber, setPlateNumber] = useState("");
@@ -46,6 +52,16 @@ const TrafficServices = forwardRef((props, ref) => {
   const [color, setColor] = useState("");
   const [year, setYear] = useState("");
   const [chassisNumber, setChassisNumber] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authError, setAuthError] = useState(null);
+
+  const [formData, setFormData] = useState({
+    fullName: "",
+    NID: "",
+    licenseNumber: "",
+    carNumber: "",
+    phoneNumber: "",
+  });
 
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
@@ -65,157 +81,66 @@ const TrafficServices = forwardRef((props, ref) => {
     return idRegex.test(id);
   };
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "الاسم مطلوب";
+    }
+
+    if (!formData.NID || formData.NID.length !== 14) {
+      newErrors.NID = "الرقم القومي يجب أن يكون 14 رقم";
+    }
+
+    if (!formData.licenseNumber.trim()) {
+      newErrors.licenseNumber = "رقم الرخصة مطلوب";
+    }
+
+    if (!formData.carNumber.trim()) {
+      newErrors.carNumber = "رقم السيارة مطلوب";
+    }
+
+    if (!formData.phoneNumber || formData.phoneNumber.length !== 11) {
+      newErrors.phoneNumber = "رقم الهاتف يجب أن يكون 11 رقم";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!user) {
+      setAuthError("يجب تسجيل الدخول أولاً للقيام بهذه العملية");
+      return;
+    }
+
+    setAuthError(null);
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    try {
+      // هنا يتم إرسال البيانات للباك إند
+      console.log("تم إرسال البيانات:", formData);
+      // بعد نجاح الإرسال
+      alert("تم تقديم الطلب بنجاح");
+    } catch (error) {
+      console.error("خطأ في إرسال البيانات:", error);
+      alert("حدث خطأ أثناء إرسال البيانات");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   useImperativeHandle(ref, () => ({
-    validateForm: () => {
-      const newErrors = {};
-
-      if (activeStep === 1) {
-        // if (
-        //   card.title === "استخراج رخصة قيادة" ||
-        //   card.title === "استخراج رخصة سيارة"
-        // ) {
-        //   if (!fullName) {
-        //     newErrors.fullName = "هذا الحقل مطلوب";
-        //   } else if (!isValidName(fullName)) {
-        //     newErrors.fullName = "الاسم غير صالح";
-        //   }
-
-        //   if (!id) {
-        //     newErrors.id = "هذا الحقل مطلوب";
-        //   } else if (!isValidId(id)) {
-        //     newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-        //   }
-
-        //   if (!birthDate) {
-        //     newErrors.birthDate = "هذا الحقل مطلوب";
-        //   }
-        //   if (!modelName) {
-        //     newErrors.modelName = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!address) {
-        //     newErrors.address = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!licenseType) {
-        //     newErrors.licenseType = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!personalPhoto) {
-        //     newErrors.personalPhoto = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!medicalResult) {
-        //     newErrors.medicalResult = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!theoryResult) {
-        //     newErrors.theoryResult = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!practicalResult) {
-        //     newErrors.practicalResult = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!issueDate) {
-        //     newErrors.issueDate = "هذا الحقل مطلوب";
-        //   }
-
-        //   if (!expiryDate) {
-        //     newErrors.expiryDate = "هذا الحقل مطلوب";
-        //   }
-        //   if (!vehicleType) {
-        //     newErrors.vehicleType = "هذا الحقل مطلوب";
-        //   }
-        //   if (!modelName) {
-        //     newErrors.modelName = "هذا الحقل مطلوب";
-        //   }
-        //   if (!color) {
-        //     newErrors.color = "هذا الحقل مطلوب";
-        //   }
-        //   if (!year) {
-        //     newErrors.year = "هذا الحقل مطلوب";
-        //   }
-        //   if (!chassisNumber) {
-        //     newErrors.chassisNumber = "هذا الحقل مطلوب";
-        //   }
-        // }
-
-        if (
-          card.title === "تجديد رخصة قيادة" ||
-          card.title === "تجديد رخصة سيارة"
-        ) {
-          if (!currentLicenseNumber)
-            newErrors.currentLicenseNumber = "هذا الحقل مطلوب";
-          if (!currentLicenseExpiryDate)
-            newErrors.currentLicenseExpiryDate = "هذا الحقل مطلوب";
-          if (!paymentMethod) newErrors.paymentMethod = "هذا الحقل مطلوب";
-          if (!isSelf) newErrors.isSelf = "هذا الحقل مطلوب";
-          if (!id) {
-            newErrors.id = "هذا الحقل مطلوب";
-          } else if (!isValidId(id)) {
-            newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-          }
-          if (!fullName) newErrors.fullName = "هذا الحقل مطلوب";
-          else if (!isValidName(fullName))
-            newErrors.fullName = "الاسم غير صالح";
-          if (!birthDate) newErrors.birthDate = "هذا الحقل مطلوب";
-          if (!expiryDate) newErrors.expiryDate = "هذا الحقل مطلوب";
-          if (!issueDate) newErrors.issueDate = "هذا الحقل مطلوب";
-          if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
-          if (!vehicleRegistrationNumber)
-            newErrors.vehicleRegistrationNumber = "هذا الحقل مطلوب";
-          if (!plateNumber) newErrors.plateNumber = "هذا الحقل مطلوب";
-        }
-
-        if (card.title === "بدل فاقد / تالف للرخص") {
-          if (!licenseType) newErrors.licenseType = "هذا الحقل مطلوب";
-          if (!currentLicenseNumber)
-            newErrors.currentLicenseNumber = "هذا الحقل مطلوب";
-          if (!isSelf) newErrors.isSelf = "هذا الحقل مطلوب";
-          if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
-          if (!paymentMethod) {
-            newErrors.paymentMethod = "برجاء اختيار طريقة الدفع.";
-          }
-        }
-
-        // if (card.title === "مخالفات المرور ودفعها") {
-        //   if (!violationNumber) newErrors.violationNumber = "هذا الحقل مطلوب";
-        //   if (!paymentBill) newErrors.paymentBill = "هذا الحقل مطلوب";
-        //   if (!violationType) newErrors.violationType = "هذا الحقل مطلوب";
-        //   if (!plateNumber) newErrors.plateNumber = "هذا الحقل مطلوب";
-        //   if (!fineAmount) newErrors.fineAmount = "هذا الحقل مطلوب";
-        //   if (!violationDate) newErrors.violationDate = "هذا الحقل مطلوب";
-        //   if (!isSelf) newErrors.isSelf = "هذا الحقل مطلوب";
-        //   if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
-        // }
-      }
-      setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-    },
-    getFormData: () => ({
-      fullName,
-      id,
-      birthDate,
-      address,
-      licenseType,
-      personalPhoto,
-      medicalResult,
-      theoryResult,
-      practicalResult,
-      issueDate,
-      expiryDate,
-      currentLicenseNumber,
-      isSelf,
-      paymentMethod,
-      violationNumber,
-      violationType,
-      vehicleRegistrationNumber,
-      plateNumber,
-      fineAmount,
-      violationDate,
-    }),
+    validateForm,
+    getFormData: () => formData,
   }));
+
   const handleNext = () => {
     const newErrors = {};
 
@@ -227,7 +152,8 @@ const TrafficServices = forwardRef((props, ref) => {
           newErrors.fullName = "الاسم غير صالح";
         }
         if (!personalPhoto) newErrors.personalPhoto = "هذا الحقل مطلوب";
-        if (!medicalExamination) newErrors.medicalExamination = "هذا الحقل مطلوب";
+        if (!medicalExamination)
+          newErrors.medicalExamination = "هذا الحقل مطلوب";
         if (!id) {
           newErrors.id = "هذا الحقل مطلوب";
         } else if (!isValidId(id)) {
@@ -284,195 +210,6 @@ const TrafficServices = forwardRef((props, ref) => {
       case 1:
         return (
           <div>
-
-             {/* {card.title === "استخراج رخصة قيادة" && (
-        <>
-          <div className="mb-3 ">
-            <label className="form-label">الاسم بالكامل </label>
-            <input
-              type="text"
-              className="form-control "
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-            {errors.fullName && (
-              <div className="text-danger">{errors.fullName}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">الرقم القومي </label>
-            <input
-              type="text"
-              className="form-control"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
-            {errors.id && <div className="text-danger">{errors.id}</div>}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">تاريخ الميلاد </label>
-            <input
-              type="date"
-              className="form-control"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-            />
-            {errors.birthDate && (
-              <div className="text-danger">{errors.birthDate}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">العنوان </label>
-            <input
-              type="text"
-              className="form-control"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-            />
-            {errors.address && (
-              <div className="text-danger">{errors.address}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">نوع الرخصة </label>
-            <select
-              className="form-select "
-              value={licenseType}
-              onChange={(e) => setLicenseType(e.target.value)}
-            >
-              <option value=""> </option>
-              <option value="private">خاصة</option>
-              <option value="commercial">تجارية</option>
-              <option value="motorcycle">دراجة نارية</option>
-            </select>
-            {errors.licenseType && (
-              <div className="text-danger">{errors.licenseType}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">الصورة الشخصية </label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="personalPhoto"
-                accept="image/*"
-                onChange={(e) => {
-                  setPersonalPhoto(e.target.files[0]);
-                }}
-              />
-              <label htmlFor="personalPhoto" className="file-input-label">
-                <span className="file-name">
-                  {personalPhoto ? personalPhoto.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
-            </div>
-            {errors.personalPhoto && (
-              <div className="text-danger">{errors.personalPhoto}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">نتيجة الفحص الطبي </label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="medicalResult"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => {
-                  setMedicalResult(e.target.files[0]);
-                }}
-              />
-              <label htmlFor="medicalResult" className="file-input-label">
-                <span className="file-name">
-                  {medicalResult ? medicalResult.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
-            </div>
-            {errors.medicalResult && (
-              <div className="text-danger">{errors.medicalResult}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">نتيجة الاختبار النظري </label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="theoryResult"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => {
-                  setTheoryResult(e.target.files[0]);
-                }}
-              />
-              <label htmlFor="theoryResult" className="file-input-label">
-                <span className="file-name">
-                  {theoryResult ? theoryResult.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
-            </div>
-            {errors.theoryResult && (
-              <div className="text-danger">{errors.theoryResult}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">نتيجة الاختبار العملي </label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="practicalResult"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={(e) => {
-                  setPracticalResult(e.target.files[0]);
-                }}
-              />
-              <label htmlFor="practicalResult" className="file-input-label">
-                <span className="file-name">
-                  {practicalResult ? practicalResult.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
-            </div>
-            {errors.practicalResult && (
-              <div className="text-danger">{errors.practicalResult}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">تاريخ الإصدار </label>
-            <input
-              type="date"
-              className="form-control"
-              value={issueDate}
-              onChange={(e) => setIssueDate(e.target.value)}
-            />
-            {errors.issueDate && (
-              <div className="text-danger">{errors.issueDate}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">تاريخ الانتهاء </label>
-            <input
-              type="date"
-              className="form-control"
-              value={expiryDate}
-              onChange={(e) => setExpiryDate(e.target.value)}
-            />
-            {errors.expiryDate && (
-              <div className="text-danger">{errors.expiryDate}</div>
-            )}
-          </div>
-        </>
-      )}  */}
             {card.title === "مخالفات المرور ودفعها" && (
               <>
                 <div className="mb-3 ">
@@ -595,21 +332,7 @@ const TrafficServices = forwardRef((props, ref) => {
                       {errors.isSelf && (
                         <div className="text-danger">{errors.isSelf}</div>
                       )}
-                      {isSelf === false && (
-                        // <div className="mb-3">
-                        //   <label className="form-label mt-4">طريقة الدفع </label>
-                        //   <input
-                        //     type="text"
-                        //     className="form-control"
-                        //     value={chassisNumber}
-                        //     onChange={(e) => setChassisNumber(e.target.value)}
-                        //   />
-                        //   {errors.chassisNumber && (
-                        //     <div className="text-danger">{errors.chassisNumber}</div>
-                        //   )}
-                        // </div>
-                        <PaymentMethods />
-                      )}
+                      {isSelf === false && <PaymentMethods />}
                       {isSelf === true && (
                         <div className="mb-3">
                           <label className="form-label mt-4">
@@ -787,194 +510,6 @@ const TrafficServices = forwardRef((props, ref) => {
               </>
             )}
 
-             {/* {card.title === "استخراج رخصة سيارة" && (
-        <>
-          <div className="mb-3 ">
-            <label className="form-label">الاسم بالكامل </label>
-            <input
-              type="text"
-              className="form-control "
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
-            {errors.fullName && (
-              <div className="text-danger">{errors.fullName}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">الرقم القومي </label>
-            <input
-              type="text"
-              className="form-control"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
-            {errors.id && <div className="text-danger">{errors.id}</div>}
-          </div>
-
-          <div className="mb-3 ">
-            <label className="form-label">نوع المركبة ؟</label>
-
-            <select
-              value={vehicleType}
-              onChange={(e) => setVehicleType(e.target.value)}
-              className="form-select"
-            >
-              <option value=""></option>
-              <option value="car">سيارة</option>
-              <option value="truck">شاحنة</option>
-            </select>
-            {errors.vehicleType && (
-              <div className="text-danger">{errors.vehicleType}</div>
-            )}
-
-            <div className=" mt-4">
-              <div className="row">
-                <h4 className="text-color mb-3"> تفاصيل المركبة : </h4>
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label">الطراز </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={modelName}
-                      onChange={(e) => setModelName(e.target.value)}
-                    />
-                    {errors.modelName && (
-                      <div className="text-danger">{errors.modelName}</div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">اللون </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={color}
-                      onChange={(e) => setColor(e.target.value)}
-                    />
-                    {errors.color && (
-                      <div className="text-danger">{errors.color}</div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">سنة الصنع </label>
-                    <input
-                      type="number"
-                      min="1900"
-                      max="2025"
-                      step="1"
-                      className="form-control"
-                      value={year}
-                      onChange={(e) => setYear(e.target.value)}
-                    />
-                    {errors.year && (
-                      <div className="text-danger">{errors.year}</div>
-                    )}
-                    <div className="mb-3">
-                      <label className="form-label mt-3">رقم الهيكل</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={chassisNumber}
-                        onChange={(e) => setChassisNumber(e.target.value)}
-                      />
-                      {errors.chassisNumber && (
-                        <div className="text-danger">
-                          {errors.chassisNumber}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label">تقرير الفحص </label>
-                    <div className="file-input-container">
-                      <input
-                        type="file"
-                        id="personalPhoto"
-                        accept="image/*"
-                        onChange={(e) => {
-                          setPersonalPhoto(e.target.files[0]);
-                        }}
-                      />
-                      <label
-                        htmlFor="personalPhoto"
-                        className="file-input-label"
-                      >
-                        <span className="file-name">
-                          {personalPhoto
-                            ? personalPhoto.name
-                            : "لم يتم اختيار ملف"}
-                        </span>
-                        <span className="browse-button">اختر ملف</span>
-                      </label>
-                    </div>
-                    {errors.personalPhoto && (
-                      <div className="text-danger">{errors.personalPhoto}</div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">تقرير الفحص </label>
-                    <div className="file-input-container">
-                      <input
-                        type="file"
-                        id="personalPhoto"
-                        accept="image/*"
-                        onChange={(e) => {
-                          setPersonalPhoto(e.target.files[0]);
-                        }}
-                      />
-                      <label
-                        htmlFor="personalPhoto"
-                        className="file-input-label"
-                      >
-                        <span className="file-name">
-                          {personalPhoto
-                            ? personalPhoto.name
-                            : "لم يتم اختيار ملف"}
-                        </span>
-                        <span className="browse-button">اختر ملف</span>
-                      </label>
-                    </div>
-                    {errors.personalPhoto && (
-                      <div className="text-danger">{errors.personalPhoto}</div>
-                    )}
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">تقرير الفحص </label>
-                    <div className="file-input-container">
-                      <input
-                        type="file"
-                        id="personalPhoto"
-                        accept="image/*"
-                        onChange={(e) => {
-                          setPersonalPhoto(e.target.files[0]);
-                        }}
-                      />
-                      <label
-                        htmlFor="personalPhoto"
-                        className="file-input-label"
-                      >
-                        <span className="file-name">
-                          {personalPhoto
-                            ? personalPhoto.name
-                            : "لم يتم اختيار ملف"}
-                        </span>
-                        <span className="browse-button">اختر ملف</span>
-                      </label>
-                    </div>
-                    {errors.personalPhoto && (
-                      <div className="text-danger">{errors.personalPhoto}</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </>
-      )}  */}
             {card.title === "تجديد رخصة قيادة" && (
               <>
                 <div className="mb-3">
@@ -1017,69 +552,60 @@ const TrafficServices = forwardRef((props, ref) => {
                     <div className="text-danger">{errors.birthDate}</div>
                   )}
                 </div>
-                
-                        <div className="mb-3">
-                          <label className="form-label">
-                            صورة شخصية جديدة
-                          </label>
-                          <div className="file-input-container">
-                            <input
-                              type="file"
-                              id="personalPhoto"
-                              accept="image/*"
-                              onChange={(e) => {
-                                setPersonalPhoto(e.target.files[0]);
-                              }}
-                            />
-                            <label
-                              htmlFor="personalPhoto"
-                              className="file-input-label"
-                            >
-                              <span className="file-name">
-                                {personalPhoto
-                                  ? personalPhoto.name
-                                  : "لم يتم اختيار ملف"}
-                              </span>
-                              <span className="browse-button">اختر ملف</span>
-                            </label>
-                          </div>
-                          {errors.personalPhoto && (
-                            <div className="text-danger">
-                              {errors.personalPhoto}
-                            </div>
-                          )}
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label">
-                            صورة الفحص الطبي 
-                          </label>
-                          <div className="file-input-container">
-                            <input
-                              type="file"
-                              id="medicalExamination"
-                              accept="image/*"
-                              onChange={(e) => {
-                                setMedicalExamination(e.target.files[0]);
-                              }}
-                            />
-                            <label
-                              htmlFor="medicalExamination"
-                              className="file-input-label"
-                            >
-                              <span className="file-name">
-                                {medicalExamination
-                                  ? medicalExamination.name
-                                  : "لم يتم اختيار ملف"}
-                              </span>
-                              <span className="browse-button">اختر ملف</span>
-                            </label>
-                          </div>
-                          {errors.medicalExamination && (
-                            <div className="text-danger">
-                              {errors.medicalExamination}
-                            </div>
-                          )}
-                        </div>
+
+                <div className="mb-3">
+                  <label className="form-label">صورة شخصية جديدة</label>
+                  <div className="file-input-container">
+                    <input
+                      type="file"
+                      id="personalPhoto"
+                      accept="image/*"
+                      onChange={(e) => {
+                        setPersonalPhoto(e.target.files[0]);
+                      }}
+                    />
+                    <label htmlFor="personalPhoto" className="file-input-label">
+                      <span className="file-name">
+                        {personalPhoto
+                          ? personalPhoto.name
+                          : "لم يتم اختيار ملف"}
+                      </span>
+                      <span className="browse-button">اختر ملف</span>
+                    </label>
+                  </div>
+                  {errors.personalPhoto && (
+                    <div className="text-danger">{errors.personalPhoto}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">صورة الفحص الطبي</label>
+                  <div className="file-input-container">
+                    <input
+                      type="file"
+                      id="medicalExamination"
+                      accept="image/*"
+                      onChange={(e) => {
+                        setMedicalExamination(e.target.files[0]);
+                      }}
+                    />
+                    <label
+                      htmlFor="medicalExamination"
+                      className="file-input-label"
+                    >
+                      <span className="file-name">
+                        {medicalExamination
+                          ? medicalExamination.name
+                          : "لم يتم اختيار ملف"}
+                      </span>
+                      <span className="browse-button">اختر ملف</span>
+                    </label>
+                  </div>
+                  {errors.medicalExamination && (
+                    <div className="text-danger">
+                      {errors.medicalExamination}
+                    </div>
+                  )}
+                </div>
               </>
             )}
             {card.title === "تجديد رخصة سيارة" && (
@@ -1309,7 +835,6 @@ const TrafficServices = forwardRef((props, ref) => {
                         </div>
                       </div>
                       <div className="col-md-6">
-                      
                         <div className="mb-3">
                           <label className="form-label">تاريخ التجديد </label>
                           <input
@@ -1432,15 +957,27 @@ const TrafficServices = forwardRef((props, ref) => {
 
       {renderStepContent()}
 
-      {activeStep < 4 && (
+      {activeStep < 3 && <Button handleNext={handleNext} />}
+
+      {/* {authError && (
+        <Alert variant="warning" className="mb-3">
+          <p className="mb-0">{authError}</p>
+        </Alert>
+      )} */}
+
+{activeStep === 3 && (
         <div className="text-start">
-          <button
-            type="button"
-            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-            onClick={handleNext}
-          >
-            التالي &nbsp; <FaArrowLeftLong size={20} />
-          </button>
+        <button
+          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? ("جاري المعالجة...") :  (
+                  <>
+                    تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+                  </>
+                )}
+        </button>
         </div>
       )}
     </>

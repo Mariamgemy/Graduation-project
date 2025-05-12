@@ -1,286 +1,321 @@
-import { forwardRef, useImperativeHandle } from "react";
-import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import React from "react";
+import "./UtilityServices.css";
+
+import { forwardRef, useImperativeHandle, useState, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Alert, Spinner } from "react-bootstrap";
+import { billingService } from "../../services/billingService";
 import CaptchaComponent from "../captcha";
-import { useRef } from "react";
+import { Elements } from "@stripe/react-stripe-js";
+import stripePromise from "../../config/stripeConfig";
+import StripePayment from "../StripePaymentForm";
+import { useAuth } from "../../context/AuthContext";
+import { FaArrowLeftLong } from "react-icons/fa6";
+
+// --- Extracted fields component ---
+function UtilityFormFields({
+  formData,
+  errors,
+  handleChange,
+  captchaRef,
+  showCaptcha,
+}) {
+  return (
+    <>
+      <div className="mb-3">
+        <label className="form-label">الرقم القومي</label>
+        <input
+          type="text"
+          className={`form-control custom-input ${
+            errors.NID ? "is-invalid" : ""
+          }`}
+          name="NID"
+          value={formData.NID}
+          onChange={handleChange}
+          placeholder="ادخل الرقم القومي"
+          maxLength="14"
+        />
+        {errors.NID && <div className="invalid-feedback">{errors.NID}</div>}
+      </div>
+      <div className="mb-3">
+        <label className="form-label">قراءة العداد</label>
+        <input
+          type="number"
+          className={`form-control custom-input ${
+            errors.currentReading ? "is-invalid" : ""
+          }`}
+          name="currentReading"
+          value={formData.currentReading}
+          onChange={handleChange}
+          placeholder="ادخل قراءة العداد"
+          min="0"
+        />
+        {errors.currentReading && (
+          <div className="invalid-feedback">{errors.currentReading}</div>
+        )}
+      </div>
+      {showCaptcha && (
+        <div className="mt-3">
+          <CaptchaComponent ref={captchaRef} />
+        </div>
+      )}
+    </>
+  );
+}
 
 const UtilityServices = forwardRef((props, ref) => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const card = location.state;
-
-  const [activeStep, setActiveStep] = useState(1);
-  const [company, setCompany] = useState("");
-  const [subscriberNumber, setSubscriberNumber] = useState("");
-  const [meterNumber, setMeterNumber] = useState("");
-  const [id, setId] = useState("");
-  const [errors, setErrors] = useState({});
-  const [formSubmitted, setFormSubmitted] = useState(false);
   const captchaRef = useRef();
 
+  const [formData, setFormData] = useState({
+    NID: "",
+    currentReading: "",
+  });
+  const [errors, setErrors] = useState({});
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentStep, setPaymentStep] = useState("form");
+  const [paymentError, setPaymentError] = useState(null);
+  const [paymentData, setPaymentData] = useState(null);
+  const [authError, setAuthError] = useState(null);
 
-  const isValidId = (id) => {
-    const idRegex = /^\d{14}$/;
-    return idRegex.test(id);
-  }; 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const getUtilityType = (title) => {
+    if (title.includes("كهرباء")) return "Electricity";
+    if (title.includes("مياه")) return "Water";
+    if (title.includes("غاز")) return "Gas";
+    return "Other";
+  };
 
   useImperativeHandle(ref, () => ({
     validateForm: () => {
-      const isCaptchaValid = captchaRef.current?.validateCaptchaField();
       const newErrors = {};
+      const isCaptchaValid = captchaRef.current?.validateCaptchaField();
 
-      if (card.title === "سداد فاتورة الكهرباء") {
-        if (!company) newErrors.company = "هذا الحقل مطلوب";
-        if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
-        if (!id) {
-          newErrors.id = "هذا الحقل مطلوب";
-        } else if (!isValidId(id)) {
-          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-        }
+      if (!formData.NID || formData.NID.length !== 14) {
+        newErrors.NID = "الرقم القومي يجب أن يكون 14 رقم";
       }
 
-      if (card.title === "سداد فاتورة المياه") {
-        if (!company) newErrors.company = "هذا الحقل مطلوب";
-        if (!meterNumber) newErrors.meterNumber = "هذا الحقل مطلوب";
-        if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
-        if (!id) {
-          newErrors.id = "هذا الحقل مطلوب";
-        } else if (!isValidId(id)) {
-          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-        }
+      if (
+        !formData.currentReading ||
+        isNaN(formData.currentReading) ||
+        Number(formData.currentReading) < 0
+      ) {
+        newErrors.currentReading = "قراءة العداد يجب أن تكون رقماً موجباً";
       }
-
-    
-
-      if (card.title === "سداد فاتورة الغاز") {
-        if (!company) newErrors.company = "هذا الحقل مطلوب";
-        if (!subscriberNumber) newErrors.subscriberNumber = "هذا الحقل مطلوب";
-        if (!id) {
-          newErrors.id = "هذا الحقل مطلوب";
-        } else if (!isValidId(id)) {
-          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-        }
-      }
-
-      
 
       setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
+      return Object.keys(newErrors).length === 0 && isCaptchaValid;
     },
-    getFormData: () => ({
-      company,
-      subscriberNumber,
-      meterNumber,
-    }),
+    getFormData: () => formData,
   }));
 
-  return (
-    <>
-      {card.title === "سداد فاتورة الكهرباء" && (
-        <>
-          <div className="mb-3">
-            <label className="form-label">اختر الشركة </label>
-            <select
-              className={`form-select custom-select-style custom-input ${
-                errors.company ? "is-invalid" : ""
-              }`}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
+  const handleProceedToPayment = async () => {
+    // Check if user is logged in
+    if (!user) {
+      setAuthError("يجب تسجيل الدخول أولاً قبل القيام بهذه العملية");
+      // setTimeout(() => {
+      //   navigate("/login");
+      // }, 2000);
+      return;
+    }
+
+    setAuthError(null);
+    setPaymentError(null);
+    setIsProcessing(true);
+    setPaymentData(null);
+
+    try {
+      console.log("بدء عملية السداد...");
+      const isValid = ref.current.validateForm();
+      if (!isValid) {
+        console.log("فشل التحقق من صحة النموذج");
+        setIsProcessing(false);
+        return;
+      }
+      console.log("تم التحقق من صحة النموذج بنجاح");
+
+      const apiPayload = {
+        NID: formData.NID.trim(),
+        type: getUtilityType(card.title),
+        currentReading: parseInt(formData.currentReading, 10),
+      };
+      console.log("بيانات الطلب:", apiPayload);
+
+      console.log("جاري إرسال الطلب للباك إند...");
+      const result = await billingService.generateAndPayBill(apiPayload);
+      console.log("استجابة الباك إند:", result);
+
+      if (result && result.clientSecret && result.paymentIntentId) {
+        console.log("تم استلام بيانات الدفع بنجاح");
+        setPaymentData({
+          clientSecret: result.clientSecret,
+          paymentIntentId: result.paymentIntentId,
+          billNumber: result.billNumber || "",
+          amount: result.amount || 0,
+        });
+        console.log("تم تحديث حالة الدفع:", {
+          clientSecret: result.clientSecret,
+          paymentIntentId: result.paymentIntentId,
+          billNumber: result.billNumber,
+          amount: result.amount,
+        });
+        setPaymentStep("payment");
+      } else {
+        console.error("فشل في الحصول على بيانات الدفع:", result);
+        throw new Error(
+          result.message || "فشل في تهيئة عملية الدفع من الخادم."
+        );
+      }
+    } catch (error) {
+      console.error("حدث خطأ أثناء عملية السداد:", error);
+      setPaymentError(error.message || "حدث خطأ غير متوقع أثناء تهيئة الدفع.");
+      setPaymentStep("error");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePaymentSuccess = (paymentResult) => {
+    console.log("تم الدفع بنجاح:", paymentResult);
+    setPaymentStep("success_redirecting");
+  };
+
+  const handlePaymentError = (errorMessage) => {
+    console.error("فشل الدفع:", errorMessage);
+    setPaymentError(errorMessage);
+    setPaymentStep("error");
+  };
+
+  const renderContent = () => {
+    console.log("حالة الدفع الحالية:", paymentStep);
+    console.log("بيانات الدفع:", paymentData);
+
+    switch (paymentStep) {
+      case "success_redirecting":
+        return (
+          <div className=" text-center p-4">
+            <Spinner animation="border" role="status" />
+            <p className="mt-2">جاري معالجة الدفع...</p>
+          </div>
+        );
+      case "error":
+        return (
+          <div >
+            <Alert variant="danger" className="mb-3">
+              <h4>حدث خطأ!</h4>
+              <p>{paymentError || "حدث خطأ غير متوقع."}</p>
+            </Alert>
+            <UtilityFormFields
+              formData={formData}
+              errors={errors}
+              handleChange={handleChange}
+              captchaRef={captchaRef}
+              showCaptcha={true}
+            />
+          </div>
+        );
+      case "payment":
+        if (!paymentData?.clientSecret) {
+          console.error("لا توجد بيانات الدفع المطلوبة");
+          return (
+            <div className="modern-card">
+              <Alert variant="danger" className="mb-3">
+                <h4>خطأ في بيانات الدفع</h4>
+                <p>لم يتم استلام بيانات الدفع المطلوبة</p>
+              </Alert>
+              <UtilityFormFields
+                formData={formData}
+                errors={errors}
+                handleChange={handleChange}
+                captchaRef={captchaRef}
+                showCaptcha={true}
+              />
+              <button
+                className="btn nav-btn px-4 py-2 fs-5 mb-2 w-100"
+                onClick={handleProceedToPayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? "جاري المعالجة..." : "متابعة"}
+              </button>
+            </div>
+          );
+        }
+        return (
+          <div className="payment-section">
+            <h5>تفاصيل الفاتورة</h5>
+            {paymentData.billNumber && (
+              <p>رقم الفاتورة: {paymentData.billNumber}</p>
+            )}
+            {paymentData.amount && <p>المبلغ: {paymentData.amount}</p>}
+
+            <div className="mt-4">
+              <h5>إدخال بيانات البطاقة</h5>
+              <Elements stripe={stripePromise}>
+                <StripePayment
+                  clientSecret={paymentData.clientSecret}
+                  paymentIntentId={paymentData.paymentIntentId}
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentError={handlePaymentError}
+                />
+              </Elements>
+            </div>
+
+            <button
+              className="btn btn-link mt-2"
+              onClick={() => {
+                setPaymentStep("form");
+                setPaymentError(null);
+                setPaymentData(null);
+              }}
             >
-              <option value=""> </option>
-              <option value="كهرباء شمال القاهرة">كهرباء شمال القاهرة</option>
-              <option value="كهرباء جنوب القاهرة">كهرباء جنوب القاهرة</option>
-              <option value="كهرباء جنوب الدلتا">كهرباء جنوب الدلتا</option>
-              <option value="كهرباء القناة">كهرباء القناة</option>
-              <option value="كهرباء مصر الوسطي">كهرباء مصر الوسطي</option>
-              <option value="كهرباء مصر العليا">كهرباء مصر العليا</option>
-            </select>
-            {errors.company && (
-              <div className="text-danger">{errors.company}</div>
+              إلغاء
+            </button>
+          </div>
+        );
+      case "form":
+      default:
+        return (
+          <div >
+            {authError && (
+              <Alert variant="warning" className="mb-3">
+                <p className="mb-0">{authError}</p>
+              </Alert>
             )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">ادخل رقم السداد الالكتروني </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.subscriberNumber ? "is-invalid" : ""
-              }`}
-              value={subscriberNumber}
-              onChange={(e) => setSubscriberNumber(e.target.value)}
+            <UtilityFormFields
+              formData={formData}
+              errors={errors}
+              handleChange={handleChange}
+              captchaRef={captchaRef}
+              showCaptcha={true}
             />
-            {errors.subscriberNumber && (
-              <div className="text-danger">{errors.subscriberNumber}</div>
-            )}
+            <div className="text-start">
+              <button
+                className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+                onClick={handleProceedToPayment}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  "جاري الاستعلام..."
+                ) : (
+                  <>
+                    متابعة &nbsp; <FaArrowLeftLong size={20} />
+                  </>
+                )}
+              </button>
+            </div>
           </div>
-          <div className="mb-3">
-            <label className="form-label">الرقم القومي </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.id ? "is-invalid" : ""
-              }`}
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
-            {errors.id && <div className="text-danger">{errors.id}</div>}
-          </div>
+        );
+    }
+  };
 
-        </>
-      )}
-
-      {card.title === "سداد فاتورة المياه" && (
-        <>
-          <div className="mb-3">
-            <label className="form-label">اختر الشركة </label>
-            <select
-              className={`form-select custom-select-style custom-input ${
-                errors.company ? "is-invalid" : ""
-              }`}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            >
-              <option value=""> </option>
-              <option value="القاهرة الكبرى والجيزة والقليوبية">
-                القاهرة الكبرى والجيزة والقليوبية
-              </option>
-              <option value="الإسكندرية">الإسكندرية</option>
-              <option value="الدلتا">الدلتا</option>
-              <option value="الصعيد">الصعيد</option>
-              <option value="القناة وسيناء">القناة وسيناء</option>
-              <option value="المناطق الحدودية والوادي الجديد">
-                المناطق الحدودية والوادي الجديد
-              </option>
-            </select>
-            {errors.company && (
-              <div className="text-danger">{errors.company}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">ادخل رقم العداد </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.meterNumber ? "is-invalid" : ""
-              }`}
-              value={meterNumber}
-              onChange={(e) => setMeterNumber(e.target.value)}
-            />
-            {errors.meterNumber && (
-              <div className="text-danger">{errors.meterNumber}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.subscriberNumber ? "is-invalid" : ""
-              }`}
-              value={subscriberNumber}
-              onChange={(e) => setSubscriberNumber(e.target.value)}
-            />
-            {errors.subscriberNumber && (
-              <div className="text-danger">{errors.subscriberNumber}</div>
-            )}
-          </div>
-          <div className="mb-3">
-            <label className="form-label">الرقم القومي </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.id ? "is-invalid" : ""
-              }`}
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
-            {errors.id && <div className="text-danger">{errors.id}</div>}
-          </div>
-
-        </>
-      )}
-
-    
-
-      {card.title === "سداد فاتورة الغاز" && (
-        <>
-          <div className="mb-3">
-            <label className="form-label">اختر الشركة </label>
-            <select
-              className={`form-select custom-select-style custom-input ${
-                errors.company ? "is-invalid" : ""
-              }`}
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
-            >
-              <option value=""> </option>
-              <option value="1">بتروتريد</option>
-              <option value="2">نات جاس</option>
-              <option value="3">شركة طاقة للغاز</option>
-            </select>
-            {errors.company && (
-              <div className="text-danger">{errors.company}</div>
-            )}
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label">ادخل رقم المشترك </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.subscriberNumber ? "is-invalid" : ""
-              }`}
-              placeholder="ادخل الارقام من المحافظة حتى الفرعي"
-              value={subscriberNumber}
-              onChange={(e) => setSubscriberNumber(e.target.value)}
-            />
-            {errors.subscriberNumber && (
-              <div className="text-danger">{errors.subscriberNumber}</div>
-            )}
-          </div>
-          <div className="mb-3">
-            <label className="form-label">الرقم القومي </label>
-            <input
-              type="text"
-              className={`form-control custom-input ${
-                errors.id ? "is-invalid" : ""
-              }`}
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-            />
-            {errors.id && <div className="text-danger">{errors.id}</div>}
-          </div>
-
-        </>
-      )}
-      <div className="mt-3">
-        <CaptchaComponent ref={captchaRef} />
-        {errors.captcha && <div className="text-danger">{errors.captcha}</div>}
-      </div>
-
-      <div className="text-start">
-        <button
-          type="submit"
-          className={`btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2 ${
-            formSubmitted ? "btn-success" : "btn-outline-secondry"
-          }`}
-        >
-          {formSubmitted ? "تم الإرسال بنجاح" : "التالي"}
-        </button>
-
-        {formSubmitted && (
-          <button
-            type="submit"
-            className="btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2"
-          >
-            التالي
-          </button>
-        )}
-      </div>
-    </>
-  );
+  return <div className="utility-services">{renderContent()}</div>;
 });
 
 export default UtilityServices;

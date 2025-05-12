@@ -3,12 +3,16 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import "../Css/NavigationButtons.css";
 import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
 
-const NavigationButtons = ({ activeStep, setActiveStep, formData, stepLabels }) => {
-
+const NavigationButtons = ({
+  activeStep,
+  setActiveStep,
+  formData,
+  stepLabels,
+}) => {
   const currentLabels = stepLabels || [
-    { label: "الخطوة 1", icon: <FaUser /> },
-    { label: "الخطوة 2", icon: <FaFileAlt /> },
-    { label: "الخطوة 3", icon: <FaCheck /> },
+    { label: "بيانات الطلب", icon: <FaUser /> },
+    { label: "بيانات الاستلام", icon: <FaFileAlt /> },
+    { label: "تأكيد الطلب", icon: <FaCheck /> },
   ];
 
   const isStep1Completed = () => {
@@ -38,6 +42,8 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData, stepLabels }) 
       complaintDescription,
       utilityType,
       meterNumber,
+      city,
+      district,
     } = formData;
 
     if (
@@ -62,25 +68,36 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData, stepLabels }) 
       card.title === "شهادة وفاة"
     ) {
       if (!quadriliteralName || !kinship) return false;
-    }
-    else if (card.title === "شهادة كفاءة الطاقة") {
-      if (!quadriliteralName ||!id ||!detailedAddress ||!phone || !facilityType || !certificateType || !elctricBill || !idPhoto) return false
-    }
-
-    else if (card.title === "تقديم شكوى مرافق" ) {
-      if (!fullName || !subscriberNumber || !complaintType || !complaintDescription || !governorate || !utilityType || !detailedAddress || !phone || !email) return false
-    }
-
-
-    else if(card.title ==="التقديم على عداد كهرباء / مياه"){
-      if (!id || !email || !phone || !fullName) return false
-    }
-    else if (card.title === "نقل ملكية عداد"){
-      if(!fullName ||
+    } else if (card.title === "شهادة كفاءة الطاقة") {
+      if (
+        !quadriliteralName ||
         !id ||
+        !detailedAddress ||
         !phone ||
-        !meterNumber ||
-        !detailedAddress)  return false;
+        !facilityType ||
+        !certificateType ||
+        !elctricBill ||
+        !idPhoto
+      )
+        return false;
+    } else if (card.title === "تقديم شكوى مرافق") {
+      if (
+        !fullName ||
+        !subscriberNumber ||
+        !complaintType ||
+        !complaintDescription ||
+        !governorate ||
+        !utilityType ||
+        !detailedAddress ||
+        !phone ||
+        !email
+      )
+        return false;
+    } else if (card.title === "التقديم على عداد كهرباء / مياه") {
+      if (!id || !email || !phone || !fullName) return false;
+    } else if (card.title === "نقل ملكية عداد") {
+      if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
+        return false;
     }
 
     return true;
@@ -89,16 +106,10 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData, stepLabels }) 
   const isStep2Completed = () => {
     if (!formData) return false;
 
-    const { deliveryInfo } = formData;
+    const { governorate, city, district, detailedAddress } = formData;
 
     // التحقق من اكتمال بيانات الاستلام
-    if (
-      !deliveryInfo ||
-      !deliveryInfo.name ||
-      !deliveryInfo.phone ||
-      !deliveryInfo.address ||
-      !deliveryInfo.governorate
-    ) {
+    if (!governorate || !city || !district || !detailedAddress) {
       return false;
     }
 
@@ -123,13 +134,19 @@ const NavigationButtons = ({ activeStep, setActiveStep, formData, stepLabels }) 
             (index === 1 && !isStep1Completed()) ||
             (index === 2 && !isStep2Completed());
 
+          const isCompleted =
+            (index === 0 && isStep1Completed()) ||
+            (index === 1 && isStep2Completed());
+
           return (
             <button
               key={index}
               type="button"
               className={`btn btn-light border rounded-0 ${
                 activeStep === index + 1 ? "active-button" : ""
-              } ${isDisabled ? "disabled" : ""} `}
+              } ${isDisabled ? "disabled" : ""} ${
+                isCompleted ? "completed-button" : ""
+              }`}
               onClick={() => handleButtonClick(index)}
               disabled={isDisabled}
             >
