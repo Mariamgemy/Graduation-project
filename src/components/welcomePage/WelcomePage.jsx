@@ -5,7 +5,7 @@ import MainComponent from "../MainComponent";
 import permitsImg from "../images/Printing invoices-amico.svg"
 import ReverseSection from "../ReverseSection";
 import elctricImg from "../images/freepik__background__92199.png";
-
+import captionImg from "../images/caption.svg"
 import trafficImg from "../images/freepik__background__3598.png";
 import Footer from "../Footer";
 import phoneImg from "../images/phone.png";
@@ -109,12 +109,12 @@ function WelcomePage() {
       description:
         "تساعدك هذه الخدمة على استخراج بدل فاقد أو تالف لرخصة القيادة أو السيارة.",
     },
-    // {
-    //   id: "traffic-6",
-    //   category: "traffic",
-    //   title: "مخالفات المرور ودفعها",
-    //   description: "يمكنك الاستعلام عن مخالفات المرور ودفعها أونلاين بسهولة.",
-    // },
+    {
+      id: "traffic-6",
+      category: "traffic",
+      title: "مخالفات المرور ودفعها",
+      description: "يمكنك الاستعلام عن مخالفات المرور ودفعها أونلاين بسهولة.",
+    },
   ];
 
   // خدمات الكهرباء والمرافق
@@ -236,7 +236,7 @@ function WelcomePage() {
         />
       </div>
 
-      <ReverseSection image={phoneImg} title="نبذة عننا" cardsData={caption} />
+      <ReverseSection image={captionImg} title="نبذة عننا" cardsData={caption} />
       <Footer />
     </>
   );

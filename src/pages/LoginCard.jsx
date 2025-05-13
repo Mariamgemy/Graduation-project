@@ -146,6 +146,7 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
             <label className="fw-bold form-label">البريد الإلكتروني</label>
         
             <EmailInput
+            
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="ادخل البريد الالكتروني"

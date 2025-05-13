@@ -2,16 +2,16 @@ import { forwardRef, useImperativeHandle } from "react";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 import "./TrafficServices.css";
-import NavigationButtons from "../NavigationButtons";
-import Steppar from "../Steppar";
 import { FaArrowLeftLong } from "react-icons/fa6";
 import PaymentMethods from "../PaymentMethod";
-import TrafficNavigationButtons from "../TrafficNavigationButtons";
-import TrafficStepper from "../TrafficStepper";
+import NavigationButtons from "../NavigationButtons";
+import Steppar from "../Steppar";
 import Button from "../Button";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "react-bootstrap";
+import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
+import { BsFillPersonVcardFill } from "react-icons/bs";
 
 const TrafficServices = forwardRef((props, ref) => {
   const location = useLocation();
@@ -43,6 +43,7 @@ const TrafficServices = forwardRef((props, ref) => {
   const [birthDate, setBirthDate] = useState("");
   const [address, setAddress] = useState("");
   const [licenseType, setLicenseType] = useState("");
+  const [licenseNumber, setLicenseNumber] = useState("");
   const [personalPhoto, setPersonalPhoto] = useState(null);
   const [medicalResult, setMedicalResult] = useState(null);
   const [theoryResult, setTheoryResult] = useState(null);
@@ -51,10 +52,24 @@ const TrafficServices = forwardRef((props, ref) => {
   const [expiryDate, setExpiryDate] = useState("");
   const [color, setColor] = useState("");
   const [year, setYear] = useState("");
+  const [renewalPeriod, setRenewalPeriod] = useState("");
   const [chassisNumber, setChassisNumber] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authError, setAuthError] = useState(null);
 
+  const navigationSteps = {
+    "مخالفات المرور ودفعها": [
+      { label: "بيانات الرخصة", icon: <BsFillPersonVcardFill /> },
+      { label: "بيانات المخالفة", icon: <FaFileAlt /> },
+      { label: "دفع المخالفة", icon: <FaCheck /> },
+    ],
+  };
+
+  const currentStepLabels = navigationSteps[card?.title] || [
+    { label: "بيانات الرخصة", icon: <BsFillPersonVcardFill /> },
+    { label: "بيانات الاستلام", icon: <FaFileAlt /> },
+    { label: "تأكيد الطلب", icon: <FaCheck /> },
+  ];
   const [formData, setFormData] = useState({
     fullName: "",
     NID: "",
@@ -513,43 +528,56 @@ const TrafficServices = forwardRef((props, ref) => {
             {card.title === "تجديد رخصة قيادة" && (
               <>
                 <div className="mb-3">
-                  <label className="form-label">الاسم رباعي </label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input ${
-                      errors.fullName ? "is-invalid" : ""
+                  <label className="form-label">نوع الرخصة</label>
+                  <select
+                    className={`form-select custom-select-style custom-input  ${
+                      errors.licenseType ? "is-invalid" : ""
                     }`}
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                  />
-                  {errors.fullName && (
-                    <div className="text-danger">{errors.fullName}</div>
+                    name="licenseType"
+        
+                    value={licenseType}
+                    onChange={(e) => setLicenseType(e.target.value)}
+                  >
+                    <option value=""></option>
+                    <option value="private">رخصة خاصة</option>
+                    <option value="motorcycle">رخصة دراجة نارية</option>
+                  </select>
+                  {errors.licenseType && (
+                    <div className="text-danger">{errors.licenseType}</div>
                   )}
                 </div>
                 <div className="mb-3">
-                  <label className="form-label">الرقم القومي </label>
+                  <label className="form-label">مدة التجديد المطلوبة</label>
+                  <select
+                    className={`form-select custom-select-style custom-input  ${
+                      errors.renewalPeriod ? "is-invalid" : ""
+                    }`}
+                    name="renewalPeriod"
+                    value={renewalPeriod}
+                    onChange={(e) => setRenewalPeriod(e.target.value)}
+                  >
+                    <option value=""></option>
+                    <option value="private">3 سنوات</option>
+                    <option value="motorcycle">10 سنوات</option>
+                  </select>
+                  {errors.renewalPeriod && (
+                    <div className="text-danger">{errors.renewalPeriod}</div>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <label className="form-label">رقم الرخصة الحالي</label>
                   <input
                     type="text"
                     className={`form-control custom-input  ${
-                      errors.id ? "is-invalid" : ""
+                      errors.licenseNumber ? "is-invalid" : ""
                     }`}
-                    value={id}
-                    onChange={(e) => setId(e.target.value)}
+                    name="licenseNumber"
+                    autoComplete="on"
+                    value={licenseNumber}
+                    onChange={(e) => setLicenseNumber(e.target.value)}
                   />
-                  {errors.id && <div className="text-danger">{errors.id}</div>}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">تاريخ الميلاد</label>
-                  <input
-                    type="date"
-                    className={`form-control custom-input  ${
-                      errors.birthDate ? "is-invalid" : ""
-                    }`}
-                    value={birthDate}
-                    onChange={(e) => setBirthDate(e.target.value)}
-                  />
-                  {errors.birthDate && (
-                    <div className="text-danger">{errors.birthDate}</div>
+                  {errors.licenseNumber && (
+                    <div className="text-danger">{errors.licenseNumber}</div>
                   )}
                 </div>
 
@@ -621,6 +649,8 @@ const TrafficServices = forwardRef((props, ref) => {
                             className={`form-control custom-input  ${
                               errors.plateNumber ? "is-invalid" : ""
                             }`}
+                            name="plateNumber"
+                            autoComplete="off"
                             value={plateNumber}
                             onChange={(e) => setPlateNumber(e.target.value)}
                           />
@@ -642,6 +672,8 @@ const TrafficServices = forwardRef((props, ref) => {
                                 ? "is-invalid"
                                 : ""
                             }`}
+                            name="vehicleRegistrationNumber"
+                            autoComplete="off"
                             value={vehicleRegistrationNumber}
                             onChange={(e) =>
                               setVehicleRegistrationNumber(e.target.value)
@@ -933,7 +965,7 @@ const TrafficServices = forwardRef((props, ref) => {
   return (
     <>
       <div className="mb-3">
-        <TrafficStepper
+        <Steppar
           active={activeStep}
           setActive={setActiveStep}
           formData={{
@@ -943,7 +975,7 @@ const TrafficServices = forwardRef((props, ref) => {
             birthDate,
           }}
         />
-        <TrafficNavigationButtons
+        <NavigationButtons
           activeStep={activeStep}
           setActiveStep={setActiveStep}
           formData={{
@@ -952,6 +984,7 @@ const TrafficServices = forwardRef((props, ref) => {
             id,
             birthDate,
           }}
+          stepLabels={currentStepLabels}
         />
       </div>
 
@@ -965,19 +998,21 @@ const TrafficServices = forwardRef((props, ref) => {
         </Alert>
       )} */}
 
-{activeStep === 3 && (
+      {activeStep === 3 && (
         <div className="text-start">
-        <button
-          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? ("جاري المعالجة...") :  (
-                  <>
-                    تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-                  </>
-                )}
-        </button>
+          <button
+            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              "جاري المعالجة..."
+            ) : (
+              <>
+                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+              </>
+            )}
+          </button>
         </div>
       )}
     </>

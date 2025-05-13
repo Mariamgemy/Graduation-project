@@ -740,6 +740,8 @@ const EnergyServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.fullName ? "is-invalid" : ""
                     }`}
+                    name="fullName"
+                    autoComplete="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                   />
@@ -751,10 +753,12 @@ const EnergyServices = forwardRef((props, ref) => {
                 <div className="mb-3">
                   <label className="form-label">رقم الهاتف </label>
                   <input
-                    type="text"
+                    type="tel"
                     className={`form-control custom-input ${
                       errors.phone ? "is-invalid" : ""
                     }`}
+                    name="phone"
+                    autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
@@ -766,10 +770,12 @@ const EnergyServices = forwardRef((props, ref) => {
                 <div className="mb-3">
                   <label className="form-label">البريد الإلكتروني </label>
                   <input
-                    type="text"
+                    type="email"
                     className={`form-control custom-input ${
                       errors.email ? "is-invalid" : ""
                     }`}
+                    name="email"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -788,6 +794,8 @@ const EnergyServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.fullName ? "is-invalid" : ""
                     }`}
+                    name="fullName"
+                    autoComplete="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                   />
@@ -802,6 +810,8 @@ const EnergyServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.id ? "is-invalid" : ""
                     }`}
+                    name="id"
+                    autoComplete="off"
                     value={id}
                     onChange={(e) => setId(e.target.value)}
                   />
@@ -810,10 +820,12 @@ const EnergyServices = forwardRef((props, ref) => {
                 <div className="mb-3">
                   <label className="form-label">رقم الهاتف </label>
                   <input
-                    type="text"
+                    type="tel"
                     className={`form-control custom-input ${
                       errors.phone ? "is-invalid" : ""
                     }`}
+                    name="phone"
+                    autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
@@ -828,6 +840,8 @@ const EnergyServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.email ? "is-invalid" : ""
                     }`}
+                    name="email"
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -847,6 +861,8 @@ const EnergyServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.fullName ? "is-invalid" : ""
                     }`}
+                    name="fullName"
+                    autoComplete="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                   />
@@ -861,6 +877,8 @@ const EnergyServices = forwardRef((props, ref) => {
                     className={`form-control custom-input  ${
                       errors.id ? "is-invalid" : ""
                     }`}
+                    name="id"
+                    autoComplete="off"
                     value={id}
                     onChange={(e) => setId(e.target.value)}
                   />
@@ -869,10 +887,12 @@ const EnergyServices = forwardRef((props, ref) => {
                 <div className="mb-3">
                   <label className="form-label">رقم الهاتف</label>
                   <input
-                    type="text"
+                    type="tel"
                     className={`form-control custom-input  ${
                       errors.phone ? "is-invalid" : ""
                     }`}
+                    name="phone"
+                    autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
@@ -1083,19 +1103,21 @@ const EnergyServices = forwardRef((props, ref) => {
         </Alert>
       )} */}
 
-{activeStep === 3 && (
+      {activeStep === 3 && (
         <div className="text-start">
-        <button
-          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? ("جاري المعالجة...") :  (
-                  <>
-                    تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-                  </>
-                )}
-        </button>
+          <button
+            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              "جاري المعالجة..."
+            ) : (
+              <>
+                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+              </>
+            )}
+          </button>
         </div>
       )}
     </>

@@ -1,6 +1,6 @@
 import Line from "../components/Line";
 import Suggest from "../components/images/Suggest.png";
-import CaptchaComponent from "../components/captcha"
+import CaptchaComponent from "../components/captcha";
 import Footer from "../components/Footer";
 import "../Css/Suggestions.css";
 import { useState } from "react";
@@ -126,6 +126,7 @@ const Suggestions = () => {
                     }`}
                     type="text"
                     name="userName"
+                    autoComplete="name"
                     placeholder="الاسم"
                     value={formData.userName}
                     onChange={handleChange}
@@ -140,8 +141,9 @@ const Suggestions = () => {
                     className={`form-control custom-input ${
                       errors.email ? "is-invalid" : ""
                     }`}
-                    type="text"
+                    type="email"
                     name="email"
+                    autoComplete="email"
                     placeholder="البريد الإلكتروني"
                     value={formData.email}
                     onChange={handleChange}
@@ -156,8 +158,9 @@ const Suggestions = () => {
                     className={`form-control custom-input ${
                       errors.phone ? "is-invalid" : ""
                     }`}
-                    type="text"
+                    type="tel"
                     name="phone"
+                    autoComplete="tel"
                     placeholder="رقم الموبايل"
                     value={formData.phone}
                     onChange={handleChange}

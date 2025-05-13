@@ -1194,6 +1194,8 @@ const CivilServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.governorate ? "is-invalid" : ""
                     }`}
+                    name="governorate"
+                    autoComplete="address-level1"
                     value={governorate}
                     onChange={(e) => setGovernorate(e.target.value)}
                   />
@@ -1208,6 +1210,8 @@ const CivilServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.city ? "is-invalid" : ""
                     }`}
+                    name="city"
+                    autoComplete="address-level2"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                   />
@@ -1224,6 +1228,8 @@ const CivilServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.district ? "is-invalid" : ""
                     }`}
+                    name="district"
+                    autoComplete="address-level3"
                     value={district}
                     onChange={(e) => setDistrict(e.target.value)}
                   />
@@ -1237,6 +1243,8 @@ const CivilServices = forwardRef((props, ref) => {
                     className={`form-control custom-input ${
                       errors.detailedAddress ? "is-invalid" : ""
                     }`}
+                    name="detailedAddress"
+                    autoComplete="street-address"
                     rows="3"
                     value={detailedAddress}
                     onChange={(e) => setDetailedAddress(e.target.value)}

@@ -1,86 +1,201 @@
 .sidebar {
-    background-color: #f8f9fa; /* لون الخلفية */
-    width: 300px ; /* زيادة عرض السايدبار ليكون أعرض */
-    height: 100vh !important; /* يمتد لارتفاع الشاشة بالكامل */
-    position: fixed;
-    top: 0;
-    left: 0;
-    direction: rtl; /* لترتيب العناصر من اليمين إلى اليسار */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* ظل خفيف */
-    transition: transform 0.3s ease-in-out; /* تأثير الانتقال عند الطي */
-    z-index: 10; /* تأكد من أنه فوق المحتوى الآخر */
-  }
-  
-  .sidebar.closed {
-    transform: translateX(-300px);
-    -webkit-transform: translateX(-300px);
-    -moz-transform: translateX(-300px);
-    -ms-transform: translateX(-300px);
-    -o-transform: translateX(-300px);
+  background-color: #f8f9fa; 
+  width: 300px;
+  height: 100vh !important; 
+  position: fixed;
+  top: 0;
+  left: 0;
+  direction: rtl; 
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); 
+  transition: transform 0.3s ease-in-out; 
+  z-index: 10; 
 }
-  
-  .sidebar-toggle {
 
-    top: 20px;
-    left: 20px;
-    background-color: #e9ecef; /* لون خلفية زر الطي */
-    color: #495057; /* لون أيقونة السهم */
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 11; /* تأكد من أن الزر فوق محتوى السايدبار */
+.sidebar.closed {
+  transform: translateX(-300px);
+
+}
+
+.sidebar-toggle {
+  top: 20px;
+  left: 20px;
+  background-color: #e9ecef;
+  color: #495057; 
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 11; 
+}
+
+.sidebar-content {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.sidebar-content .bg-light {
+  padding: 20px; 
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-content .d-flex {
+  margin-bottom: 15px; 
+}
+
+.sidebar-content h5 {
+  font-size: 1.5rem;
+  color: #343a40;
+  margin-bottom: 0;
+}
+
+.accordion-item {
+  border: none;
+  background-color: transparent; 
+}
+
+.accordion-header button {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: none;
+  padding: 10px 15px;
+  text-align: right; 
+  font-weight: bold;
+}
+
+.accordion-header button:focus {
+  box-shadow: none; 
+}
+
+.accordion-body {
+  padding: 15px;
+  color: #6c757d;
+  border-top: 1px solid #dee2e6; 
+}
+
+.sidebar-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+}
+
+.sidebar-title {
+  margin: 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.sidebar-accordion {
+  --bs-accordion-border-color: #e0e0e0;
+  --bs-accordion-btn-bg: #ffffff;
+  --bs-accordion-active-bg: #f8f9fa;
+}
+
+.sidebar-item {
+  border: none;
+  margin-bottom: 0.5rem;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.sidebar-header-item {
+  padding: 0.75rem 1rem;
+  background-color: #ffffff;
+  transition: all 0.2s ease;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sidebar-header-item:hover {
+  background-color: #f4f9fe;
+}
+
+.sidebar-header-item button {
+  padding: 0;
+  font-weight: 500;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+
+
+
+.accordion-button:focus {
+  box-shadow: none;
+  border-color: #e0e0e0;
+}
+
+
+
+.sidebar-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+.sidebar-header-item svg {
+  color: #3373a3;
+}
+
+
+.text-color {
+  color: #2c3e50;
+}
+
+@media (max-width: 768px) {
+  .sidebar-container {
+    padding: 1rem;
   }
+
+  .sidebar-header {
+    padding-bottom: 1rem;
+  }
+}
+
+.accordion-button::after {
+  margin-left: auto !important; 
+  margin-right: 0 !important;
+}
+
+
+.sidebar-header-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  direction: rtl;
+}
+
+.sidebar-header-item .d-flex {
+  flex-grow: 1;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #e6f0fa !important;
+  color: #1a5276 !important;
+  font-weight: bold;
   
-  .sidebar-content {
-    padding: 0; /* إزالة الحشو الداخلي لأن Accordion لديه حشو خاص به */
-    display: flex;
-    flex-direction: column;
-    height: 100vh; /* تأكد من أن المحتوى يمتد لارتفاع السايدبار */
-  }
-  
-  .sidebar-content .bg-light {
-    padding: 20px; /* إضافة حشو للقسم الذي يحتوي على Accordion والهيدر */
-    flex-grow: 1; /* يجعل هذا الجزء يأخذ المساحة المتبقية */
-    display: flex;
-    flex-direction: column; /* لترتيب الهيدر و Accordion عموديا */
-  }
-  
-  .sidebar-content .d-flex {
-    margin-bottom: 15px; /* إضافة مساحة أسفل الهيدر */
-  }
-  
-  .sidebar-content h5 {
-    font-size: 1.5rem;
-    color: #343a40;
-    margin-bottom: 0; /* إزالة الهامش السفلي الافتراضي للـ h5 */
-  }
-  
-  /* أنماط إضافية لـ Accordion (اختياري) */
-  .accordion-item {
-    border: none; /* إزالة حدود العناصر */
-    background-color: transparent; /* جعل خلفية العناصر شفافة إذا أردت */
-  }
-  
-  .accordion-header button {
-    background-color: #f8f9fa; /* نفس لون خلفية السايدبار */
-    color: #495057;
-    border: none;
-    padding: 10px 15px;
-    text-align: right; /* محاذاة النص إلى اليمين */
-    font-weight: bold;
-  }
-  
-  .accordion-header button:focus {
-    box-shadow: none; /* إزالة ظل التركيز الافتراضي */
-  }
-  
-  .accordion-body {
-    padding: 15px;
-    color: #6c757d;
-    border-top: 1px solid #dee2e6; /* إضافة فاصل علوي بين الهيدر والمحتوى */
-  }
+}
+
+

@@ -1,7 +1,7 @@
 import { Container } from "react-bootstrap";
 import Line from "./Line";
 import Cards from "./Cards";
-
+import "../Css/MainComponent.css"
 function ReverseSection({ title, image, cardsData }) {
   return (
     <>
@@ -11,7 +11,7 @@ function ReverseSection({ title, image, cardsData }) {
             <img
               src={image}
               alt="صورة الويب سايت"
-              className="img-fluid w-100"
+              className="img-fluid img-services"
             />
           </div>
 

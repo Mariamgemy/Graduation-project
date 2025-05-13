@@ -30,6 +30,7 @@ function UtilityFormFields({
             errors.NID ? "is-invalid" : ""
           }`}
           name="NID"
+          autoComplete="off"
           value={formData.NID}
           onChange={handleChange}
           placeholder="ادخل الرقم القومي"
@@ -38,16 +39,17 @@ function UtilityFormFields({
         {errors.NID && <div className="invalid-feedback">{errors.NID}</div>}
       </div>
       <div className="mb-3">
-        <label className="form-label">قراءة العداد</label>
+        <label className="form-label">رقم العداد</label>
         <input
           type="number"
           className={`form-control custom-input ${
             errors.currentReading ? "is-invalid" : ""
           }`}
           name="currentReading"
+          autoComplete="off"
           value={formData.currentReading}
           onChange={handleChange}
-          placeholder="ادخل قراءة العداد"
+          placeholder="ادخل رقم العداد"
           min="0"
         />
         {errors.currentReading && (
@@ -207,7 +209,7 @@ const UtilityServices = forwardRef((props, ref) => {
         );
       case "error":
         return (
-          <div >
+          <div>
             <Alert variant="danger" className="mb-3">
               <h4>حدث خطأ!</h4>
               <p>{paymentError || "حدث خطأ غير متوقع."}</p>
@@ -282,7 +284,7 @@ const UtilityServices = forwardRef((props, ref) => {
       case "form":
       default:
         return (
-          <div >
+          <div>
             {authError && (
               <Alert variant="warning" className="mb-3">
                 <p className="mb-0">{authError}</p>

@@ -94,7 +94,9 @@ const SignUp = () => {
             <h3 className="text-center mb-4 textP">إنشاء حساب</h3>
 
             {apiError && <div className="alert alert-danger">{apiError}</div>}
-            {apiSuccess && <div className="alert alert-success">{apiSuccess}</div>}
+            {apiSuccess && (
+              <div className="alert alert-success">{apiSuccess}</div>
+            )}
 
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
@@ -103,12 +105,15 @@ const SignUp = () => {
                   type="text"
                   className={`form-control ${errors.name ? "is-invalid" : ""}`}
                   name="name"
+                  autoComplete="name"
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="أدخل اسمك"
                   disabled={isLoading}
                 />
-                {errors.name && <div className="text-danger">{errors.name}</div>}
+                {errors.name && (
+                  <div className="text-danger">{errors.name}</div>
+                )}
               </div>
 
               <div className="mb-3">
@@ -117,43 +122,59 @@ const SignUp = () => {
                   type="email"
                   className={`form-control ${errors.email ? "is-invalid" : ""}`}
                   name="email"
+                  autoComplete="email"
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="example@email.com"
                   disabled={isLoading}
                 />
-                {errors.email && <div className="text-danger">{errors.email}</div>}
+                {errors.email && (
+                  <div className="text-danger">{errors.email}</div>
+                )}
               </div>
 
               <div className="mb-3">
                 <label className="form-label">كلمة المرور</label>
                 <input
                   type="password"
-                  className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                  name="password"
+                  className={`form-control ${
+                    errors.password ? "is-invalid" : ""
+                  }`}
+                  name="new-password"
+                  autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="********"
                   disabled={isLoading}
                 />
-                {errors.password && <div className="text-danger">{errors.password}</div>}
+                {errors.password && (
+                  <div className="text-danger">{errors.password}</div>
+                )}
               </div>
 
               <div className="mb-3">
                 <label className="form-label">تأكيد كلمة المرور</label>
                 <input
                   type="password"
-                  className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
+                  className={`form-control ${
+                    errors.confirmPassword ? "is-invalid" : ""
+                  }`}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="********"
                   disabled={isLoading}
                 />
-                {errors.confirmPassword && <div className="text-danger">{errors.confirmPassword}</div>}
+                {errors.confirmPassword && (
+                  <div className="text-danger">{errors.confirmPassword}</div>
+                )}
               </div>
 
-              <button type="submit" className="btn btn-secondary w-100" disabled={isLoading}>
+              <button
+                type="submit"
+                className="btn btn-secondary w-100"
+                disabled={isLoading}
+              >
                 {isLoading ? "جاري التسجيل..." : "تسجيل"}
               </button>
 

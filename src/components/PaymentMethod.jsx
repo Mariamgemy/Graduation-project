@@ -15,7 +15,7 @@ const PaymentMethods = ({ billDetails, onPaymentSuccess, onPaymentError }) => {
       },
       {
         id: "stripe", // Changed PayPal to Stripe
-        name: "Credit/Debit Card (Stripe)", // Updated name
+        name: "أدفع الآن ", // Updated name
         icon: "💳",
       },
       // Add other methods if needed

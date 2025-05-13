@@ -1,79 +1,93 @@
-import React from 'react';
-import { Accordion } from 'react-bootstrap';
+import React from "react";
+import { Accordion } from "react-bootstrap";
 
 import { SiContactlesspayment } from "react-icons/si";
-import "../Css/Sidebar.css"
-
+import "../Css/Sidebar.css";
 
 import { useLocation } from "react-router-dom";
 import { TbFileDescription } from "react-icons/tb";
 import { BsFillPersonVcardFill } from "react-icons/bs";
-import { MdOutlinePayments ,MdWatchLater  } from "react-icons/md";
-import { IoOptionsSharp , IoPeople } from "react-icons/io5";
+import { MdOutlinePayments, MdWatchLater } from "react-icons/md";
+import { IoOptionsSharp, IoPeople } from "react-icons/io5";
 import { FaCcVisa } from "react-icons/fa";
 import { GiMoneyStack } from "react-icons/gi";
 
 function Sidebar() {
   const location = useLocation();
   const card = location.state;
+
+  const sidebarItems = [
+    {
+      icon: <TbFileDescription size={24} />,
+      title: "الوصف",
+      content: <p className="fs-6 text-color">{card.description}</p>,
+      eventKey: "0",
+    },
+    {
+      icon: <MdOutlinePayments size={24} />,
+      title: "رسوم الخدمة",
+      content: <p className="fs-6 text-color">سيتم عرض الرسوم هنا</p>,
+      eventKey: "1",
+    },
+    {
+      icon: <IoOptionsSharp size={24} />,
+      title: "خيارات الدفع المتوفرة",
+      content: (
+        <div className="d-flex align-items-center justify-content-center gap-3">
+          <FaCcVisa size={30} color="#1A1F71" />
+          <GiMoneyStack size={30} color="#2E7D32" />
+          <span className="fs-6 text-color">نقداً أو بطاقة الخصم</span>
+        </div>
+      ),
+      eventKey: "2",
+    },
+    {
+      icon: <IoPeople size={24} />,
+      title: "المستفيدون",
+      content: <p className="fs-6 text-color">محتوى القسم الثاني...</p>,
+      eventKey: "3",
+    },
+    {
+      icon: <MdWatchLater size={24} />,
+      title: "ساعات العمل",
+      content: <p className="fs-6 text-color">Available 24/7</p>,
+      eventKey: "4",
+    },
+    {
+      icon: <TbFileDescription size={24} />,
+      title: "الشروط والاحكام",
+      content: <p className="fs-6 text-color">محتوى القسم الثاني...</p>,
+      eventKey: "5",
+    },
+    {
+      icon: <BsFillPersonVcardFill size={24} />,
+      title: "تواصل معنا",
+      content: <p className="fs-6 text-color">محتوى القسم الثاني...</p>,
+      eventKey: "6",
+    },
+  ];
+
   return (
-    <div className="bg-light p-5">
-    {/* هيدر السايدبار */}
-    <div className="d-flex align-items-center mb-3">
-    <SiContactlesspayment size={40} color='#3373a3' />
+    <div className="sidebar-container">
+      <div className="sidebar-header">
+        <SiContactlesspayment size={40} color="#3373a3" />
+        <h5 className="sidebar-title">{card.title}</h5>
+      </div>
 
-      <h5 className="mb-0 me-2 fw-bold text-color">{card.title}</h5>
-
-    </div>
-      <Accordion >
-        <Accordion.Item eventKey="0">
-          <Accordion.Header><TbFileDescription size={30} />الوصف </Accordion.Header>
-          <Accordion.Body>
-          <p className="fs-5 text-color text-center">{card.description}</p>.
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="1">
-          <Accordion.Header><MdOutlinePayments size={30}/>رسوم الخدمة  </Accordion.Header>
-          <Accordion.Body>
-       
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="2">
-          <Accordion.Header><IoOptionsSharp size={30}/>خيارات الدفع المتوفرة  </Accordion.Header>
-          <Accordion.Body>
-          <p className="fs-5 text-color text-center">نقداً أو بطاقة الخصم
-<span><FaCcVisa size={30} color='blue'/><GiMoneyStack size={30} color='green'/></span>
-
-</p>.
- 
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="3">
-          <Accordion.Header><IoPeople size={30}/>المستفيدون </Accordion.Header>
-          <Accordion.Body>
-            محتوى القسم الثاني...
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="4">
-          <Accordion.Header><MdWatchLater size={30}/>ساعات العمل  </Accordion.Header>
-          <Accordion.Body>
-          <p className="fs-5 text-color text-center">Available 24/7</p>.
-         
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="5">
-          <Accordion.Header><TbFileDescription  size={30}/>الشروط والاحكام  </Accordion.Header>
-          <Accordion.Body>
-            محتوى القسم الثاني...
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="6">
-          <Accordion.Header> <BsFillPersonVcardFill size={30}/>تواصل معنا  </Accordion.Header>
-          <Accordion.Body>
-            محتوى القسم الثاني...
-          </Accordion.Body>
-        </Accordion.Item>
-    
+      <Accordion className="sidebar-accordion">
+        {sidebarItems.map((item) => (
+          <Accordion.Item key={item.eventKey} eventKey={item.eventKey} className="sidebar-item">
+            <Accordion.Header className="sidebar-header-item">
+              <div className="d-flex align-items-center gap-2">
+                {item.icon}
+                <span>{item.title}</span>
+              </div>
+            </Accordion.Header>
+            <Accordion.Body className="sidebar-body">
+              {item.content}
+            </Accordion.Body>
+          </Accordion.Item>
+        ))}
       </Accordion>
     </div>
   );
