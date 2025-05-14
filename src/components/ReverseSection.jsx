@@ -11,7 +11,7 @@ function ReverseSection({ title, image, cardsData }) {
             <img
               src={image}
               alt="صورة الويب سايت"
-              className="img-fluid img-services"
+              className="img-fluid img-services mt-5"
             />
           </div>
 

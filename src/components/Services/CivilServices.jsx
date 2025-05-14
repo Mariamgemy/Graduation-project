@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle } from "react";
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import "./Civil.css";
 import NavigationButtons from "../NavigationButtons";
 import Steppar from "../Steppar";
@@ -27,6 +27,7 @@ const CivilServices = forwardRef((props, ref) => {
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [authError, setAuthError] = useState(null);
+  // بيانات الاستلام 
   const [governorate, setGovernorate] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
@@ -43,9 +44,12 @@ const CivilServices = forwardRef((props, ref) => {
     district: "",
     detailedAddress: "",
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
 
+
+  
   const isValidPhoneNumber = (phoneNumber) => {
     const phoneRegex = /^01[0-25]\d{8}$/;
     return phoneRegex.test(phoneNumber);
@@ -66,6 +70,14 @@ const CivilServices = forwardRef((props, ref) => {
     const idRegex = /^\d{14}$/;
     return idRegex.test(id);
   };
+
+  useEffect(() => {
+    if (!user) {
+      setAuthError("يجب تسجيل الدخول أولاً للقيام بهذه العملية");
+    } else {
+      setAuthError(null);
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,64 +106,59 @@ const CivilServices = forwardRef((props, ref) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "الاسم مطلوب";
-    }
+    // if (!formData.fullName.trim()) {
+    //   newErrors.fullName = "الاسم مطلوب";
+    // }
 
-    if (!formData.NID || formData.NID.length !== 14) {
-      newErrors.NID = "الرقم القومي يجب أن يكون 14 رقم";
-    }
+    // if (!formData.NID || formData.NID.length !== 14) {
+    //   newErrors.NID = "الرقم القومي يجب أن يكون 14 رقم";
+    // }
 
-    if (!formData.birthDate) {
-      newErrors.birthDate = "تاريخ الميلاد مطلوب";
-    }
+    // if (!formData.birthDate) {
+    //   newErrors.birthDate = "تاريخ الميلاد مطلوب";
+    // }
 
-    if (!formData.address.trim()) {
-      newErrors.address = "العنوان مطلوب";
-    }
+    // if (!formData.address.trim()) {
+    //   newErrors.address = "العنوان مطلوب";
+    // }
 
-    if (!formData.phoneNumber || formData.phoneNumber.length !== 11) {
-      newErrors.phoneNumber = "رقم الهاتف يجب أن يكون 11 رقم";
-    }
+    // if (!formData.phoneNumber || formData.phoneNumber.length !== 11) {
+    //   newErrors.phoneNumber = "رقم الهاتف يجب أن يكون 11 رقم";
+    // }
 
-    if (activeStep === 2) {
-      if (!formData.governorate) {
-        newErrors.governorate = "المحافظة مطلوبة";
-      } else if (!isValidGovernorate(formData.governorate)) {
-        newErrors.governorate = "يرجى إدخال اسم المحافظة بشكل صحيح";
-      }
+    // if (activeStep === 2) {
+    //   if (!formData.governorate) {
+    //     newErrors.governorate = "المحافظة مطلوبة";
+    //   } else if (!isValidGovernorate(formData.governorate)) {
+    //     newErrors.governorate = "يرجى إدخال اسم المحافظة بشكل صحيح";
+    //   }
 
-      if (!formData.city) {
-        newErrors.city = "المدينة مطلوبة";
-      } else if (!isValidCity(formData.city)) {
-        newErrors.city = "يرجى إدخال اسم المدينة بشكل صحيح";
-      }
+    //   if (!formData.city) {
+    //     newErrors.city = "المدينة مطلوبة";
+    //   } else if (!isValidCity(formData.city)) {
+    //     newErrors.city = "يرجى إدخال اسم المدينة بشكل صحيح";
+    //   }
 
-      if (!formData.district) {
-        newErrors.district = "الحي / المركز مطلوب";
-      } else if (!isValidDistrict(formData.district)) {
-        newErrors.district = "يرجى إدخال اسم الحي / المركز بشكل صحيح";
-      }
+    //   if (!formData.district) {
+    //     newErrors.district = "الحي / المركز مطلوب";
+    //   } else if (!isValidDistrict(formData.district)) {
+    //     newErrors.district = "يرجى إدخال اسم الحي / المركز بشكل صحيح";
+    //   }
 
-      if (!formData.detailedAddress) {
-        newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
-      } else if (!isValidDetailedAddress(formData.detailedAddress)) {
-        newErrors.detailedAddress =
-          "يرجى إدخال العنوان التفصيلي بشكل كامل (10 أحرف على الأقل)";
-      }
-    }
+    //   if (!formData.detailedAddress) {
+    //     newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
+    //   } else if (!isValidDetailedAddress(formData.detailedAddress)) {
+    //     newErrors.detailedAddress =
+    //       "يرجى إدخال العنوان التفصيلي بشكل كامل (10 أحرف على الأقل)";
+    //   }
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async () => {
-    if (!user) {
-      setAuthError("يجب تسجيل الدخول أولاً للقيام بهذه العملية");
-      return;
-    }
-
-    setAuthError(null);
+   
 
     if (!validateForm()) return;
 
@@ -160,10 +167,10 @@ const CivilServices = forwardRef((props, ref) => {
       // هنا يتم إرسال البيانات للباك إند
       console.log("تم إرسال البيانات:", formData);
       // بعد نجاح الإرسال
-      alert("تم تقديم الطلب بنجاح");
+    
     } catch (error) {
       console.error("خطأ في إرسال البيانات:", error);
-      alert("حدث خطأ أثناء إرسال البيانات");
+     
     } finally {
       setIsSubmitting(false);
     }
@@ -285,7 +292,16 @@ const CivilServices = forwardRef((props, ref) => {
     }
   };
 
-  const renderStepContent = () => {
+   const renderStepContent = () => {
+    if (!user) {
+      return (
+        <div className="mt-3 p-3">
+          <Alert variant="warning" className="mb-3">
+            <p className="mb-0">{authError}</p>
+          </Alert>
+        </div>
+      );
+    }
     switch (activeStep) {
       case 1:
         return (
@@ -496,9 +512,9 @@ const CivilServices = forwardRef((props, ref) => {
                   )}
                 </div>
                 <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
-                  <h5 className="mb-3">
-                    ضوابط استخراج شهادة ميلاد من خلال الانترنت
-                  </h5>
+                  <h4 className="mb-3">
+                  ⚠️ ضوابط استخراج شهادة ميلاد من خلال الانترنت 
+                  </h4>
                   <ul className="list-unstyled">
                     <li className="mb-2 d-flex align-items-start">
                       <span className="me-2 text-warning">💡</span>
@@ -1290,6 +1306,8 @@ const CivilServices = forwardRef((props, ref) => {
             district,
             detailedAddress,
           }}
+          disabled={!user}
+
         />
         <NavigationButtons
           activeStep={activeStep}
@@ -1309,12 +1327,14 @@ const CivilServices = forwardRef((props, ref) => {
             district,
             detailedAddress,
           }}
+          disabled={!user}
+
         />
       </div>
 
       {renderStepContent()}
 
-      {activeStep < 3 && <Button handleNext={handleNext} />}
+      {activeStep < 3 && user && <Button handleNext={handleNext} />}
 
       {activeStep === 3 && (
         <div className="text-start">
@@ -1324,7 +1344,7 @@ const CivilServices = forwardRef((props, ref) => {
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              "جاري المعالجة..."
+              "جاري الاستعلام..."
             ) : (
               <>
                 تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />

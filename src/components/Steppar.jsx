@@ -33,6 +33,11 @@ const Steppar = ({ active, setActive, formData }) => {
       complaintDescription,
       utilityType,
       meterNumber,
+      licenseNumber,
+      licenseType,
+      personalPhoto,
+      medicalResult,
+      renewalPeriod,
     } = formData;
 
     if (
@@ -94,6 +99,10 @@ const Steppar = ({ active, setActive, formData }) => {
       if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
         return false;
     }
+    else if (card.title === "تجديد رخصة قيادة") {
+      if (!licenseNumber || !licenseType || !personalPhoto || !medicalResult || !renewalPeriod)
+        return false;
+    }
 
     return true;
   };
@@ -101,18 +110,12 @@ const Steppar = ({ active, setActive, formData }) => {
   const isStep2Completed = () => {
     if (!formData) return false;
 
-    const {card, governorate, city, district, detailedAddress } = formData;
-    if (
-      card.title === "شهادة ميلاد" ||
-      card.title === "شهادة وفاة" ||
-      card.title === "شهادة ميلاد مميكنة لأول مرة" ||
-      card.title === "قسيمة زواج" ||
-      card.title === "قسيمة طلاق"
-    ) {
+    const { governorate, city, district, detailedAddress } = formData;
+   
       if (!governorate || !city || !district || !detailedAddress) {
         return false;
       }
-    }
+    
 
     return true;
   

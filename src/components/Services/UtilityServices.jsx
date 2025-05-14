@@ -1,4 +1,4 @@
-import React from "react";
+import {useEffect} from "react";
 import "./UtilityServices.css";
 
 import { forwardRef, useImperativeHandle, useState, useRef } from "react";
@@ -12,7 +12,7 @@ import StripePayment from "../StripePaymentForm";
 import { useAuth } from "../../context/AuthContext";
 import { FaArrowLeftLong } from "react-icons/fa6";
 
-// --- Extracted fields component ---
+
 function UtilityFormFields({
   formData,
   errors,
@@ -20,6 +20,7 @@ function UtilityFormFields({
   captchaRef,
   showCaptcha,
 }) {
+
   return (
     <>
       <div className="mb-3">
@@ -83,6 +84,13 @@ const UtilityServices = forwardRef((props, ref) => {
   const [paymentData, setPaymentData] = useState(null);
   const [authError, setAuthError] = useState(null);
 
+  useEffect(() => {
+    if (!user) {
+      setAuthError("يجب تسجيل الدخول أولاً للقيام بهذه العملية");
+    } else {
+      setAuthError(null);
+    }
+  }, [user]);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -117,18 +125,26 @@ const UtilityServices = forwardRef((props, ref) => {
     },
     getFormData: () => formData,
   }));
-
+  if (!user) {
+    return (
+      <div className="mt-3 p-3">
+        <Alert variant="warning" className="mb-3">
+          <p className="mb-0">{authError}</p>
+        </Alert>
+      </div>
+    );
+  }
   const handleProceedToPayment = async () => {
     // Check if user is logged in
-    if (!user) {
-      setAuthError("يجب تسجيل الدخول أولاً قبل القيام بهذه العملية");
-      // setTimeout(() => {
-      //   navigate("/login");
-      // }, 2000);
-      return;
-    }
+    // if (!user) {
+    //   setAuthError("يجب تسجيل الدخول أولاً قبل القيام بهذه العملية");
+    //   // setTimeout(() => {
+    //   //   navigate("/login");
+    //   // }, 2000);
+    //   return;
+    // }
 
-    setAuthError(null);
+    // setAuthError(null);
     setPaymentError(null);
     setIsProcessing(true);
     setPaymentData(null);

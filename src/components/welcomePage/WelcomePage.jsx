@@ -5,7 +5,7 @@ import MainComponent from "../MainComponent";
 import permitsImg from "../images/Printing invoices-amico.svg"
 import ReverseSection from "../ReverseSection";
 import elctricImg from "../images/freepik__background__92199.png";
-import captionImg from "../images/caption.svg"
+import captionImg from "../images/services.svg"
 import trafficImg from "../images/freepik__background__3598.png";
 import Footer from "../Footer";
 import phoneImg from "../images/phone.png";
@@ -98,9 +98,9 @@ function WelcomePage() {
     {
       id: "traffic-4",
       category: "traffic",
-      title: "تجديد رخصة سيارة",
+      title: "تجديد رخصة مركبة",
       description:
-        "خدمة لتجديد رخصة سيارتك الحالية دون الحاجة للذهاب إلى المرور.",
+       "تتيح لك هذه الخدمة تجديد رخصة مركبتك إلكترونيًا مع إمكانية توصيل الرخصة إلى عنوانك، بشرط عدم وجود فحص فني أو حظر بيع على المركبة المُراد تجديدها.",
     },
     {
       id: "traffic-5",

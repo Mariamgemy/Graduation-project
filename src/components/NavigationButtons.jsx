@@ -44,6 +44,11 @@ const NavigationButtons = ({
       meterNumber,
       city,
       district,
+      licenseNumber,
+      licenseType,
+      personalPhoto,
+      medicalResult,
+      renewalPeriod,
     } = formData;
 
     if (
@@ -97,6 +102,10 @@ const NavigationButtons = ({
       if (!id || !email || !phone || !fullName) return false;
     } else if (card.title === "نقل ملكية عداد") {
       if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
+        return false;
+    }
+    else if (card.title === "تجديد رخصة قيادة") {
+      if (!licenseNumber || !licenseType || !personalPhoto || !medicalResult || !renewalPeriod)
         return false;
     }
 

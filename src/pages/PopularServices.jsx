@@ -1,6 +1,6 @@
 import Footer from "../components/Footer";
 import ReverseSection from "../components/ReverseSection";
-import popularImg from "../components/images/popular.png";
+import popularImg from "../components/images/OBJECTS.svg";
 
 function PopularServices() {
   const popularServices = [

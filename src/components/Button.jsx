@@ -11,7 +11,7 @@ function Button({ handleNext }) {
           type="button"
           className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2 mt-3"
           onClick={
-            handleNext
+              handleNext
           }
           
           >
