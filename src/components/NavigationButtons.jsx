@@ -56,7 +56,7 @@ const NavigationButtons = ({
       card.title === "قسيمة زواج" ||
       card.title === "قسيمة طلاق"
     ) {
-      if (!motherName || !isSelf) return false;
+      if (!motherName || isSelf === "") return false;
       if (isSelf === true && !numberOfCopies) return false;
       if (
         isSelf === false &&
@@ -72,7 +72,15 @@ const NavigationButtons = ({
       card.title === "شهادة ميلاد مميكنة لأول مرة" ||
       card.title === "شهادة وفاة"
     ) {
-      if (!quadriliteralName || !kinship) return false;
+      if (
+        !quadriliteralName ||
+        !id ||
+        !anotherMotherName ||
+        !gender ||
+        !kinship ||
+        !numberOfCopies
+      )
+        return false;
     } else if (card.title === "شهادة كفاءة الطاقة") {
       if (
         !quadriliteralName ||
@@ -103,9 +111,14 @@ const NavigationButtons = ({
     } else if (card.title === "نقل ملكية عداد") {
       if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
         return false;
-    }
-    else if (card.title === "تجديد رخصة قيادة") {
-      if (!licenseNumber || !licenseType || !personalPhoto || !medicalResult || !renewalPeriod)
+    } else if (card.title === "تجديد رخصة قيادة") {
+      if (
+        !licenseNumber ||
+        !licenseType ||
+        !personalPhoto ||
+        !medicalResult ||
+        !renewalPeriod
+      )
         return false;
     }
 

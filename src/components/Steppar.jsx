@@ -45,7 +45,7 @@ const Steppar = ({ active, setActive, formData }) => {
       card.title === "قسيمة زواج" ||
       card.title === "قسيمة طلاق"
     ) {
-      if (!motherName || !isSelf) return false;
+      if (!motherName || isSelf === "") return false;
       if (isSelf === true && !numberOfCopies) return false;
       if (
         isSelf === false &&
@@ -63,10 +63,10 @@ const Steppar = ({ active, setActive, formData }) => {
     ) {
       if (
         !quadriliteralName ||
-        !kinship ||
+        !id ||
         !anotherMotherName ||
         !gender ||
-        !id ||
+        !kinship ||
         !numberOfCopies
       )
         return false;
@@ -98,9 +98,14 @@ const Steppar = ({ active, setActive, formData }) => {
     } else if (card.title === "نقل ملكية عداد") {
       if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
         return false;
-    }
-    else if (card.title === "تجديد رخصة قيادة") {
-      if (!licenseNumber || !licenseType || !personalPhoto || !medicalResult || !renewalPeriod)
+    } else if (card.title === "تجديد رخصة قيادة") {
+      if (
+        !licenseNumber ||
+        !licenseType ||
+        !personalPhoto ||
+        !medicalResult ||
+        !renewalPeriod
+      )
         return false;
     }
 
@@ -111,15 +116,12 @@ const Steppar = ({ active, setActive, formData }) => {
     if (!formData) return false;
 
     const { governorate, city, district, detailedAddress } = formData;
-   
-      if (!governorate || !city || !district || !detailedAddress) {
-        return false;
-      }
-    
+
+    if (!governorate || !city || !district || !detailedAddress) {
+      return false;
+    }
 
     return true;
-  
-
   };
 
   const handleStepClick = (stepNumber) => {
@@ -168,9 +170,7 @@ const Steppar = ({ active, setActive, formData }) => {
       }
     }
     return steps;
-
   };
-
 
   return (
     <CDBContainer>

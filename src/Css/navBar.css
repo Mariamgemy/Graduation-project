@@ -214,11 +214,7 @@
   height: 3px;
   background-color: white;
   border-radius: 2px 2px 0 0;
-  transition: width 0.1s ease-in-out;
-  -webkit-transition: width 0.1s ease-in-out;
-  -moz-transition: width 0.1s ease-in-out;
-  -ms-transition: width 0.1s ease-in-out;
-  -o-transition: width 0.1s ease-in-out;
+
 }
 
 .nav-link.focus-indicator:hover::after,
@@ -318,7 +314,7 @@
 }
 
 .focus-indicator:focus {
-  outline: 2px solid #5c91b4;
+
   outline-offset: 2px;
 }
 

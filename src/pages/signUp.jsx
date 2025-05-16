@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import "../Css/signUp.css";
 import panaImage from "../components/images/pana.svg";
 import { Link, useNavigate } from "react-router-dom";
+import LoginCard from "./LoginCard";
 
 const SignUp = () => {
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    phone: "",
     password: "",
     confirmPassword: "",
   });
@@ -29,9 +31,13 @@ const SignUp = () => {
       newErrors.name = "يرجى إدخال أسم صحيح";
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      newErrors.email = "يرجى إدخال بريد إلكتروني صحيح";
+    const isValidPhoneNumber = (phoneNumber) => {
+      const phoneRegex = /^01[0-25]\d{8}$/;
+      return phoneRegex.test(phoneNumber);
+    };
+
+    if (!isValidPhoneNumber(formData.phone)) {
+      newErrors.phone = "يرجى إدخال رقم موبايل صحيح";
     }
 
     if (formData.password.length < 8) {
@@ -117,19 +123,19 @@ const SignUp = () => {
               </div>
 
               <div className="mb-3">
-                <label className="form-label">البريد الإلكتروني</label>
+                <label className="form-label">رقم الموبايل </label>
                 <input
-                  type="email"
-                  className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                  name="email"
-                  autoComplete="email"
-                  value={formData.email}
+                  type="Number"
+                  className={`form-control ${errors.phone ? "is-invalid" : ""}`}
+                  name="phone"
+                  autoComplete="phone"
+                  value={formData.phone}
                   onChange={handleChange}
-                  placeholder="example@email.com"
+                  placeholder="أدخل رقم الموبايل "
                   disabled={isLoading}
                 />
-                {errors.email && (
-                  <div className="text-danger">{errors.email}</div>
+                {errors.phone && (
+                  <div className="text-danger">{errors.phone}</div>
                 )}
               </div>
 
@@ -140,7 +146,7 @@ const SignUp = () => {
                   className={`form-control ${
                     errors.password ? "is-invalid" : ""
                   }`}
-                  name="new-password"
+                  name="password"
                   autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
@@ -179,7 +185,17 @@ const SignUp = () => {
               </button>
 
               <p className="text-center mt-3">
-                لديك حساب؟ <Link to="/login">تسجيل الدخول</Link>
+                لديك حساب؟
+                <Link
+                  onClick={() => setShowModal(true)}
+                  style={{ cursor: "pointer" ,color:"#3373a3" }}
+                >
+                  تسجيل الدخول
+                </Link>
+                <LoginCard
+                  show={showModal}
+                  handleClose={() => setShowModal(false)}
+                />
               </p>
             </form>
           </div>

@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle } from "react";
 import { useLocation } from "react-router-dom";
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import "./Civil.css";
 import NavigationButtons from "../NavigationButtons";
 import Steppar from "../Steppar";
@@ -27,7 +27,7 @@ const CivilServices = forwardRef((props, ref) => {
   const [errors, setErrors] = useState({});
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [authError, setAuthError] = useState(null);
-  // بيانات الاستلام 
+  // بيانات الاستلام
   const [governorate, setGovernorate] = useState("");
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
@@ -48,16 +48,6 @@ const CivilServices = forwardRef((props, ref) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
 
-
-  
-  const isValidPhoneNumber = (phoneNumber) => {
-    const phoneRegex = /^01[0-25]\d{8}$/;
-    return phoneRegex.test(phoneNumber);
-  };
-  const isValidEmail = (Email) => {
-    const emailRegex = /^[\w]+@([\w]+\.)+[\w]+$/;
-    return emailRegex.test(Email);
-  };
   const isValidName = (name) => {
     const nameRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
     return nameRegex.test(name);
@@ -78,6 +68,13 @@ const CivilServices = forwardRef((props, ref) => {
       setAuthError(null);
     }
   }, [user]);
+  const getDocumentType = (title) => {
+    if (title.includes("ميلاد")) return "BirthCertificate";
+    if (title.includes("زواج")) return "MarriageCertificate";
+    if (title.includes("طلاق")) return "DivorceCertificate";
+    if (title.includes("وفاة")) return "ResidenceCertificate";
+    return "Other";
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,6 +98,41 @@ const CivilServices = forwardRef((props, ref) => {
 
   const isValidDetailedAddress = (address) => {
     return address.length >= 10;
+  };
+
+  const validateCivilServiceData = (newErrors) => {
+    if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
+    else if (!isValidMotherName(motherName)) {
+      newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+    }
+
+    if (isSelf === "") newErrors.isSelf = "اختر نعم أو لا";
+
+    if (isSelf === true) {
+      if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+    } else if (isSelf === false) {
+      if (!quadriliteralName) {
+        newErrors.quadriliteralName = "هذا الحقل مطلوب";
+      } else if (!isValidName(quadriliteralName)) {
+        newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      }
+
+      if (!id) {
+        newErrors.id = "هذا الحقل مطلوب";
+      } else if (!isValidId(id)) {
+        newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+      }
+
+      if (!anotherMotherName) {
+        newErrors.anotherMotherName = "هذا الحقل مطلوب";
+      } else if (!isValidMotherName(anotherMotherName)) {
+        newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      }
+
+      if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
+      if (!gender) newErrors.gender = "هذا الحقل مطلوب";
+      if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+    }
   };
 
   const validateForm = () => {
@@ -158,8 +190,6 @@ const CivilServices = forwardRef((props, ref) => {
   };
 
   const handleSubmit = async () => {
-   
-
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -167,10 +197,8 @@ const CivilServices = forwardRef((props, ref) => {
       // هنا يتم إرسال البيانات للباك إند
       console.log("تم إرسال البيانات:", formData);
       // بعد نجاح الإرسال
-    
     } catch (error) {
       console.error("خطأ في إرسال البيانات:", error);
-     
     } finally {
       setIsSubmitting(false);
     }
@@ -190,38 +218,13 @@ const CivilServices = forwardRef((props, ref) => {
         card.title === "قسيمة زواج" ||
         card.title === "قسيمة طلاق"
       ) {
-        if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
-        else if (!isValidMotherName(motherName)) {
-          newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
+        validateCivilServiceData(newErrors);
 
-        if (isSelf === "") newErrors.isSelf = "اختر نعم أو لا";
-
-        if (isSelf === true) {
-          if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-        } else {
-          if (!quadriliteralName)
-            newErrors.quadriliteralName = "هذا الحقل مطلوب";
-          else if (!isValidName(quadriliteralName)) {
-            newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-
-          if (!id) newErrors.id = "هذا الحقل مطلوب";
-          else if (!isValidId(id)) {
-            newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-          }
-
-          if (!anotherMotherName)
-            newErrors.anotherMotherName = "هذا الحقل مطلوب";
-          else if (!isValidMotherName(anotherMotherName)) {
-            newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-
-          if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
-          if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-          if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-          if (!partnerName) newErrors.partnerName = "هذا الحقل مطلوب";
-          else if (!isValidName(partnerName)) {
+        // إضافة التحقق من البيانات الإضافية لقسيمة الزواج
+        if (card.title === "قسيمة زواج" && isSelf === false) {
+          if (!partnerName) {
+            newErrors.partnerName = "هذا الحقل مطلوب";
+          } else if (!isValidName(partnerName)) {
             newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
           }
         }
@@ -229,22 +232,27 @@ const CivilServices = forwardRef((props, ref) => {
         card.title === "شهادة ميلاد مميكنة لأول مرة" ||
         card.title === "شهادة وفاة"
       ) {
-        if (!id) newErrors.id = "هذا الحقل مطلوب";
-        else if (!isValidId(id)) {
-          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-        }
-        if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-        if (!anotherMotherName) newErrors.anotherMotherName = "هذا الحقل مطلوب";
-        else if (!isValidMotherName(anotherMotherName)) {
-          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
-        if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-        if (!quadriliteralName) newErrors.quadriliteralName = "هذا الحقل مطلوب";
-        else if (!isValidName(quadriliteralName)) {
+        if (!quadriliteralName) {
+          newErrors.quadriliteralName = "هذا الحقل مطلوب";
+        } else if (!isValidName(quadriliteralName)) {
           newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
         }
 
+        if (!id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
+
+        if (!anotherMotherName) {
+          newErrors.anotherMotherName = "هذا الحقل مطلوب";
+        } else if (!isValidMotherName(anotherMotherName)) {
+          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+
         if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
+        if (!gender) newErrors.gender = "هذا الحقل مطلوب";
+        if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
       }
 
       setErrors(newErrors);
@@ -292,7 +300,7 @@ const CivilServices = forwardRef((props, ref) => {
     }
   };
 
-   const renderStepContent = () => {
+  const renderStepContent = () => {
     if (!user) {
       return (
         <div className="mt-3 p-3">
@@ -513,7 +521,7 @@ const CivilServices = forwardRef((props, ref) => {
                 </div>
                 <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
                   <h4 className="mb-3">
-                  ⚠️ ضوابط استخراج شهادة ميلاد من خلال الانترنت 
+                    ⚠️ ضوابط استخراج شهادة ميلاد من خلال الانترنت
                   </h4>
                   <ul className="list-unstyled">
                     <li className="mb-2 d-flex align-items-start">
@@ -1276,8 +1284,283 @@ const CivilServices = forwardRef((props, ref) => {
       case 3:
         return (
           <div className="mt-3 p-3">
-            <h3 className="text-color mb-3">نتيجة الطلب</h3>
-            {/* Add request result information here */}
+            <h3 className="text-color mb-4">تأكيد الطلب</h3>
+
+            {/* بيانات الطلب */}
+            <div className="card mb-4">
+              <div className="card-header bg-light">
+                <h5 className="mb-0">بيانات الطلب</h5>
+              </div>
+              <div className="card-body">
+                {card.title === "شهادة ميلاد" && (
+                  <>
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <p>
+                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
+                        </p>
+                        <p>
+                          <strong>نوع الطلب:</strong>{" "}
+                          {isSelf ? "لنفسي" : "لشخص آخر"}
+                        </p>
+                        {isSelf ? (
+                          <p>
+                            <strong>عدد النسخ:</strong> {numberOfCopies}
+                          </p>
+                        ) : (
+                          <>
+                            <p>
+                              <strong>الاسم الرباعي:</strong>{" "}
+                              {quadriliteralName}
+                            </p>
+                            <p>
+                              <strong>الرقم القومي:</strong> {id}
+                            </p>
+                            <p>
+                              <strong>اسم الأم:</strong> {anotherMotherName}
+                            </p>
+                            <p>
+                              <strong>صلة القرابة:</strong> {kinship}
+                            </p>
+                            <p>
+                              <strong>النوع:</strong>{" "}
+                              {gender === "male" ? "ذكر" : "أنثى"}
+                            </p>
+                            <p>
+                              <strong>عدد النسخ:</strong> {numberOfCopies}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {card.title === "قسيمة زواج" && (
+                  <>
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <p>
+                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
+                        </p>
+                        <p>
+                          <strong>نوع الطلب:</strong>{" "}
+                          {isSelf ? "لنفسي" : "لشخص آخر"}
+                        </p>
+                        {isSelf ? (
+                          <p>
+                            <strong>عدد النسخ:</strong> {numberOfCopies}
+                          </p>
+                        ) : (
+                          <>
+                            <p>
+                              <strong>الاسم الرباعي:</strong>{" "}
+                              {quadriliteralName}
+                            </p>
+                            <p>
+                              <strong>الرقم القومي:</strong> {id}
+                            </p>
+                            <p>
+                              <strong>اسم الأم:</strong> {anotherMotherName}
+                            </p>
+                            <p>
+                              <strong>صلة القرابة:</strong> {kinship}
+                            </p>
+                            <p>
+                              <strong>النوع:</strong>{" "}
+                              {gender === "male" ? "ذكر" : "أنثى"}
+                            </p>
+                            <p>
+                              <strong>عدد النسخ:</strong> {numberOfCopies}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {card.title === "قسيمة طلاق" && (
+                  <>
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <p>
+                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
+                        </p>
+                        <p>
+                          <strong>نوع الطلب:</strong>{" "}
+                          {isSelf ? "لنفسي" : "لشخص آخر"}
+                        </p>
+                        {isSelf ? (
+                          <p>
+                            <strong>عدد النسخ:</strong> {numberOfCopies}
+                          </p>
+                        ) : (
+                          <>
+                            <p>
+                              <strong>الاسم الرباعي:</strong>{" "}
+                              {quadriliteralName}
+                            </p>
+                            <p>
+                              <strong>الرقم القومي:</strong> {id}
+                            </p>
+                            <p>
+                              <strong>اسم الأم:</strong> {anotherMotherName}
+                            </p>
+                            <p>
+                              <strong>صلة القرابة:</strong> {kinship}
+                            </p>
+                            <p>
+                              <strong>النوع:</strong>{" "}
+                              {gender === "male" ? "ذكر" : "أنثى"}
+                            </p>
+                            <p>
+                              <strong>عدد النسخ:</strong> {numberOfCopies}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+                {card.title === "شهادة وفاة" && (
+                  <>
+                    <div className="row mb-3">
+                      <div className="col-md-6">
+                        <p>
+                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
+                        </p>
+                        <p>
+                          <strong>نوع الطلب:</strong>{" "}
+                          {isSelf ? "لنفسي" : "لشخص آخر"}
+                        </p>
+                        {isSelf ? (
+                          <p>
+                            <strong>عدد النسخ:</strong> {numberOfCopies}
+                          </p>
+                        ) : (
+                          <>
+                            <p>
+                              <strong>الاسم الرباعي:</strong>{" "}
+                              {quadriliteralName}
+                            </p>
+                            <p>
+                              <strong>الرقم القومي:</strong> {id}
+                            </p>
+                            <p>
+                              <strong>اسم الأم:</strong> {anotherMotherName}
+                            </p>
+                            <p>
+                              <strong>صلة القرابة:</strong> {kinship}
+                            </p>
+                            <p>
+                              <strong>النوع:</strong>{" "}
+                              {gender === "male" ? "ذكر" : "أنثى"}
+                            </p>
+                            <p>
+                              <strong>عدد النسخ:</strong> {numberOfCopies}
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* بيانات الاستلام */}
+            <div className="card mb-4">
+              <div className="card-header bg-light">
+                <h5 className="mb-0">بيانات الاستلام</h5>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  <div className="col-md-6">
+                    <p>
+                      <strong>المحافظة:</strong> {governorate}
+                    </p>
+                    <p>
+                      <strong>المدينة:</strong> {city}
+                    </p>
+                  </div>
+                  <div className="col-md-6">
+                    <p>
+                      <strong>الحي/المركز:</strong> {district}
+                    </p>
+                    <p>
+                      <strong>العنوان التفصيلي:</strong> {detailedAddress}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* خيارات الدفع */}
+            <div className="card mb-4">
+              <div className="card-header bg-light">
+                <h5 className="mb-0">اختر طريقة الدفع</h5>
+              </div>
+              <div className="card-body">
+                <div className="form-check mb-3">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="cash"
+                    value="cash"
+                    defaultChecked
+                  />
+                  <label className="form-check-label" htmlFor="cash">
+                    الدفع عند الاستلام
+                  </label>
+                </div>
+                <div className="form-check mb-3">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="creditCard"
+                    value="creditCard"
+                  />
+                  <label className="form-check-label" htmlFor="creditCard">
+                    بطاقة ائتمان
+                  </label>
+                </div>
+                <div className="form-check">
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="paymentMethod"
+                    id="wallet"
+                    value="wallet"
+                  />
+                  <label className="form-check-label" htmlFor="wallet">
+                    محفظة إلكترونية
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* ملخص التكلفة */}
+            <div className="card mb-4">
+              <div className="card-header bg-light">
+                <h5 className="mb-0">ملخص التكلفة</h5>
+              </div>
+              <div className="card-body">
+                <div className="d-flex justify-content-between mb-2">
+                  <span>تكلفة الوثيقة:</span>
+                  <span>50 جنيه</span>
+                </div>
+                <div className="d-flex justify-content-between mb-2">
+                  <span>تكلفة التوصيل:</span>
+                  <span>20 جنيه</span>
+                </div>
+                <hr />
+                <div className="d-flex justify-content-between">
+                  <strong>الإجمالي:</strong>
+                  <strong>70 جنيه</strong>
+                </div>
+              </div>
+            </div>
           </div>
         );
       default:
@@ -1301,13 +1584,13 @@ const CivilServices = forwardRef((props, ref) => {
             anotherMotherName,
             kinship,
             gender,
+            partnerName,
             governorate,
             city,
             district,
             detailedAddress,
           }}
           disabled={!user}
-
         />
         <NavigationButtons
           activeStep={activeStep}
@@ -1321,6 +1604,7 @@ const CivilServices = forwardRef((props, ref) => {
             id,
             anotherMotherName,
             kinship,
+            partnerName,
             gender,
             governorate,
             city,
@@ -1328,7 +1612,6 @@ const CivilServices = forwardRef((props, ref) => {
             detailedAddress,
           }}
           disabled={!user}
-
         />
       </div>
 

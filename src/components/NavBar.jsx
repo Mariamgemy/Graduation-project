@@ -91,8 +91,8 @@ const NavBar = () => {
                 to="/signUp"
                 className="nav-link text-white focus-indicator"
               >
-                {" "}
-                متابعة الطلبات{" "}
+              
+                متابعة الطلبات
               </Link>
 
               <div className="d-lg-none mt-3">
