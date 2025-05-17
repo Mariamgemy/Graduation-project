@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Navbar, Nav, Container, Dropdown, Modal } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiMenu } from "react-icons/fi";
 import { MdPerson } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa";
@@ -19,6 +19,7 @@ const NavBar = () => {
   const [showModal, setShowModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleDropdownItemClick = () => {
     setDropdownOpen(false);
@@ -27,6 +28,16 @@ const NavBar = () => {
   const handleLogout = () => {
     logout();
     setShowUserModal(false);
+  };
+
+  const handleProfileClick = () => {
+    setShowUserModal(false);
+    navigate("/profile");
+  };
+
+  const handleOrdersClick = () => {
+    setShowUserModal(false);
+    navigate("/orders");
   };
 
   return (
@@ -89,9 +100,8 @@ const NavBar = () => {
               </Link>
               <Link
                 to="/signUp"
-                className="nav-link text-white focus-indicator"
+                className="nav-link text-white focus-indicator none"
               >
-              
                 متابعة الطلبات
               </Link>
 
@@ -142,10 +152,16 @@ const NavBar = () => {
                         {user.email}
                       </h3>
                       <div className="d-flex flex-column gap-3">
-                        <button className="btn btn-outline-success w-100 py-2">
+                        <button
+                          className="btn btn-outline-success w-100 py-2"
+                          onClick={handleProfileClick}
+                        >
                           حسابي
                         </button>
-                        <button className="btn btn-outline-success w-100 py-2">
+                        <button
+                          className="btn btn-outline-success w-100 py-2"
+                          onClick={handleOrdersClick}
+                        >
                           طلباتي
                         </button>
                         <button

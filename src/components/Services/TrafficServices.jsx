@@ -131,7 +131,6 @@ const TrafficServices = forwardRef((props, ref) => {
   };
 
   const handleSubmit = async () => {
-
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -254,19 +253,22 @@ const TrafficServices = forwardRef((props, ref) => {
         return (
           <div>
             {card.title === "مخالفات المرور ودفعها" && (
-              <>
-                <div className="mb-3 ">
-                  <div className="row">
-                    <div className="col-md-6 mt-3">
+              <div className="violation-form">
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="form-section">
+                      <h4 className="section-title mb-3">بيانات المخالفة</h4>
+
                       <div className="mb-3">
-                        <label className="form-label">رقم المخالفة </label>
+                        <label className="form-label">رقم المخالفة</label>
                         <input
                           type="text"
-                          className={`form-control custom-input  ${
+                          className={`form-control custom-input ${
                             errors.violationNumber ? "is-invalid" : ""
                           }`}
                           value={violationNumber}
                           onChange={(e) => setViolationNumber(e.target.value)}
+                          placeholder="أدخل رقم المخالفة"
                         />
                         {errors.violationNumber && (
                           <div className="text-danger">
@@ -274,15 +276,17 @@ const TrafficServices = forwardRef((props, ref) => {
                           </div>
                         )}
                       </div>
+
                       <div className="mb-3">
-                        <label className="form-label">رقم اللوحة </label>
+                        <label className="form-label">رقم اللوحة</label>
                         <input
                           type="text"
-                          className={`form-control custom-input  ${
+                          className={`form-control custom-input ${
                             errors.plateNumber ? "is-invalid" : ""
                           }`}
                           value={plateNumber}
                           onChange={(e) => setPlateNumber(e.target.value)}
+                          placeholder="أدخل رقم اللوحة"
                         />
                         {errors.plateNumber && (
                           <div className="text-danger">
@@ -290,6 +294,7 @@ const TrafficServices = forwardRef((props, ref) => {
                           </div>
                         )}
                       </div>
+
                       <div className="mb-3">
                         <label className="form-label">نوع المخالفة</label>
                         <select
@@ -299,10 +304,19 @@ const TrafficServices = forwardRef((props, ref) => {
                           value={violationType}
                           onChange={(e) => setViolationType(e.target.value)}
                         >
-                          <option value=""> </option>
-                          <option value="1">إشارة حمراء</option>
-                          <option value="2">سرعة زائدة</option>
-                          <option value="3">وقوف غير قانوني</option>
+                          <option value="">اختر نوع المخالفة</option>
+                          <option value="1">تجاوز السرعة المحددة</option>
+                          <option value="2">
+                            عدم التوقف عند الإشارة الحمراء
+                          </option>
+                          <option value="3">الوقوف في مكان ممنوع</option>
+                          <option value="4">عدم ربط حزام الأمان</option>
+                          <option value="5">
+                            استخدام الهاتف أثناء القيادة
+                          </option>
+                          <option value="6">عدم حمل رخصة القيادة</option>
+                          <option value="7">عدم حمل وثيقة التأمين</option>
+                          <option value="8">عدم حمل رخصة السيارة</option>
                         </select>
                         {errors.violationType && (
                           <div className="text-danger">
@@ -311,15 +325,17 @@ const TrafficServices = forwardRef((props, ref) => {
                         )}
                       </div>
                     </div>
+                  </div>
 
-                    <div className="col-md-6">
+                  <div className="col-md-6">
+                    <div className="form-section">
+                      <h4 className="section-title mb-3">تفاصيل الدفع</h4>
+
                       <div className="mb-3">
-                        <label className="form-label mt-3">
-                          تاريخ المخالفة{" "}
-                        </label>
+                        <label className="form-label">تاريخ المخالفة</label>
                         <input
                           type="date"
-                          className={`form-control custom-input  ${
+                          className={`form-control custom-input ${
                             errors.violationDate ? "is-invalid" : ""
                           }`}
                           value={violationDate}
@@ -331,64 +347,77 @@ const TrafficServices = forwardRef((props, ref) => {
                           </div>
                         )}
                       </div>
+
                       <div className="mb-3">
-                        <label className="form-label">مبلغ الغرامة </label>
-                        <input
-                          type="text"
-                          className={`form-control custom-input  ${
-                            errors.fineAmount ? "is-invalid" : ""
-                          }`}
-                          value={fineAmount}
-                          onChange={(e) => setFineAmount(e.target.value)}
-                        />
+                        <label className="form-label">مبلغ الغرامة</label>
+                        <div className="input-group">
+                          <input
+                            type="number"
+                            className={`form-control custom-input ${
+                              errors.fineAmount ? "is-invalid" : ""
+                            }`}
+                            value={fineAmount}
+                            onChange={(e) => setFineAmount(e.target.value)}
+                            placeholder="أدخل مبلغ الغرامة"
+                          />
+                          <span className="input-group-text">جنيه</span>
+                        </div>
                         {errors.fineAmount && (
                           <div className="text-danger">{errors.fineAmount}</div>
                         )}
                       </div>
 
-                      <label className="form-label mt-3">حالة الدفع ؟</label>
-
-                      <div className="d-flex gap-5">
-                        <div className="form-check">
-                          <input
-                            type="radio"
-                            name="isSelf"
-                            className="form-check-input"
-                            value="yes"
-                            checked={isSelf === true}
-                            onChange={(e) => setIsSelf(true)}
-                          />
-                          <label className="form-check-label">مدفوع</label>
+                      <div className="mb-3">
+                        <label className="form-label">حالة الدفع</label>
+                        <div className="payment-status">
+                          <div className="form-check">
+                            <input
+                              type="radio"
+                              name="isSelf"
+                              className="form-check-input"
+                              value="yes"
+                              checked={isSelf === true}
+                              onChange={(e) => setIsSelf(true)}
+                            />
+                            <label className="form-check-label">مدفوع</label>
+                          </div>
+                          <div className="form-check">
+                            <input
+                              type="radio"
+                              name="isSelf"
+                              className="form-check-input"
+                              value="no"
+                              checked={isSelf === false}
+                              onChange={(e) => setIsSelf(false)}
+                            />
+                            <label className="form-check-label">
+                              غير مدفوع
+                            </label>
+                          </div>
                         </div>
-                        <div className="form-check">
-                          <input
-                            type="radio"
-                            name="isSelf"
-                            className="form-check-input"
-                            value="no"
-                            checked={isSelf === false}
-                            onChange={(e) => setIsSelf(false)}
-                          />
-                          <label className="form-check-label">غير مدفوع</label>
-                        </div>
+                        {errors.isSelf && (
+                          <div className="text-danger">{errors.isSelf}</div>
+                        )}
                       </div>
-                      {errors.isSelf && (
-                        <div className="text-danger">{errors.isSelf}</div>
+
+                      {isSelf === false && (
+                        <div className="payment-methods-section">
+                          <h5 className="mb-3">اختر طريقة الدفع</h5>
+                          <PaymentMethods />
+                        </div>
                       )}
-                      {isSelf === false && <PaymentMethods />}
+
                       {isSelf === true && (
                         <div className="mb-3">
-                          <label className="form-label mt-4">
-                            إيصال الدفع{" "}
-                          </label>
+                          <label className="form-label">إيصال الدفع</label>
                           <div className="file-input-container">
                             <input
                               type="file"
                               id="paymentBill"
-                              accept="image/*"
-                              onChange={(e) => {
-                                setPaymentBill(e.target.files[0]);
-                              }}
+                              accept="image/*,.pdf"
+                              onChange={(e) =>
+                                setPaymentBill(e.target.files[0])
+                              }
                             />
                             <label
                               htmlFor="paymentBill"
@@ -409,12 +438,45 @@ const TrafficServices = forwardRef((props, ref) => {
                               {errors.paymentBill}
                             </div>
                           )}
+                          <small className="text-muted">
+                            يمكنك رفع صورة أو ملف PDF للإيصال
+                          </small>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              </>
+
+                <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
+                  <h4 className="mb-3">⚠️ ملاحظات هامة:</h4>
+                  <ul className="list-unstyled">
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>
+                        يجب دفع المخالفة خلال 30 يوم من تاريخ صدورها لتجنب
+                        الغرامات الإضافية.
+                      </span>
+                    </li>
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>
+                        في حالة عدم الدفع خلال المدة المحددة، سيتم إضافة 50% من
+                        قيمة المخالفة كغرامة تأخير.
+                      </span>
+                    </li>
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>
+                        يمكنك الاعتراض على المخالفة خلال 15 يوم من تاريخ صدورها.
+                      </span>
+                    </li>
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>احتفظ بإيصال الدفع لمدة 6 أشهر على الأقل.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             )}
             {card.title === "بدل فاقد / تالف للرخص" && (
               <>
@@ -865,26 +927,26 @@ const TrafficServices = forwardRef((props, ref) => {
                     <li className="mb-2 d-flex align-items-start">
                       <span className="me-2 text-warning">💡</span>
                       <span>
-                      يجب أن تكون المركبة من نوع ملاكي أو دراجة نارية.
-                        </span>
+                        يجب أن تكون المركبة من نوع ملاكي أو دراجة نارية.
+                      </span>
+                    </li>
+                    <li className="mb-2 d-flex align-items-start">
+                      <span className="me-2 text-warning">💡</span>
+                      <span>يجب أن تكون سعة المحرك أقل من 2030 CC.</span>
                     </li>
                     <li className="mb-2 d-flex align-items-start">
                       <span className="me-2 text-warning">💡</span>
                       <span>
-                      يجب أن تكون سعة المحرك أقل من 2030 CC.
+                        يجب سداد جميع الرسوم والمخالفات والتأمين الإجباري قبل
+                        إجراء عملية التجديد.
                       </span>
                     </li>
                     <li className="mb-2 d-flex align-items-start">
                       <span className="me-2 text-warning">💡</span>
                       <span>
-                      يجب سداد جميع الرسوم والمخالفات والتأمين الإجباري قبل إجراء عملية التجديد.
+                        لا يجوز توصيل الرخصة في حالة وجود فحص فني مطلوب أو حظر
+                        بيع على المركبة.
                       </span>
-                    </li>
-                    <li className="mb-2 d-flex align-items-start">
-                      <span className="me-2 text-warning">💡</span>
-                      <span>
-                      لا يجوز توصيل الرخصة في حالة وجود فحص فني مطلوب أو حظر بيع على المركبة.
-                        </span>
                     </li>
                   </ul>
                 </div>
@@ -1031,23 +1093,23 @@ const TrafficServices = forwardRef((props, ref) => {
 
       {activeStep < 3 && user && <Button handleNext={handleNext} />}
 
-{activeStep === 3 && (
-  <div className="text-start">
-    <button
-      className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-      onClick={handleSubmit}
-      disabled={isSubmitting}
-    >
-      {isSubmitting ? (
-        "جاري الاستعلام..."
-      ) : (
-        <>
-          تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-        </>
+      {activeStep === 3 && (
+        <div className="text-start">
+          <button
+            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              "جاري الاستعلام..."
+            ) : (
+              <>
+                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+              </>
+            )}
+          </button>
+        </div>
       )}
-    </button>
-  </div>
-)}
     </>
   );
 });

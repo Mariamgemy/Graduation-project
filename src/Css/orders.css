@@ -1,0 +1,24 @@
+.order-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.order-card .card-title {
+  color: #246ba1;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.order-card .card-text {
+  color: var(--primary-color);
+}
+
+.order-card .text-success {
+  color: #3373a3 !important;
+}

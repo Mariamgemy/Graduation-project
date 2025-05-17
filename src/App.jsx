@@ -19,6 +19,8 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 // import Phone from "./pages/ComplaintDone";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import Orders from "./pages/Orders.jsx";
+import Profile from "./pages/Profile.jsx";
 
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
@@ -106,6 +108,22 @@ function App() {
           element={
             <Layout>
               <ComplaintDone />
+            </Layout>
+          }
+        />
+        <Route
+          path="orders"
+          element={
+            <Layout>
+              <Orders />
+            </Layout>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <Layout>
+              <Profile/>
             </Layout>
           }
         />
