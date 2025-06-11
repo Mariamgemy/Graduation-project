@@ -98,13 +98,13 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
             {errors.id && <div className="text-danger">{errors.id}</div>}
           </div>
 
-          <div className="mb-3">
+          {/* <div className="mb-3">
             <label className="fw-bold form-label">رقم المصنع</label>
             <input className="form-control mb-2" type="text" value={factoryNumber} onChange={(e) => setFactoryNumber(e.target.value)} placeholder="ادخل رقم المصنع" disabled={isLoading} />
             {errors.factoryNumber && <div className="text-danger">{errors.factoryNumber}</div>}
           </div>
 
-          <img src={factory} alt="صورة رقم المصنع" className="w-25" />
+          <img src={factory} alt="صورة رقم المصنع" className="w-25" /> */}
 
           <div className="mt-3">
             <CaptchaComponent ref={captchaRef} />

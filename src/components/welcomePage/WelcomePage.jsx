@@ -238,7 +238,7 @@ function WelcomePage() {
       </div>
 
       <ReverseSection image={captionImg} title="نبذة عننا" cardsData={caption} />
-      <ConsumptionPieChart/>
+     
       <Footer />
     </>
   );

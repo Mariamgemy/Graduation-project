@@ -59,8 +59,9 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
-    console.log("بدء عملية تسجيل الدخول...");
+   
 
     if (!validateForm()) {
       console.log("فشل التحقق من صحة النموذج");
@@ -71,7 +72,8 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
     setApiError("");
 
     try {
-      console.log("جاري إرسال البيانات إلى API:", { email, password });
+      console.log("الرابط النهائي للـ API هو:", `${API_CONFIG.BASE_URL}/Account/login`);
+
       const response = await fetch(`${API_CONFIG.BASE_URL}/Account/login`, {
         method: "POST",
         headers: {
