@@ -11,6 +11,10 @@ import Footer from "../Footer";
 import phoneImg from "../images/phone.png";
 import billImg from "../images/freepik__background__59718.png"
 import ConsumptionPieChart from "../ConsumptionPieChart";
+import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import LoginCard from "../../pages/LoginCard";
+
 function WelcomePage() {
   //اشهر الخدامات
   const services = [
@@ -197,9 +201,18 @@ function WelcomePage() {
       scrollTarget: "mn",
     },
   ];
+  const location = useLocation(); // بيجيب state اللي جاي مع Navigate
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.showLogin) {
+      setShowLoginModal(true); // لما showLogin تبقى true نفتح المودال
+    }
+  }, [location.state]);
 
   return (
     <>
+     <LoginCard show={showLoginModal} handleClose={() => setShowLoginModal(false)} />
       <MainComponent
         title=" الخدمات المتاحة "
         image={rafikiImg}

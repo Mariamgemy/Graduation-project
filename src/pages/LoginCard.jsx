@@ -96,7 +96,7 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
       // Handle successful login
       console.log("تم تسجيل الدخول بنجاح، جاري حفظ البيانات...");
       localStorage.setItem("token", data.token);
-      login({ email, token: data.token }); // تحديث حالة المستخدم
+      login({ email, name: data.displayName, token: data.token });
       console.log("تم حفظ بيانات المستخدم في localStorage و context");
 
       handleClose();

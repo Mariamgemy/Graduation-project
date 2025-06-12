@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   });
 
   const login = (userData) => {
-    console.log("جاري تسجيل دخول المستخدم:", userData);
+  
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
     console.log("تم حفظ بيانات المستخدم في localStorage");

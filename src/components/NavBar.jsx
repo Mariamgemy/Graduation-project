@@ -95,11 +95,11 @@ const NavBar = () => {
                 to="/services"
                 className="nav-link text-white focus-indicator"
               >
-                {" "}
-                خداماتنا{" "}
+                
+                خداماتنا
               </Link>
               <Link
-                to="/signUp"
+                to="/orders"
                 className="nav-link text-white focus-indicator none"
               >
                 متابعة الطلبات
@@ -138,7 +138,7 @@ const NavBar = () => {
                     className="btn nav-btn btn-outline-success px-4 py-2 fs-5 mb-2"
                     onClick={() => setShowUserModal(true)}
                   >
-                    <MdPerson size={30} /> {user.email}
+                    أهلاً , {user.name}
                   </button>
                   <Modal
                     show={showUserModal}
@@ -149,7 +149,7 @@ const NavBar = () => {
                   >
                     <Modal.Body className="p-4 rounded-4">
                       <h3 className="mb-4 text-center text-color">
-                        {user.email}
+                        {user.name}
                       </h3>
                       <div className="d-flex flex-column gap-3">
                         <button

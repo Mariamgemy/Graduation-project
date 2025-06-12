@@ -21,6 +21,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { AuthProvider } from "./context/AuthContext.jsx";
 import Orders from "./pages/Orders.jsx";
 import Profile from "./pages/Profile.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
@@ -111,6 +112,7 @@ function App() {
             </Layout>
           }
         />
+
         <Route
           path="orders"
           element={
@@ -119,6 +121,14 @@ function App() {
             </Layout>
           }
         />
+        <Route
+  path="/orders"
+  element={
+    <ProtectedRoute>
+      <Orders/>
+    </ProtectedRoute>
+  }
+/>
         <Route
           path="profile"
           element={
