@@ -212,9 +212,7 @@ const UtilityServices = forwardRef((props, ref) => {
   };
 
   const renderContent = () => {
-    console.log("حالة الدفع الحالية:", paymentStep);
-    console.log("بيانات الدفع:", paymentData);
-
+  
     switch (paymentStep) {
       case "success_redirecting":
         return (

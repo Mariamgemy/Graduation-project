@@ -1,21 +1,37 @@
 /* الخلفية المغبشة */
 .custom-backdrop {
-    backdrop-filter: blur(8px);
-    background-color: rgba(0, 0, 0, 0.3); /* تعتيم خفيف */
-  }
-  
-  /* ستايل الكارت اللي جوه */
-  .blur-background-modal .modal-content {
-    background-color: #fcf8f8; /* لون غامق */
-    border-radius: 1rem;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    color: rgb(13, 12, 12);
-  }
-  .custom-backdrop {
-    pointer-events: none !important; /* يمنع أي تفاعل مع الخلفية */
-  }
-  
-  .modal-content {
-    pointer-events: auto !important; /* يعيد التفاعل للمحتوى فقط */
-  }
-  
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.3); /* تعتيم خفيف */
+}
+
+/* ستايل الكارت اللي جوه */
+.blur-background-modal .modal-content {
+  background-color: #fcf8f8; /* لون غامق */
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  color: rgb(13, 12, 12);
+}
+.custom-backdrop {
+  pointer-events: none !important; /* يمنع أي تفاعل مع الخلفية */
+}
+
+.modal-content {
+  pointer-events: auto !important; /* يعيد التفاعل للمحتوى فقط */
+}
+.btn-outline-cancel {
+  color: #3373a3 !important;
+  font-size: 18px !important;
+  transition: all 0.3s ease !important;
+}
+.btn-outline-cancel:hover {
+  color: var(--primary-color) !important;
+}
+
+
+
+.btn-outline-cancel:hover {
+  background-color: #e9ecef !important;
+  transform: translateY(-2px) !important;
+  font-size: 19px !important;
+  box-shadow: 0 4px 8px rgba(35, 36, 36, 0.1) !important;
+}

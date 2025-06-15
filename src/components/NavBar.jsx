@@ -7,18 +7,15 @@ import { FaChevronLeft } from "react-icons/fa";
 import "../Css/navBar.css";
 import "../Css/test.css";
 import { IoSearch } from "react-icons/io5";
-import CustomModal from "../pages/IdValidation";
-import LoginCard from "../pages/LoginCard";
-import SearchBar from "./SearchData";
-import SearchData from "./SearchBox";
 import SearchBox from "./SearchBox";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useModal } from "./ModalManager"; // إضافة import
 
 const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const { user, logout } = useAuth();
+  const { openModal } = useModal(); // استخدام useModal
   const navigate = useNavigate();
 
   const handleDropdownItemClick = () => {
@@ -95,8 +92,7 @@ const NavBar = () => {
                 to="/services"
                 className="nav-link text-white focus-indicator"
               >
-                
-                خداماتنا
+                خدماتنا
               </Link>
               <Link
                 to="/orders"
@@ -130,7 +126,7 @@ const NavBar = () => {
                 </Link>
               </div>
             </Nav>
-            <SearchBox data={SearchData} />
+            <SearchBox />
             <div className="d-flex mt-2">
               {user ? (
                 <div className="d-flex align-items-center">
@@ -175,19 +171,13 @@ const NavBar = () => {
                   </Modal>
                 </div>
               ) : (
-                <>
-                  <button
-                    type="button"
-                    className="btn nav-btn btn-outline-success px-4 py-2 fs-5 mb-2"
-                    onClick={() => setShowModal(true)}
-                  >
-                    <MdPerson size={30} /> تسجيل الدخول
-                  </button>
-                  <LoginCard
-                    show={showModal}
-                    handleClose={() => setShowModal(false)}
-                  />
-                </>
+                <button
+                  type="button"
+                  className="btn nav-btn btn-outline-success px-4 py-2 fs-5 mb-2"
+                  onClick={() => openModal('login')} // استخدام openModal بدلاً من setShowModal
+                >
+                  <MdPerson size={30} /> تسجيل الدخول
+                </button>
               )}
               <div className="d-none d-lg-block ">
                 <Dropdown

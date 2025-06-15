@@ -22,7 +22,9 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 import Orders from "./pages/Orders.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
-
+import { ModalProvider } from './components/ModalManager';
+import ModalContainer from './components/ModalContainer'; 
+import NavBar from './components/NavBar';
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
 
@@ -30,7 +32,9 @@ function App() {
   return (
     <AuthProvider>
       <ScrollToTopButton />
-
+      <ModalProvider> 
+      <NavBar />
+      <ModalContainer /> 
       <Routes>
         <Route
           path="/"
@@ -53,14 +57,6 @@ function App() {
           element={
             <Layout>
               <Login />
-            </Layout>
-          }
-        />
-        <Route
-          path="services"
-          element={
-            <Layout>
-              <Services />
             </Layout>
           }
         />
@@ -112,28 +108,32 @@ function App() {
             </Layout>
           }
         />
+            <Route
+              path="services"
+              element={
+                <Layout>
+              <ProtectedRoute>
+                  <Services />
+                  </ProtectedRoute>
+                </Layout>
+              }
+            />
 
         <Route
-          path="orders"
+          path="/orders"
           element={
             <Layout>
-              <Orders />
+              <ProtectedRoute>
+                <Orders />
+              </ProtectedRoute>
             </Layout>
           }
         />
         <Route
-  path="/orders"
-  element={
-    <ProtectedRoute>
-      <Orders/>
-    </ProtectedRoute>
-  }
-/>
-        <Route
           path="profile"
           element={
             <Layout>
-              <Profile/>
+              <Profile />
             </Layout>
           }
         />
@@ -174,6 +174,7 @@ function App() {
           }
         />
       </Routes>
+      </ModalProvider>
     </AuthProvider>
   );
 }

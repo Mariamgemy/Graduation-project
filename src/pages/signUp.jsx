@@ -1,23 +1,43 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../Css/signUp.css";
 import panaImage from "../components/images/pana.svg";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import LoginCard from "./LoginCard";
-
+import { API_CONFIG } from "../api/config";
+import { useModal } from "../components/ModalManager";
 const SignUp = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { openModal } = useModal();
+  // استقبال البيانات من المودال
+  const { id, email, otpCode, isVerified, otpVerified } = location.state || {};
+
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
-    name: "",
-    phone: "",
+    // البيانات المحققة مسبقاً
+    nid: id || "",
+    email: email || "",
+    // البيانات الجديدة
+    displayName: "",
+    userName: "",
     password: "",
     confirmPassword: "",
+    address: "",
+    phoneNumber: "",
   });
 
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
   const [apiSuccess, setApiSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+
+  // التحقق من وجود البيانات المطلوبة
+  useEffect(() => {
+    if (!id || !email || !isVerified || !otpVerified) {
+      // إذا لم تكن البيانات متوفرة، أعد التوجيه للصفحة الرئيسية
+      navigate("/");
+    }
+  }, [id, email, isVerified, otpVerified, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,17 +47,25 @@ const SignUp = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (formData.name.trim().length < 2) {
-      newErrors.name = "يرجى إدخال أسم صحيح";
+    if (formData.displayName.trim().length < 2) {
+      newErrors.displayName = "يرجى إدخال اسم صحيح";
+    }
+
+    if (formData.userName.trim().length < 3) {
+      newErrors.userName = "يرجى إدخال اسم مستخدم صحيح (3 أحرف على الأقل)";
+    }
+
+    if (formData.address.trim().length < 5) {
+      newErrors.address = "يرجى إدخال عنوان صحيح";
     }
 
     const isValidPhoneNumber = (phoneNumber) => {
-      const phoneRegex = /^01[0-25]\d{8}$/;
+      const phoneRegex = /^(\+20)?01[0-25]\d{8}$/;
       return phoneRegex.test(phoneNumber);
     };
 
-    if (!isValidPhoneNumber(formData.phone)) {
-      newErrors.phone = "يرجى إدخال رقم موبايل صحيح";
+    if (!isValidPhoneNumber(formData.phoneNumber)) {
+      newErrors.phoneNumber = "يرجى إدخال رقم موبايل صحيح";
     }
 
     if (formData.password.length < 8) {
@@ -62,17 +90,31 @@ const SignUp = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("YOUR_API_ENDPOINT/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
+      const registerData = {
+        registerData: {
+          displayName: formData.displayName,
           email: formData.email,
+          userName: formData.userName,
           password: formData.password,
-        }),
-      });
+          nid: formData.nid,
+          address: formData.address,
+          phoneNumber: formData.phoneNumber,
+        },
+        otpCode: otpCode || "verified",
+      };
+
+      console.log("البيانات المرسلة:", registerData);
+
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/auth/register-with-otp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(registerData),
+        }
+      );
 
       const data = await response.json();
 
@@ -81,13 +123,28 @@ const SignUp = () => {
       }
 
       setApiSuccess("تم إنشاء الحساب بنجاح! سيتم تحويلك لصفحة تسجيل الدخول.");
-      setTimeout(() => navigate("/login"), 2000); // تحويل بعد ثانيتين
+      setTimeout(() =>  openModal('login'), 2000);
     } catch (error) {
       setApiError(error.message || "حدث خطأ أثناء إنشاء الحساب.");
+      console.error("خطأ في التسجيل:", error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // إذا لم تكن البيانات متوفرة، اعرض رسالة تحميل
+  if (!id || !email || !isVerified || !otpVerified) {
+    return (
+      <div className="container-fluid vh-100 d-flex align-items-center justify-content-center">
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">جاري التحقق من البيانات...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid vh-100">
@@ -97,7 +154,7 @@ const SignUp = () => {
         </div>
         <div className="col-md-6 d-flex align-items-center justify-content-center">
           <div className="w-75">
-            <h3 className="text-center mb-4 textP">إنشاء حساب</h3>
+            <h3 className="text-center mb-4 textP"> تسجيل الدخول</h3>
 
             {apiError && <div className="alert alert-danger">{apiError}</div>}
             {apiSuccess && (
@@ -105,40 +162,86 @@ const SignUp = () => {
             )}
 
             <form onSubmit={handleSubmit}>
+              {/* الاسم المعروض */}
               <div className="mb-3">
-                <label className="form-label">الاسم الكامل</label>
+                <label className="form-label">الاسم بالكامل</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                  name="name"
+                  className={`form-control ${
+                    errors.displayName ? "is-invalid" : ""
+                  }`}
+                  name="displayName"
                   autoComplete="name"
-                  value={formData.name}
+                  value={formData.displayName}
                   onChange={handleChange}
-                  placeholder="أدخل اسمك"
+                  placeholder="أدخل اسمك الكامل"
                   disabled={isLoading}
                 />
-                {errors.name && (
-                  <div className="text-danger">{errors.name}</div>
+                {errors.displayName && (
+                  <div className="text-danger">{errors.displayName}</div>
                 )}
               </div>
 
+              {/* اسم المستخدم */}
               <div className="mb-3">
-                <label className="form-label">رقم الموبايل </label>
+                <label className="form-label">اسم المستخدم</label>
                 <input
-                  type="Number"
-                  className={`form-control ${errors.phone ? "is-invalid" : ""}`}
-                  name="phone"
-                  autoComplete="phone"
-                  value={formData.phone}
+                  type="text"
+                  className={`form-control ${
+                    errors.userName ? "is-invalid" : ""
+                  }`}
+                  name="userName"
+                  autoComplete="username"
+                  value={formData.userName}
                   onChange={handleChange}
-                  placeholder="أدخل رقم الموبايل "
+                  placeholder="أدخل اسم المستخدم"
                   disabled={isLoading}
                 />
-                {errors.phone && (
-                  <div className="text-danger">{errors.phone}</div>
+                {errors.userName && (
+                  <div className="text-danger">{errors.userName}</div>
                 )}
               </div>
 
+              {/* العنوان */}
+              <div className="mb-3">
+                <label className="form-label">العنوان</label>
+                <input
+                  type="text"
+                  className={`form-control ${
+                    errors.address ? "is-invalid" : ""
+                  }`}
+                  name="address"
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="أدخل عنوانك"
+                  disabled={isLoading}
+                />
+                {errors.address && (
+                  <div className="text-danger">{errors.address}</div>
+                )}
+              </div>
+
+              {/* رقم الهاتف */}
+              <div className="mb-3">
+                <label className="form-label">رقم الموبايل</label>
+                <input
+                  type="tel"
+                  className={`form-control ${
+                    errors.phoneNumber ? "is-invalid" : ""
+                  }`}
+                  name="phoneNumber"
+                  autoComplete="tel"
+                  value={formData.phoneNumber}
+                  onChange={handleChange}
+                  placeholder="أدخل رقم الموبايل"
+                  disabled={isLoading}
+                />
+                {errors.phoneNumber && (
+                  <div className="text-danger">{errors.phoneNumber}</div>
+                )}
+              </div>
+
+              {/* كلمة المرور */}
               <div className="mb-3">
                 <label className="form-label">كلمة المرور</label>
                 <input
@@ -158,6 +261,7 @@ const SignUp = () => {
                 )}
               </div>
 
+              {/* تأكيد كلمة المرور */}
               <div className="mb-3">
                 <label className="form-label">تأكيد كلمة المرور</label>
                 <input
@@ -181,14 +285,14 @@ const SignUp = () => {
                 className="btn btn-secondary w-100"
                 disabled={isLoading}
               >
-                {isLoading ? "جاري التسجيل..." : "تسجيل"}
+                {isLoading ? "جاري التسجيل..." : "إكمال التسجيل"}
               </button>
 
               <p className="text-center mt-3">
                 لديك حساب؟
                 <Link
                   onClick={() => setShowModal(true)}
-                  style={{ cursor: "pointer" ,color:"#3373a3" }}
+                  style={{ cursor: "pointer", color: "#3373a3" }}
                 >
                   تسجيل الدخول
                 </Link>

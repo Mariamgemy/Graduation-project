@@ -169,6 +169,7 @@ function WelcomePage() {
     //   title: "استعلام عن فاتورة الكهرباء",
     //   description: "استعلم عن فاتورة الكهرباء الخاصة بك."
     // },
+   
     {
       id: "utility-2",
       category: "utility",
@@ -193,6 +194,13 @@ function WelcomePage() {
       title: "سداد فاتورة الغاز",
       description: "سدد فاتورة الغاز الخاصة بك.",
     },
+    {
+      id: "housing-2",
+      category: "housing",
+      title: "متابعة استهلاك المياه والكهرباء بشكل لحظي",
+      description:
+        "خدمة تمكّنك من متابعة استهلاكك الشهري واليومي للمياه والكهرباء عبر تقارير ورسوم بيانية تفصيلية، مع إشعارات في حال ارتفاع الاستهلاك.",
+    },
   ];
   const caption = [
     {
@@ -212,7 +220,7 @@ function WelcomePage() {
 
   return (
     <>
-     <LoginCard show={showLoginModal} handleClose={() => setShowLoginModal(false)} />
+     {/* <LoginCard show={showLoginModal} handleClose={() => setShowLoginModal(false)} /> */}
       <MainComponent
         title=" الخدمات المتاحة "
         image={rafikiImg}

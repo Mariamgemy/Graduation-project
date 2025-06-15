@@ -1,22 +1,25 @@
 import "../Css/IdValidation.css";
 import { Link } from "react-router-dom";
 import { Modal, Button } from "react-bootstrap";
-import CustomModal from "./IdValidation";
 import { useState, useEffect } from "react";
 import PasswordInput from "../components/PasswordInput";
 import EmailInput from "../components/EmailInput";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { API_CONFIG } from "../api/config";
 import { useAuth } from "../context/AuthContext.jsx";
+import { useModal } from "../components/ModalManager"; 
+
+
+
 
 const LoginCard = forwardRef(({ show, handleClose }, ref) => {
-  const [showModal, setShowModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const { login } = useAuth();
+  const { switchModal } = useModal(); 
 
   // Reset form when modal is closed
   useEffect(() => {
@@ -59,22 +62,23 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
-   
-
+  
     if (!validateForm()) {
       console.log("فشل التحقق من صحة النموذج");
       return;
     }
-
+  
     setIsLoading(true);
     setApiError("");
-
+  
     try {
-      console.log("الرابط النهائي للـ API هو:", `${API_CONFIG.BASE_URL}/Account/login`);
-
-      const response = await fetch(`${API_CONFIG.BASE_URL}/Account/login`, {
+      console.log(
+        "الرابط النهائي للـ API هو:",
+        `${API_CONFIG.BASE_URL}/Auth/login`
+      );
+  
+      const response = await fetch(`${API_CONFIG.BASE_URL}/Auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,21 +88,45 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
           password,
         }),
       });
-
+  // تأكد إن API_CONFIG.BASE_URL صحيح
+console.log(API_CONFIG); // شوف إيه القيمة بالضبط
       console.log("تم استلام الرد من API:", response.status);
+  
+      // التحقق من حالة الاستجابة قبل محاولة تحويلها لـ JSON
+      if (!response.ok) {
+        let errorMessage = "حدث خطأ أثناء تسجيل الدخول";
+        
+        // محاولة قراءة رسالة الخطأ إذا كانت موجودة
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (jsonError) {
+          // إذا فشل تحويل JSON، استخدم رسالة خطأ حسب الـ status code
+          if (response.status === 404) {
+            errorMessage = "خدمة تسجيل الدخول غير متاحة حالياً";
+          } else if (response.status === 401) {
+            errorMessage = "البريد الإلكتروني أو كلمة المرور خاطئة";
+          } else if (response.status >= 500) {
+            errorMessage = "خطأ في السيرفر، يرجى المحاولة لاحقاً";
+          }
+        }
+        
+        throw new Error(errorMessage);
+      }
+  
+      // تحويل الاستجابة لـ JSON فقط إذا كانت ناجحة
       const data = await response.json();
       console.log("بيانات الرد:", data);
 
-      if (!response.ok) {
-        throw new Error(data.message || "اسم المستخدم خاطيء او كلمة المرور خاطئة");
-      }
-
+  
       // Handle successful login
       console.log("تم تسجيل الدخول بنجاح، جاري حفظ البيانات...");
-      localStorage.setItem("token", data.token);
-      login({ email, name: data.displayName, token: data.token });
+      localStorage.setItem("token", data.data.token);
+      login({ email, name: data.data.displayName, token: data.data.token });
       console.log("تم حفظ بيانات المستخدم في localStorage و context");
-
+      // console.log("token", data.data.displayName);
+      // console.log("token", success);
+  
       handleClose();
     } catch (error) {
       console.error("حدث خطأ أثناء تسجيل الدخول:", error);
@@ -128,13 +156,13 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
         <h3 className="mb-3 text-center text-color">سجل دخولك</h3>
         <p className="text-center">
           ليس لديك حساب؟
-          <Link className="text-color" onClick={() => setShowModal(true)}>
+          <Link
+            className="text-color ms-1"
+            style={{ cursor: 'pointer' }}
+            onClick={() => switchModal('register')}
+          >
             إنشاء حساب.
           </Link>
-          <CustomModal
-            show={showModal}
-            handleClose={() => setShowModal(false)}
-          />
         </p>
 
         {apiError && (
@@ -146,18 +174,14 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="fw-bold form-label">البريد الإلكتروني</label>
-        
+
             <EmailInput
-            
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="ادخل البريد الالكتروني"
               disabled={isLoading}
             />
             {errors.email && <div className="text-danger">{errors.email}</div>}
-            <Link to="#">
-              <p className="text-color">*هل نسيت البريد الإلكتروني؟</p>
-            </Link>
           </div>
 
           <div className="mb-3">
@@ -171,9 +195,13 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
             {errors.password && (
               <div className="text-danger">{errors.password}</div>
             )}
-            <Link to="#">
-              <p className="text-color">*هل نسيت كلمة السر؟</p>
-            </Link>
+            <p
+              className="text-color mt-2"
+              style={{ cursor: "pointer" }}
+              onClick={() => switchModal('forgotPassword')}
+            >
+              *هل نسيت كلمة السر؟
+            </p>
           </div>
 
           <button
@@ -185,11 +213,6 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
           </button>
         </form>
       </Modal.Body>
-      {/* <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
-          إغلاق
-        </Button>
-      </Modal.Footer> */}
     </Modal>
   );
 });
