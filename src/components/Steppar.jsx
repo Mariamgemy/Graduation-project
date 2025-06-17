@@ -38,6 +38,19 @@ const Steppar = ({ active, setActive, formData }) => {
       personalPhoto,
       medicalResult,
       renewalPeriod,
+
+      // // متابعة الاستهلاك
+      // BillAmount,
+      // Consumption,
+      // BillMonth,
+      // BillYear,
+      // DaysInBillingCycle,
+      // MeterType,
+      // NumberOfAirConditioners,
+      // AirConditionerUsageHours,
+      // AirConditionerType,
+     
+
     } = formData;
 
     if (
@@ -107,20 +120,59 @@ const Steppar = ({ active, setActive, formData }) => {
         !renewalPeriod
       )
         return false;
+
     }
+    // else if (card.title==="متابعة الاستهلاك بشكل لحظي"){
+    //   if(            !BillAmount||
+    //     !Consumption||
+    //     !BillMonth||
+    //     !BillYear||
+    //     !DaysInBillingCycle||
+    //     !MeterType||
+    //     !NumberOfAirConditioners||
+    //     !AirConditionerUsageHours||
+    //     !AirConditionerType
+    //  )
+    //     return false
+    // }
 
     return true;
   };
 
   const isStep2Completed = () => {
     if (!formData) return false;
+    const { governorate, city, district, detailedAddress, 
+      // NumberOfLights,
+      // LightType,
+      // LightUsageHours,
+      // OtherMajorAppliances_Count,
+      // ApplianceUsage_Encoded,
+      // HouseholdSize,
+      // HomeType_Encoded,
+      // ConsumptionTrend,
+      // SeasonalConsumptionPattern, 
+      } = formData;
+      
+   
 
-    const { governorate, city, district, detailedAddress } = formData;
 
     if (!governorate || !city || !district || !detailedAddress) {
       return false;
     }
-
+  
+  // if(card.title==="متابعة الاستهلاك بشكل لحظي"){
+  //   if(   !NumberOfLights||
+  //     !LightType||
+  //     !LightUsageHours||
+  //     !OtherMajorAppliances_Count||
+  //     !ApplianceUsage_Encoded||
+  //     !HouseholdSize||
+  //     !HomeType_Encoded||
+  //     !ConsumptionTrend||
+  //     !SeasonalConsumptionPattern){
+  //       return false
+  //     }
+  //   }
     return true;
   };
 

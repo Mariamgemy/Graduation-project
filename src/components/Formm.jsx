@@ -6,9 +6,12 @@ import "../Css/Form.css";
 import CivilServices from "./Services/CivilServices";
 import TrafficServices from "./Services/TrafficServices";
 import EnergyServices from "./Services/EnergyServices";
+import ConsumptionServices from "./Services/ConsumptionServices";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-bootstrap";
+import ElectricityConsumptionForm from "./ElectricityConsumptionForm";
+
 
 const stripePromise = loadStripe(
   "pk_test_51QTN1AK1FEwOxerZfCn4zCfYZPLxgw3WwLdL2kaTBfEmexHfeoyiP2BoAWQMVkFM5w5xTrk7OPWUMelS4ktPgXqK00TW5tdcvp"
@@ -18,6 +21,7 @@ function Formm() {
   const location = useLocation();
   const card = location.state;
   const utilityRef = useRef();
+  const consumptionRef = useRef();
   const civilRef = useRef();
   const trafficRef = useRef();
   const energyRef = useRef();
@@ -31,6 +35,9 @@ function Formm() {
     card.title === "سداد فاتورة الكهرباء" ||
     card.title === "سداد فاتورة المياه" ||
     card.title === "سداد فاتورة الغاز";
+  
+
+   const isConsumptionCard = card.title === "متابعة الاستهلاك بشكل لحظي";
 
   const isCivilCard =
     card.title === "شهادة ميلاد" ||
@@ -47,7 +54,7 @@ function Formm() {
 
   const isEnergyCard =
     card.title === "شهادة كفاءة الطاقة " ||
-    card.title === "متابعة استهلاك المياه والكهرباء بشكل لحظي" ||
+
     card.title === "التقديم على عداد كهرباء / مياه" ||
     card.title === "نقل ملكية عداد" ||
     card.title === "تقديم شكوى مرافق";
@@ -110,6 +117,11 @@ function Formm() {
       // Utility services are handled separately
       return;
     }
+    if (isConsumptionCard) {
+      const isValidConsumption = consumptionRef.current?.validateForm();
+      if (!isValidConsumption) isFormValid = false;
+      else formData = consumptionRef.current?.getFormData();
+    }
     if (isCivilCard) {
       const isValidCivil = civilRef.current?.validateForm();
       if (!isValidCivil) isFormValid = false;
@@ -168,6 +180,8 @@ function Formm() {
     if (title.includes("كهرباء")) return "Electricity";
     if (title.includes("مياه")) return "Water";
     if (title.includes("غاز")) return "Gas";
+   
+
     // For Civil, Traffic, Housing, this might need adjustment or the backend handles generic types.
     return "Other";
   };
@@ -189,6 +203,7 @@ function Formm() {
           {isCivilCard && <CivilServices ref={civilRef} />}
           {isTrafficCard && <TrafficServices ref={trafficRef} />}
           {isEnergyCard && <EnergyServices ref={energyRef} />}
+          {isConsumptionCard && <ConsumptionServices ref={consumptionRef} />}
         </form>
       )}
     </div>

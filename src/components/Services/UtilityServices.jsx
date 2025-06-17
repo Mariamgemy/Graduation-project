@@ -13,6 +13,8 @@ import { useAuth } from "../../context/AuthContext";
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 
+
+
 function UtilityFormFields({
   formData,
   errors,
@@ -23,6 +25,7 @@ function UtilityFormFields({
 
   return (
     <>
+  
       <div className="mb-3">
         <label className="form-label">الرقم القومي</label>
         <input
@@ -62,7 +65,7 @@ function UtilityFormFields({
           <CaptchaComponent ref={captchaRef} />
         </div>
       )}
-    </>
+   </>
   );
 }
 
@@ -100,6 +103,7 @@ const UtilityServices = forwardRef((props, ref) => {
     if (title.includes("كهرباء")) return "Electricity";
     if (title.includes("مياه")) return "Water";
     if (title.includes("غاز")) return "Gas";
+  
     return "Other";
   };
 
@@ -299,6 +303,7 @@ const UtilityServices = forwardRef((props, ref) => {
       default:
         return (
           <div>
+       
             {authError && (
               <Alert variant="warning" className="mb-3">
                 <p className="mb-0">{authError}</p>
@@ -311,6 +316,7 @@ const UtilityServices = forwardRef((props, ref) => {
               captchaRef={captchaRef}
               showCaptcha={true}
             />
+          
             <div className="text-start">
               <button
                 className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
