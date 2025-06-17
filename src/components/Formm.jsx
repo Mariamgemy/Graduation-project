@@ -194,7 +194,7 @@ function Formm() {
         <UtilityServices ref={utilityRef} />
       ) : (
         // For other services, use the form as before
-        <form onSubmit={handleSubmit}>
+        <div>
           {authError && (
             <Alert variant="warning" className="mb-3">
               <p className="mb-0">{authError}</p>
@@ -204,7 +204,7 @@ function Formm() {
           {isTrafficCard && <TrafficServices ref={trafficRef} />}
           {isEnergyCard && <EnergyServices ref={energyRef} />}
           {isConsumptionCard && <ConsumptionServices ref={consumptionRef} />}
-        </form>
+        </div>
       )}
     </div>
   );

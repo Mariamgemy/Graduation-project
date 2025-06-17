@@ -6,7 +6,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     // جلب بيانات المستخدم من localStorage إذا كانت موجودة
     const saved = localStorage.getItem("user");
-    console.log("جاري تحميل بيانات المستخدم من localStorage:", saved);
+    // console.log("جاري تحميل بيانات المستخدم من localStorage:", saved);
     return saved ? JSON.parse(saved) : null;
   });
 

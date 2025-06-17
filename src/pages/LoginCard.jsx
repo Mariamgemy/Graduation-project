@@ -116,7 +116,7 @@ console.log(API_CONFIG); // شوف إيه القيمة بالضبط
   
       // تحويل الاستجابة لـ JSON فقط إذا كانت ناجحة
       const data = await response.json();
-      console.log("بيانات الرد:", data);
+      // console.log("بيانات الرد:", data);
 
   
       // Handle successful login
