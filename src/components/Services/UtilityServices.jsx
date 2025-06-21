@@ -139,16 +139,7 @@ const UtilityServices = forwardRef((props, ref) => {
     );
   }
   const handleProceedToPayment = async () => {
-    // Check if user is logged in
-    // if (!user) {
-    //   setAuthError("يجب تسجيل الدخول أولاً قبل القيام بهذه العملية");
-    //   // setTimeout(() => {
-    //   //   navigate("/login");
-    //   // }, 2000);
-    //   return;
-    // }
 
-    // setAuthError(null);
     setPaymentError(null);
     setIsProcessing(true);
     setPaymentData(null);
