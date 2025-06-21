@@ -674,7 +674,7 @@ const CustomModal = forwardRef(({ show, handleClose }, ref) => {
               ) : (
                 <button
                   type="button"
-                  className="btn btn-link text-color"
+                  className="btn btn-link text-color w-100"
                   onClick={handleResendOtp}
                   disabled={isLoading || !canResend}
                 >

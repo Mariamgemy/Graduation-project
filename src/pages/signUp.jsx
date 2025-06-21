@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import LoginCard from "./LoginCard";
 import { API_CONFIG } from "../api/config";
 import { useModal } from "../components/ModalManager";
+import PasswordInput from "../components/PasswordInput";
 const SignUp = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -152,7 +153,7 @@ const SignUp = () => {
         <div className="col-md-6 d-none d-md-flex align-items-center justify-content-center bg-light">
           <img src={panaImage} alt="صورة" className="img-fluid w-75" />
         </div>
-        <div className="col-md-6 d-flex align-items-center justify-content-center">
+        <div className="col-md-6 d-flex align-items-center justify-content-center mt-5">
           <div className="w-75">
             <h3 className="text-center mb-4 textP"> تسجيل الدخول</h3>
 
@@ -230,6 +231,7 @@ const SignUp = () => {
                     errors.phoneNumber ? "is-invalid" : ""
                   }`}
                   name="phoneNumber"
+                  dir="rtl" 
                   autoComplete="tel"
                   value={formData.phoneNumber}
                   onChange={handleChange}
@@ -244,11 +246,10 @@ const SignUp = () => {
               {/* كلمة المرور */}
               <div className="mb-3">
                 <label className="form-label">كلمة المرور</label>
-                <input
-                  type="password"
-                  className={`form-control ${
-                    errors.password ? "is-invalid" : ""
-                  }`}
+                <PasswordInput
+                  // className={`${
+                  //   errors.password ? "is-invalid" : ""
+                  // }`}
                   name="password"
                   autoComplete="new-password"
                   value={formData.password}
@@ -264,11 +265,10 @@ const SignUp = () => {
               {/* تأكيد كلمة المرور */}
               <div className="mb-3">
                 <label className="form-label">تأكيد كلمة المرور</label>
-                <input
-                  type="password"
-                  className={`form-control ${
-                    errors.confirmPassword ? "is-invalid" : ""
-                  }`}
+                <PasswordInput
+                  // className={`form-control ${
+                  //   errors.confirmPassword ? "is-invalid" : ""
+                  // }`}
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -282,7 +282,7 @@ const SignUp = () => {
 
               <button
                 type="submit"
-                className="btn btn-secondary w-100"
+                className="btn nav-btn btn-outline-secondry p2-4 py-2 mb-2 mt-4 w-100"
                 disabled={isLoading}
               >
                 {isLoading ? "جاري التسجيل..." : "إكمال التسجيل"}

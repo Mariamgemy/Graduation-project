@@ -10,7 +10,7 @@ import trafficImg from "../images/freepik__background__3598.png";
 import Footer from "../Footer";
 import phoneImg from "../images/phone.png";
 import billImg from "../images/freepik__background__59718.png"
-import ConsumptionPieChart from "../ConsumptionPieChart";
+
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import LoginCard from "../../pages/LoginCard";

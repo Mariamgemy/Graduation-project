@@ -7,10 +7,7 @@ import EmailInput from "../components/EmailInput";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { API_CONFIG } from "../api/config";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useModal } from "../components/ModalManager"; 
-
-
-
+import { useModal } from "../components/ModalManager";
 
 const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   const [email, setEmail] = useState("");
@@ -19,7 +16,7 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
   const { login } = useAuth();
-  const { switchModal } = useModal(); 
+  const { switchModal } = useModal();
 
   // Reset form when modal is closed
   useEffect(() => {
@@ -63,21 +60,21 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!validateForm()) {
       console.log("فشل التحقق من صحة النموذج");
       return;
     }
-  
+
     setIsLoading(true);
     setApiError("");
-  
+
     try {
       console.log(
         "الرابط النهائي للـ API هو:",
         `${API_CONFIG.BASE_URL}/Auth/login`
       );
-  
+
       const response = await fetch(`${API_CONFIG.BASE_URL}/Auth/login`, {
         method: "POST",
         headers: {
@@ -88,14 +85,14 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
           password,
         }),
       });
-  // تأكد إن API_CONFIG.BASE_URL صحيح
-console.log(API_CONFIG); // شوف إيه القيمة بالضبط
+      // تأكد إن API_CONFIG.BASE_URL صحيح
+      console.log(API_CONFIG); // شوف إيه القيمة بالضبط
       console.log("تم استلام الرد من API:", response.status);
-  
+
       // التحقق من حالة الاستجابة قبل محاولة تحويلها لـ JSON
       if (!response.ok) {
         let errorMessage = "حدث خطأ أثناء تسجيل الدخول";
-        
+
         // محاولة قراءة رسالة الخطأ إذا كانت موجودة
         try {
           const errorData = await response.json();
@@ -110,23 +107,31 @@ console.log(API_CONFIG); // شوف إيه القيمة بالضبط
             errorMessage = "خطأ في السيرفر، يرجى المحاولة لاحقاً";
           }
         }
-        
+
         throw new Error(errorMessage);
       }
-  
+
       // تحويل الاستجابة لـ JSON فقط إذا كانت ناجحة
       const data = await response.json();
       // console.log("بيانات الرد:", data);
 
-  
       // Handle successful login
       console.log("تم تسجيل الدخول بنجاح، جاري حفظ البيانات...");
       localStorage.setItem("token", data.data.token);
-      login({ email, name: data.data.displayName, token: data.data.token });
+      login({
+        email,
+        name: data.data.displayName,
+        nationalId: data.data.nid,
+        phone: data.data.phoneNumber,
+        address: data.data.address,
+        birthDate: data.data.dateOfBirth,
+        gender: data.data.gender,
+        token: data.data.token,
+      });
       console.log("تم حفظ بيانات المستخدم في localStorage و context");
       // console.log("token", data.data.displayName);
       // console.log("token", success);
-  
+
       handleClose();
     } catch (error) {
       console.error("حدث خطأ أثناء تسجيل الدخول:", error);
@@ -158,8 +163,8 @@ console.log(API_CONFIG); // شوف إيه القيمة بالضبط
           ليس لديك حساب؟
           <Link
             className="text-color ms-1"
-            style={{ cursor: 'pointer' }}
-            onClick={() => switchModal('register')}
+            style={{ cursor: "pointer" }}
+            onClick={() => switchModal("register")}
           >
             إنشاء حساب.
           </Link>
@@ -198,7 +203,7 @@ console.log(API_CONFIG); // شوف إيه القيمة بالضبط
             <p
               className="text-color mt-2"
               style={{ cursor: "pointer" }}
-              onClick={() => switchModal('forgotPassword')}
+              onClick={() => switchModal("forgotPassword")}
             >
               *هل نسيت كلمة السر؟
             </p>

@@ -1,11 +1,11 @@
-import { FaMobileAlt } from "react-icons/fa";
+import { MdAttachEmail } from "react-icons/md";
 import { MdLockOutline } from "react-icons/md";
 import "../Css/PhoneInput.css";
 
 const EmailInput = ({ value, onChange, placeholder, className = "" }) => {
   return (
     <div className={`phone-input-container ${className}`}>
-      <FaMobileAlt className="phone-icon" />
+      <MdAttachEmail  className="phone-icon" />
       <input
         autoComplete="email"
         type="email"

@@ -113,3 +113,239 @@ body {
   color: #495057; /* Slightly darker grey for labels */
   margin-bottom: 0.5rem;
 }
+.analysis-results-section {
+  background: linear-gradient(135deg, #f5f7fa 0%, #99bed8af 100%);
+  border-radius: 20px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.results-header {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.results-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 2px;
+}
+
+.bill-status-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.summary-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1);
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.summary-icon {
+  padding: 1rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.chart-card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.chart-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.factors-card {
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.factor-item {
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.factor-item:hover {
+  transform: translateX(5px);
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.factor-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.factor-percentage {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.recommendations-card {
+  border-radius: 15px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.recommendation-item {
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(5px);
+}
+
+.recommendation-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.recommendation-text {
+  line-height: 1.6;
+  color: #444;
+}
+
+/* Card Headers */
+.card-header {
+  border: none;
+  font-weight: 600;
+}
+
+.bg-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.bg-info {
+  background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%) !important;
+}
+
+.bg-success {
+  background: linear-gradient(135deg, #96CEB4 0%, #FFECD2 100%) !important;
+}
+
+/* Recharts custom styling */
+.recharts-pie-label-text {
+  font-size: 12px;
+  font-weight: 600;
+  fill: #333;
+}
+
+.recharts-legend-item-text {
+  color: #333 !important;
+  font-weight: 500;
+}
+
+.recharts-tooltip-wrapper {
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .analysis-results-section {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .results-header {
+    padding: 1rem 0;
+  }
+  
+  .summary-card {
+    margin-bottom: 1rem;
+  }
+  
+  .chart-card .card-body {
+    padding: 1rem;
+  }
+}
+
+/* Navigation buttons styling */
+.nav-btn {
+  border-radius: 25px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  color: white;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  color: white;
+}
+
+.nav-btn:disabled {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.bg-color{
+  background-color: #3373a3 !important;
+}
+.bg-clor{
+  background-color: var(--primary-color) !important;
+
+}

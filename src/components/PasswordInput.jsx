@@ -21,7 +21,7 @@ const PasswordInput = ({
         }
         type={showPassword ? "text" : "password"}
         name={name}
-        className="form-control mb-2"
+        className="form-control"
         value={value}
         onChange={onChange}
         placeholder={placeholder}

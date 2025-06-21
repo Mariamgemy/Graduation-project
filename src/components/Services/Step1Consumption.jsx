@@ -130,23 +130,25 @@ function Step1({ formData, errors, handleChange }) {
    <div className="row">
      <div className="col-md-6 mb-3">
        <Form.Group>
-         <Form.Label>نوع العداد</Form.Label>
+         <Form.Label>نمط استخدام الأجهزة</Form.Label>
          <Form.Select
-           name="MeterType"
-           value={formData.MeterType}
+           name="ApplianceUsage_Encoded"
+           value={formData.ApplianceUsage_Encoded}
            onChange={handleChange}
            className={`custom-select-style custom-input ${
-             errors.MeterType ? "is-invalid" : ""
+             errors.ApplianceUsage_Encoded ? "is-invalid" : ""
            }`}
          >
-           <option value="">اختر نوع العداد</option>
-           <option value="Electricity">كهرباء</option>
-           <option value="Water">ماء</option>
-           <option value="Gas">غاز</option>
+           <option value="">اختر نمط الاستخدام</option>
+           <option value="1">استخدام منخفض جدًا</option>
+           <option value="2">استخدام منخفض </option>
+  <option value="3">استخدام معتدل</option>
+  <option value="4">استخدام مرتفع</option>
+  <option value="5">استخدام مرتفع جدًا</option>
          </Form.Select>
-         {errors.MeterType && (
+         {errors.ApplianceUsage_Encoded && (
            <Form.Control.Feedback type="invalid">
-             {errors.MeterType}
+             {errors.ApplianceUsage_Encoded}
            </Form.Control.Feedback>
          )}
        </Form.Group>

@@ -317,9 +317,9 @@ const UtilityServices = forwardRef((props, ref) => {
               showCaptcha={true}
             />
           
-            <div className="text-start">
+            <div className="d-flex justify-content-end">
               <button
-                className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+                className="btn nav-btn btn-outline-secondry p2-4 py-2  mb-2"
                 onClick={handleProceedToPayment}
                 disabled={isProcessing}
               >

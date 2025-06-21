@@ -12,6 +12,7 @@ import EmailInput from "../components/EmailInput";
 import { API_CONFIG } from "../api/config";
 import "../Css/IdValidation.css";
 import { useModal } from "../components/ModalManager";
+import PasswordInput from "../components/PasswordInput";
 const ForgotPassword = ({ show, handleClose }, ref) => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -298,22 +299,17 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
             <div className="text-center mb-3">
               {countdown > 0 ? (
                 <p className="text-muted">
-                  يمكنك طلب رمز جديد خلال:{" "}
-                  <span className="fw-bold text-primary">{countdown}</span>{" "}
-                  ثانية
+                  يمكنك طلب رمز جديد بعد {countdown} ثانية
                 </p>
               ) : (
-                <div>
-                  <p className="text-muted mb-2">لم تتلق الرمز؟</p>
-                  <button
-                    type="button"
-                    className="btn btn-link p-0 text-decoration-none"
-                    onClick={handleResendOtp}
-                    disabled={isLoading || !canResend}
-                  >
-                    إعادة إرسال رمز التحقق
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="btn btn-link text-color w-100"
+                  onClick={handleResendOtp}
+                  disabled={isLoading || !canResend}
+                >
+                  إعادة إرسال الرمز
+                </button>
               )}
             </div>
           </>
@@ -325,9 +321,8 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
             <h3 className="mb-3">تغيير كلمة المرور</h3>
             <div className="mb-3">
               <label className="fw-bold form-label">كلمة المرور الجديدة</label>
-              <input
-                type="password"
-                className="form-control"
+              <PasswordInput
+          
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="أدخل كلمة المرور الجديدة"
@@ -337,11 +332,10 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
                 <div className="text-danger">{errors.newPassword}</div>
               )}
             </div>
+      
             <div className="mb-3">
               <label className="fw-bold form-label">تأكيد كلمة المرور</label>
-              <input
-                type="password"
-                className="form-control"
+              <PasswordInput
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="أعد إدخال كلمة المرور الجديدة"
@@ -372,9 +366,7 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
       backdropClassName="custom-backdrop"
     >
       <Modal.Body className="p-4 rounded-4">
-        {apiError && (
-          <div className="alert alert-danger text-center">{apiError}</div>
-        )}
+       
 
         {apiError && (
           <div className="alert alert-danger text-center" role="alert">

@@ -72,6 +72,7 @@ function Step2({ formData, errors, handleChange }) {
               <option value="CFL">CFL</option>
               <option value="Incandescent">تقليدي</option>
               <option value="Fluorescent">فلورسنت</option>
+              <option value="Halogen">هالوجين</option>
             </Form.Select>
             {errors.LightType && (
               <Form.Control.Feedback type="invalid">

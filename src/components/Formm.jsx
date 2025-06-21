@@ -10,7 +10,7 @@ import ConsumptionServices from "./Services/ConsumptionServices";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-bootstrap";
-import ElectricityConsumptionForm from "./ElectricityConsumptionForm";
+
 
 
 const stripePromise = loadStripe(
