@@ -1,5 +1,5 @@
 
-import Suggest from "../components/images/Suggest.png";
+import Suggest from "../components/images/Suggest.svg";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import Footer from "../components/Footer";
 import "../Css/Suggestions.css";

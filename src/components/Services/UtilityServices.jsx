@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import { useEffect } from "react";
 import "./UtilityServices.css";
 
 import { forwardRef, useImperativeHandle, useState, useRef } from "react";
@@ -10,11 +10,138 @@ import { Elements } from "@stripe/react-stripe-js";
 import stripePromise from "../../config/stripeConfig";
 import StripePayment from "../StripePaymentForm";
 import { useAuth } from "../../context/AuthContext";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaCreditCard,
+  FaFileInvoice,
+  FaLock,
+  FaSpinner,
+} from "react-icons/fa";
 import { FaArrowLeftLong } from "react-icons/fa6";
 
+function BillDetailsCard({ paymentData, formData, card }) {
+  const getUtilityType = (title) => {
+    if (title.includes("كهرباء")) return "كهرباء";
+    if (title.includes("مياه")) return "مياه";
+    if (title.includes("غاز")) return "غاز";
+    return "خدمة أخرى";
+  };
 
+  return (
+    <div className="bill-details-card">
+      <div className="bill-header">
+        <div className="bill-icon">
+          <FaFileInvoice />
+        </div>
+        <h3 className="bill-title">تفاصيل الفاتورة</h3>
+      </div>
 
+      <div className="bill-info">
+        {paymentData?.billNumber && (
+          <div className="bill-info-item">
+            <span className="bill-info-label">رقم الفاتورة</span>
+            <span className="bill-info-value">#{paymentData.billNumber}</span>
+          </div>
+        )}
 
+        <div className="bill-info-item">
+          <span className="bill-info-label">نوع الخدمة</span>
+          <span className="bill-info-value">
+            {getUtilityType(card?.title || "")}
+          </span>
+        </div>
+
+        <div className="bill-info-item">
+          <span className="bill-info-label">الرقم القومي</span>
+          <span className="bill-info-value">{formData.NID}</span>
+        </div>
+
+        <div className="bill-info-item">
+          <span className="bill-info-label">قراءة العداد</span>
+          <span className="bill-info-value">{formData.currentReading}</span>
+        </div>
+      </div>
+
+      {paymentData?.amount && (
+        <div className="bill-amount">
+          <div className="bill-amount-label">المبلغ المستحق</div>
+          <div className="bill-amount-value">{paymentData.amount} جنيه</div>
+        </div>
+      )}
+    </div>
+  );
+}
+function ErrorMessage({ errorMessage, onRetry, onChangeCard }) {
+  return (
+    <div className="error-message-card">
+      <div className="error-icon">
+        <FaTimesCircle />
+      </div>
+      <h2 className="error-title">فشل في الدفع</h2>
+      <p className="error-description">
+        عذراً، لم نتمكن من معالجة دفعتك. يرجى المحاولة مرة أخرى أو استخدام بطاقة
+        أخرى.
+      </p>
+      <div className="success-details">
+        <strong>السبب:</strong> {errorMessage || "خطأ غير محدد"}
+      </div>
+      <div className="button-group">
+        <button className="btn-enhanced btn-danger" onClick={onRetry}>
+          المحاولة مرة أخرى
+        </button>
+      </div>
+    </div>
+  );
+}
+function ProcessingState() {
+  return (
+    <div className="processing-state">
+      <div className="processing-icon">
+        <FaSpinner className="loading-spinner" />
+      </div>
+      <h3>جاري معالجة الدفع...</h3>
+      <p>يرجى عدم إغلاق هذه الصفحة أو الضغط على زر الرجوع</p>
+    </div>
+  );
+}
+function PaymentFormCard({
+  paymentData,
+  onPaymentSuccess,
+  onPaymentError,
+  formData,
+  card,
+}) {
+  return (
+    <div className="payment-form-card">
+      <div className="payment-header">
+        <div className="payment-icon">
+          <FaCreditCard />
+        </div>
+        <h3 className="payment-title">بيانات البطاقة الائتمانية</h3>
+      </div>
+
+      <Elements stripe={stripePromise}>
+        <StripePayment
+          clientSecret={paymentData.clientSecret}
+          paymentIntentId={paymentData.paymentIntentId}
+          onPaymentSuccess={onPaymentSuccess}
+          onPaymentError={onPaymentError}
+          // إضافة البيانات المطلوبة
+          formData={formData}
+          card={card}
+          paymentData={paymentData}
+          billDetails={paymentData}
+        />
+      </Elements>
+
+      <div className="security-notice">
+        <FaLock />
+        معاملتك محمية بتشفير SSL وتتم معالجتها بأمان تام
+      </div>
+    </div>
+  );
+}
 function UtilityFormFields({
   formData,
   errors,
@@ -22,10 +149,8 @@ function UtilityFormFields({
   captchaRef,
   showCaptcha,
 }) {
-
   return (
     <>
-  
       <div className="mb-3">
         <label className="form-label">الرقم القومي</label>
         <input
@@ -43,7 +168,7 @@ function UtilityFormFields({
         {errors.NID && <div className="invalid-feedback">{errors.NID}</div>}
       </div>
       <div className="mb-3">
-        <label className="form-label">رقم العداد</label>
+        <label className="form-label">قراءة العداد الحالية</label>
         <input
           type="number"
           className={`form-control custom-input ${
@@ -65,7 +190,7 @@ function UtilityFormFields({
           <CaptchaComponent ref={captchaRef} />
         </div>
       )}
-   </>
+    </>
   );
 }
 
@@ -103,7 +228,7 @@ const UtilityServices = forwardRef((props, ref) => {
     if (title.includes("كهرباء")) return "Electricity";
     if (title.includes("مياه")) return "Water";
     if (title.includes("غاز")) return "Gas";
-  
+
     return "Other";
   };
 
@@ -139,7 +264,6 @@ const UtilityServices = forwardRef((props, ref) => {
     );
   }
   const handleProceedToPayment = async () => {
-
     setPaymentError(null);
     setIsProcessing(true);
     setPaymentData(null);
@@ -205,31 +329,56 @@ const UtilityServices = forwardRef((props, ref) => {
     setPaymentError(errorMessage);
     setPaymentStep("error");
   };
+  const handleRetryPayment = () => {
+    setPaymentStep("form");
+    setPaymentError(null);
+    setPaymentData(null);
+  };
+  const handleChangeCard = () => {
+    setPaymentStep("payment");
+    setPaymentError(null);
+  };
 
   const renderContent = () => {
-  
     switch (paymentStep) {
       case "success_redirecting":
-        return (
-          <div className=" text-center p-4">
-            <Spinner animation="border" role="status" />
-            <p className="mt-2">جاري معالجة الدفع...</p>
-          </div>
-        );
+        return <ProcessingState />;
       case "error":
         return (
           <div>
-            <Alert variant="danger" className="mb-3">
-              <h4>حدث خطأ!</h4>
-              <p>{paymentError || "حدث خطأ غير متوقع."}</p>
-            </Alert>
-            <UtilityFormFields
-              formData={formData}
-              errors={errors}
-              handleChange={handleChange}
-              captchaRef={captchaRef}
-              showCaptcha={true}
+            <ErrorMessage
+              errorMessage={paymentError}
+              onRetry={handleRetryPayment}
+              onChangeCard={handleChangeCard}
             />
+            <div className="modern-card">
+              <UtilityFormFields
+                formData={formData}
+                errors={errors}
+                handleChange={handleChange}
+                captchaRef={captchaRef}
+                showCaptcha={true}
+              />
+              <div className="d-flex justify-content-end">
+                <button
+                  className="btn nav-btn btn-outline-secondry p2-4 py-2 mb-2 mt-3"
+                  onClick={handleProceedToPayment}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <FaSpinner className="loading-spinner" />
+                      جاري الاستعلام...
+                    </>
+                  ) : (
+                    <>
+                      متابعة
+                      <FaArrowLeftLong />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         );
       case "payment":
@@ -248,53 +397,65 @@ const UtilityServices = forwardRef((props, ref) => {
                 captchaRef={captchaRef}
                 showCaptcha={true}
               />
-              <button
-                className="btn nav-btn px-4 py-2 fs-5 mb-2 w-100"
-                onClick={handleProceedToPayment}
-                disabled={isProcessing}
-              >
-                {isProcessing ? "جاري المعالجة..." : "متابعة"}
-              </button>
+              <div className="button-group">
+                <button
+                  className="btn-enhanced"
+                  onClick={handleProceedToPayment}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? (
+                    <>
+                      <FaSpinner className="loading-spinner" />
+                      جاري المعالجة...
+                    </>
+                  ) : (
+                    <>
+                      متابعة
+                      <FaArrowLeftLong />
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           );
         }
         return (
           <div className="payment-section">
-            <h5>تفاصيل الفاتورة</h5>
-            {paymentData.billNumber && (
-              <p>رقم الفاتورة: {paymentData.billNumber}</p>
-            )}
-            {paymentData.amount && <p>المبلغ: {paymentData.amount}</p>}
+            <div>
+              <BillDetailsCard
+                paymentData={paymentData}
+                formData={formData}
+                card={card}
+              />
 
-            <div className="mt-4">
-              <h5>إدخال بيانات البطاقة</h5>
-              <Elements stripe={stripePromise}>
-                <StripePayment
-                  clientSecret={paymentData.clientSecret}
-                  paymentIntentId={paymentData.paymentIntentId}
-                  onPaymentSuccess={handlePaymentSuccess}
-                  onPaymentError={handlePaymentError}
-                />
-              </Elements>
+              <PaymentFormCard
+                paymentData={paymentData}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
+                // إضافة البيانات المطلوبة
+                formData={formData}
+                card={card}
+              />
+
+              <div className="button-group">
+                <button
+                  className="btn nav-btn btn-outline-secondry p2-4 py-2 mb-2 fs-5 mt-3"
+                  onClick={() => {
+                    setPaymentStep("form");
+                    setPaymentError(null);
+                    setPaymentData(null);
+                  }}
+                >
+                  إلغاء والعودة
+                </button>
+              </div>
             </div>
-
-            <button
-              className="btn btn-link mt-2"
-              onClick={() => {
-                setPaymentStep("form");
-                setPaymentError(null);
-                setPaymentData(null);
-              }}
-            >
-              إلغاء
-            </button>
           </div>
         );
       case "form":
       default:
         return (
           <div>
-       
             {authError && (
               <Alert variant="warning" className="mb-3">
                 <p className="mb-0">{authError}</p>
@@ -307,7 +468,7 @@ const UtilityServices = forwardRef((props, ref) => {
               captchaRef={captchaRef}
               showCaptcha={true}
             />
-          
+
             <div className="d-flex justify-content-end">
               <button
                 className="btn nav-btn btn-outline-secondry p2-4 py-2  mb-2"
@@ -315,10 +476,14 @@ const UtilityServices = forwardRef((props, ref) => {
                 disabled={isProcessing}
               >
                 {isProcessing ? (
-                  "جاري الاستعلام..."
+                  <>
+                    <FaSpinner className="loading-spinner" />
+                    جاري الاستعلام...
+                  </>
                 ) : (
                   <>
-                    متابعة &nbsp; <FaArrowLeftLong size={20} />
+                    متابعة
+                    <FaArrowLeftLong />
                   </>
                 )}
               </button>
@@ -328,7 +493,7 @@ const UtilityServices = forwardRef((props, ref) => {
     }
   };
 
-  return <div className="utility-services">{renderContent()}</div>;
+  return <div className="">{renderContent()}</div>;
 });
 
 export default UtilityServices;

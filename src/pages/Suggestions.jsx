@@ -1,5 +1,5 @@
 import Line from "../components/Line";
-import Suggest from "../components/images/Suggest.png";
+import Suggest from "../components/images/Suggest.svg";
 import CaptchaComponent from "../components/captcha";
 import Footer from "../components/Footer";
 import "../Css/Suggestions.css";

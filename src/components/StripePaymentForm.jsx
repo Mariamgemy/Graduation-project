@@ -5,7 +5,17 @@ import { useNavigate } from "react-router-dom";
 import { paymentService } from "../services/paymentService";
 import "../Css/PaymentMethods.css";
 
-const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, onPaymentError, billDetails }) => {
+// التعديل الثالث: إضافة formData, card, paymentData للـ props
+const StripePaymentForm = ({ 
+  clientSecret, 
+  paymentIntentId, 
+  onPaymentSuccess, 
+  onPaymentError, 
+  billDetails,
+  formData,
+  card,
+  paymentData
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const navigate = useNavigate();
@@ -18,7 +28,7 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
   const [error, setError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [succeeded, setSucceeded] = useState(false);
-  const [disabled, setDisabled] = useState(true); // Initial state is disabled
+  const [disabled, setDisabled] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [pollingActive, setPollingActive] = useState(false);
 
@@ -58,42 +68,43 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
       console.error("[StripePaymentForm] CRITICAL: Missing client secret in useEffect. Payment cannot proceed.");
       setError("بيانات الدفع الأساسية مفقودة. لا يمكن إكمال العملية.");
     }
-    // Initialize disabled state based on stripe and elements availability
     if (!stripe || !elements) {
         setDisabled(true);
     }
   }, [stripe, elements, clientSecret]);
 
-  // Add effect to update UI when payment status changes to "Paid"
   useEffect(() => {
     if (paymentStatus === "Paid") {
       console.log("[StripePaymentForm] Payment status is 'Paid'. Setting succeeded state to true.");
       setSucceeded(true);
       
-      // Navigate to success page after a short delay
       const timer = setTimeout(() => {
         handleNavigateToSuccess();
-      }, 1500); // Give user a moment to see the success message before redirecting
+      }, 1500);
       
       return () => clearTimeout(timer);
     }
   }, [paymentStatus]);
 
-  // Function to navigate to success page
+  // التعديل الرئيسي: تحديث handleNavigateToSuccess لتمرير البيانات المطلوبة
   const handleNavigateToSuccess = () => {
     console.log("[StripePaymentForm] Navigating to success page with payment details");
     
-    // Prepare payment details to pass to the success page
     const paymentDetails = {
-      billNumber: billDetails?.billNumber || "N/A",
-      amount: billDetails?.amount || "50", // Default or from props
+      billNumber: billDetails?.billNumber || paymentData?.billNumber || "N/A",
+      amount: billDetails?.amount || paymentData?.amount || "50",
       paymentIntentId: paymentIntentId || "N/A",
       date: new Date().toLocaleDateString('ar-EG')
     };
     
+    // تمرير جميع البيانات المطلوبة لصفحة النجاح
     navigate('/payment-success', { 
       state: { 
-        paymentDetails 
+        paymentDetails,
+        paymentResult: paymentDetails,
+        formData: formData,
+        card: card,
+        paymentData: paymentData || billDetails
       } 
     });
   };
@@ -189,7 +200,6 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
 
   const handleChange = async (event) => {
     console.log("[StripePaymentForm] CardElement handleChange triggered. Event:", event);
-    // Button is disabled if CardElement is empty or there's an error, or if stripe/elements are not ready.
     setDisabled(event.empty || !!event.error || !stripe || !elements);
     setError(event.error ? event.error.message : "");
   };
@@ -253,7 +263,6 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
         switch (intent.status) {
           case 'succeeded':
             console.log('[StripePaymentForm] handleSubmit: PaymentIntent status from confirmCardPayment is \'succeeded\'.');
-            // Immediately set success states when Stripe confirms payment has succeeded
             setPaymentStatus("Paid");
             setSucceeded(true);
             break;
@@ -275,7 +284,6 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
               } else if (confirmedIntent) {
                 console.log('[StripePaymentForm] handleSubmit (requires_action): stripe.handleCardAction successful. ConfirmedIntent details:', confirmedIntent);
                 
-                // Check if the confirmed intent is already successful
                 if (confirmedIntent.status === 'succeeded') {
                   console.log('[StripePaymentForm] handleSubmit: ConfirmedIntent status is \'succeeded\'. Setting success states.');
                   setPaymentStatus("Paid");
@@ -328,8 +336,6 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
       </div>
     );
   }
-  console.log("[StripePaymentForm] Rendering: Stripe and Elements are available. Proceeding to render payment form. Button disabled state:", disabled);
-  console.log("[StripePaymentForm] Current state values - succeeded:", succeeded, "paymentStatus:", paymentStatus);
 
   return (
     <Form onSubmit={handleSubmit} className="stripe-payment-form">
@@ -379,18 +385,10 @@ const StripePaymentForm = ({ clientSecret, paymentIntentId, onPaymentSuccess, on
         )}
       </Button>
       
-      {/* Debug information (can be removed in production) */}
       {process.env.NODE_ENV === 'development' && (
         <div className="mt-3 p-2 bg-light">
           <small>Debug - Payment Status: {paymentStatus || 'None'}, Succeeded: {succeeded ? 'Yes' : 'No'}</small>
         </div>
-      )}
-      
-      {/* Success message still appears in the form before redirect */}
-      {succeeded && (
-        <Alert variant="success" className="mt-3">
-          تم الدفع بنجاح! سيتم تحديث حالة الفاتورة قريباً.
-        </Alert>
       )}
     </Form>
   );

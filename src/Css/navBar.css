@@ -21,7 +21,8 @@
 .navbar-brand img {
   max-height: 90px;
   width: auto;
-  margin-top: 10px;
+  /* margin-top: 4px; */
+  margin-left: 15px;
 }
 
 @media (max-width: 991px) {
@@ -31,11 +32,12 @@
   }
   .navbar-toggler {
     margin-top: -20px;
+   
   }
   .nav-logo img {
     max-height: 80px;
     width: auto;
-    margin-top: -11px;
+    /* margin-top: 11px; */
   }
 }
 
@@ -98,8 +100,9 @@
 
 .navbar-toggler-icon {
   background-image: url(../logo/Vector.svg) !important;
-  width: 1.4em !important;
-  height: 1.4em !important;
+  width: 1.6em !important;
+  height: 1.6em !important;
+  margin-bottom: 11px;
 }
 
 .navbar-toggler {
@@ -118,10 +121,6 @@
   height: 50px;
   background-color: transparent !important;
   border-radius: 40px !important;
-  -webkit-border-radius: 40px !important;
-  -moz-border-radius: 40px !important;
-  -ms-border-radius: 40px !important;
-  -o-border-radius: 40px !important;
   color: #fff !important;
 }
 
@@ -135,6 +134,7 @@
   border-radius: 20px;
   padding: 5px;
   transition: all 0.3s ease-in-out;
+
 }
 
 @media (max-width: 992px) {
@@ -150,10 +150,7 @@
 
 .searchInput {
   transition: box-shadow 0.3s ease-in-out !important;
-  -webkit-transition: box-shadow 0.3s ease-in-out !important;
-  -moz-transition: box-shadow 0.3s ease-in-out !important;
-  -ms-transition: box-shadow 0.3s ease-in-out !important;
-  -o-transition: box-shadow 0.3s ease-in-out !important;
+
 }
 
 .searchInput:focus {
