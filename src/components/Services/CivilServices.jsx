@@ -11,42 +11,48 @@ import { Alert } from "react-bootstrap";
 import { useAuth } from "../../context/AuthContext";
 import UserInfoDisplay from "../UserInfoDisplay";
 import DeliveryData from "../DeliveryData";
+import { civilService } from "../../services/civilService";
+
 const CivilServices = forwardRef((props, ref) => {
   const location = useLocation();
   const card = location.state;
   const navigate = useNavigate();
-
-  const [activeStep, setActiveStep] = useState(1);
-  const [motherName, setMotherName] = useState("");
-  const [anotherMotherName, setAnotherMotherName] = useState("");
-  const [partnerName, setPartnerName] = useState("");
-  const [isSelf, setIsSelf] = useState("");
-  const [numberOfCopies, setNumberOfCopies] = useState("");
-  const [quadriliteralName, setQuadriliteralName] = useState("");
-  const [id, setId] = useState("");
-  const [gender, setGender] = useState("");
-  const [kinship, setKinship] = useState("");
-  const [errors, setErrors] = useState({});
-  const [authError, setAuthError] = useState(null);
-
-
- 
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
 
+  const [activeStep, setActiveStep] = useState(1);
+  const [errors, setErrors] = useState({});
+  const [authError, setAuthError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deliveryData, setDeliveryData] = useState({});
+
+  // Form data state
+  const [formData, setFormData] = useState({
+    motherName: "",
+    isSelf: "",
+    numberOfCopies: "",
+    quadriliteralName: "",
+    id: "",
+    anotherMotherName: "",
+    kinship: "",
+    gender: "",
+    partnerName: "",
+  });
+
+  // Validation functions
   const isValidName = (name) => {
-    const nameRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{3,}$/;
-    return nameRegex.test(name);
+    // Check if name has exactly 4 parts (quadriliteral name)
+    const nameParts = name
+      .trim()
+      .split(/\s+/)
+      .filter((part) => part.length > 0);
+    return (
+      nameParts.length === 4 &&
+      /^[\u0621-\u064A\u066E-\u06D3\s]{3,}$/.test(name)
+    );
   };
-  const isValidMotherName = (motherName) => {
-    const nameRegex = /^[\u0621-\u064A\u066E-\u06D3\s]{2,}$/;
-    return nameRegex.test(motherName);
-  };
-  const isValidId = (id) => {
-    const idRegex = /^\d{14}$/;
-    return idRegex.test(id);
-  };
+  const isValidMotherName = (motherName) =>
+    /^[\u0621-\u064A\u066E-\u06D3\s]{2,}$/.test(motherName);
+  const isValidId = (id) => /^\d{14}$/.test(id);
 
   useEffect(() => {
     if (!user) {
@@ -55,172 +61,642 @@ const CivilServices = forwardRef((props, ref) => {
       setAuthError(null);
     }
   }, [user]);
+
+  // Get document type for backend
   const getDocumentType = (title) => {
+    if (title.includes("ميلاد مميكنة لأول مرة"))
+      return "BirthCertificateForFisrTime";
     if (title.includes("ميلاد")) return "BirthCertificate";
     if (title.includes("زواج")) return "MarriageCertificate";
     if (title.includes("طلاق")) return "DivorceCertificate";
-    if (title.includes("وفاة")) return "ResidenceCertificate";
+    if (title.includes("وفاة")) return "Death Certificate";
     return "Other";
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Handle form field changes
+  const handleFieldChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }));
+    }
   };
 
-  
-  const validateCivilServiceData = (newErrors) => {
-    if (!motherName) newErrors.motherName = "هذا الحقل مطلوب";
-    else if (!isValidMotherName(motherName)) {
-      newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+  // Validation logic
+  const validateStep = (step) => {
+    const newErrors = {};
+
+    if (step === 1) {
+      // Special validation for death certificate
+      if (card.title === "شهادة وفاة") {
+        if (!formData.quadriliteralName) {
+          newErrors.quadriliteralName = "هذا الحقل مطلوب";
+        } else if (!isValidName(formData.quadriliteralName)) {
+          newErrors.quadriliteralName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+        }
+
+        if (!formData.id) {
+          newErrors.id = "هذا الحقل مطلوب";
+        } else if (!isValidId(formData.id)) {
+          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+        }
+
+        if (!formData.anotherMotherName) {
+          newErrors.anotherMotherName = "هذا الحقل مطلوب";
+        } else if (!isValidMotherName(formData.anotherMotherName)) {
+          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+
+        if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
+        if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
+        if (!formData.numberOfCopies) {
+          newErrors.numberOfCopies = "هذا الحقل مطلوب";
+        }
+      } else {
+        // Regular validation for other certificates
+        if (!formData.motherName) {
+          newErrors.motherName = "هذا الحقل مطلوب";
+        } else if (!isValidMotherName(formData.motherName)) {
+          newErrors.motherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+
+        if (formData.isSelf === "") {
+          newErrors.isSelf = "اختر نعم أو لا";
+        }
+
+        if (formData.isSelf === false) {
+          if (!formData.quadriliteralName) {
+            newErrors.quadriliteralName = "هذا الحقل مطلوب";
+          } else if (!isValidName(formData.quadriliteralName)) {
+            newErrors.quadriliteralName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+          }
+
+          if (!formData.id) {
+            newErrors.id = "هذا الحقل مطلوب";
+          } else if (!isValidId(formData.id)) {
+            newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
+          }
+
+          if (!formData.anotherMotherName) {
+            newErrors.anotherMotherName = "هذا الحقل مطلوب";
+          } else if (!isValidMotherName(formData.anotherMotherName)) {
+            newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+          }
+
+          if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
+          if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
+
+          if (card.title === "قسيمة زواج" && !formData.partnerName) {
+            newErrors.partnerName = "هذا الحقل مطلوب";
+          } else if (
+            card.title === "قسيمة زواج" &&
+            !isValidName(formData.partnerName)
+          ) {
+            newErrors.partnerName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+          }
+        }
+
+        if (!formData.numberOfCopies) {
+          newErrors.numberOfCopies = "هذا الحقل مطلوب";
+        }
+      }
     }
 
-    if (isSelf === "") newErrors.isSelf = "اختر نعم أو لا";
+    if (step === 2) {
+      if (!deliveryData.governorate) newErrors.governorate = "المحافظة مطلوبة";
+      if (!deliveryData.city) newErrors.city = "المدينة مطلوبة";
+      if (!deliveryData.district) newErrors.district = "الحي / المركز مطلوب";
+      if (!deliveryData.detailedAddress)
+        newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
+    }
 
-    if (isSelf === true) {
-      if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-    } else if (isSelf === false) {
-      if (!quadriliteralName) {
+    if (card.title === "شهادة ميلاد مميكنة لأول مرة") {
+      if (!formData.quadriliteralName) {
         newErrors.quadriliteralName = "هذا الحقل مطلوب";
-      } else if (!isValidName(quadriliteralName)) {
-        newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+      } else if (!isValidName(formData.quadriliteralName)) {
+        newErrors.quadriliteralName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
       }
 
-      if (!id) {
-        newErrors.id = "هذا الحقل مطلوب";
-      } else if (!isValidId(id)) {
-        newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-      }
-
-      if (!anotherMotherName) {
+      if (!formData.anotherMotherName) {
         newErrors.anotherMotherName = "هذا الحقل مطلوب";
-      } else if (!isValidMotherName(anotherMotherName)) {
+      } else if (!isValidMotherName(formData.anotherMotherName)) {
         newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
       }
 
-      if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
-      if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-      if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
+      if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
+      if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
     }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Handle next step
+  const handleNext = () => {
+    if (validateStep(activeStep)) {
+      setActiveStep(activeStep + 1);
+    }
+  };
+
+  // Handle delivery data from DeliveryData component
+  const handleDeliveryData = (data) => {
+    setDeliveryData(data);
+  };
+
+  // Submit form to backend
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    if (!validateStep(activeStep)) return;
 
     setIsSubmitting(true);
     try {
-      console.log("تم إرسال البيانات:", formData);
+      const requestData = {
+        documentType: getDocumentType(card.title),
+        applicantName: user.name,
+        applicantNID: user.nationalId,
+        relation:
+          card.title === "شهادة وفاة"
+            ? formData.kinship
+            : formData.isSelf
+            ? "Self"
+            : formData.kinship,
+        ownerName:
+          card.title === "شهادة وفاة"
+            ? formData.quadriliteralName
+            : formData.isSelf
+            ? user.name
+            : formData.quadriliteralName,
+        ownerNID:
+          card.title === "شهادة وفاة"
+            ? formData.id
+            : formData.isSelf
+            ? user.nationalId
+            : formData.id,
+        ownerMotherName:
+          card.title === "شهادة وفاة"
+            ? formData.anotherMotherName
+            : formData.isSelf
+            ? formData.motherName
+            : formData.anotherMotherName,
+        copiesCount: parseInt(formData.numberOfCopies),
+        governorate: deliveryData.governorate,
+        district: deliveryData.district,
+        city: deliveryData.city,
+        detailsAddress: deliveryData.detailedAddress,
+        extraFields: {
+          partnerName: formData.partnerName || "",
+          gender: formData.gender || "",
+        },
+      };
 
+      console.log("Sending request to backend:", requestData);
+      const response = await civilService.submitCivilServiceRequest(
+        requestData
+      );
+      console.log("Backend response:", response);
+
+      navigate("/payment-success", {
+        state: {
+          serviceType: "civil",
+          documentType: card.title,
+          requestId: response.requestId,
+        },
+      });
     } catch (error) {
-      console.error("خطأ في إرسال البيانات:", error);
+      console.error("Error submitting request:", error);
+      setErrors({
+        submit: error.response?.data?.message || "حدث خطأ أثناء تقديم الطلب",
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   useImperativeHandle(ref, () => ({
-    validateForm,
-    getFormData: () => formData,
+    validateForm: () => validateStep(activeStep),
+    getFormData: () => ({ ...formData, ...deliveryData }),
   }));
 
-  const handleNext = () => {
-    const newErrors = {};
-
-    if (activeStep === 1) {
-      if (
-        card.title === "شهادة ميلاد" ||
-        card.title === "قسيمة زواج" ||
-        card.title === "قسيمة طلاق"
-      ) {
-        validateCivilServiceData(newErrors);
-
-        if (card.title === "قسيمة زواج" && isSelf === false) {
-          if (!partnerName) {
-            newErrors.partnerName = "هذا الحقل مطلوب";
-          } else if (!isValidName(partnerName)) {
-            newErrors.partnerName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-          }
-        }
-      } else if (
-        card.title === "شهادة ميلاد مميكنة لأول مرة" ||
-        card.title === "شهادة وفاة"
-      ) {
-        if (!quadriliteralName) {
-          newErrors.quadriliteralName = "هذا الحقل مطلوب";
-        } else if (!isValidName(quadriliteralName)) {
-          newErrors.quadriliteralName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
-
-        if (!id) {
-          newErrors.id = "هذا الحقل مطلوب";
-        } else if (!isValidId(id)) {
-          newErrors.id = "الرقم القومي يجب أن يكون 14 رقم";
-        }
-
-        if (!anotherMotherName) {
-          newErrors.anotherMotherName = "هذا الحقل مطلوب";
-        } else if (!isValidMotherName(anotherMotherName)) {
-          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-        }
-
-        if (!kinship) newErrors.kinship = "هذا الحقل مطلوب";
-        if (!gender) newErrors.gender = "هذا الحقل مطلوب";
-        if (!numberOfCopies) newErrors.numberOfCopies = "هذا الحقل مطلوب";
-      }
-
-      setErrors(newErrors);
-
-      if (Object.keys(newErrors).length === 0) {
-        setActiveStep(2);
-      }
+  // Render form fields based on service type
+  const renderServiceFields = () => {
+    // Special case for death certificate - no self option
+    if (card.title === "شهادة وفاة") {
+      return (
+        <div className="mt-3 p-3">
+          <div className="row">
+            <h3 className="text-color mb-3">بيانات المتوفي</h3>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label className="form-label">الاسم رباعي للمتوفي</label>
+                <input
+                  type="text"
+                  className={`form-control custom-input ${
+                    errors.quadriliteralName ? "is-invalid" : ""
+                  }`}
+                  value={formData.quadriliteralName}
+                  onChange={(e) =>
+                    handleFieldChange("quadriliteralName", e.target.value)
+                  }
+                />
+                {errors.quadriliteralName && (
+                  <div className="text-danger">{errors.quadriliteralName}</div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">الرقم القومي</label>
+                <input
+                  type="text"
+                  className={`form-control custom-input ${
+                    errors.id ? "is-invalid" : ""
+                  }`}
+                  value={formData.id}
+                  onChange={(e) => handleFieldChange("id", e.target.value)}
+                />
+                {errors.id && <div className="text-danger">{errors.id}</div>}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">صلة القرابة</label>
+                <select
+                  className={`form-select custom-select-style custom-input ${
+                    errors.kinship ? "is-invalid" : ""
+                  }`}
+                  value={formData.kinship}
+                  onChange={(e) => handleFieldChange("kinship", e.target.value)}
+                >
+                  <option value="">اختر صلة القرابة</option>
+                  <option value="الابن">الابن</option>
+                  <option value="الابنة">الابنة</option>
+                  <option value="الاب">الاب</option>
+                  <option value="الام">الام</option>
+                  <option value="الزوج">الزوج</option>
+                  <option value="الزوجة">الزوجة</option>
+                </select>
+                {errors.kinship && (
+                  <div className="text-danger">{errors.kinship}</div>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label className="form-label">اسم الام للمتوفي</label>
+                <input
+                  type="text"
+                  className={`form-control custom-input ${
+                    errors.anotherMotherName ? "is-invalid" : ""
+                  }`}
+                  value={formData.anotherMotherName}
+                  onChange={(e) =>
+                    handleFieldChange("anotherMotherName", e.target.value)
+                  }
+                />
+                {errors.anotherMotherName && (
+                  <div className="text-danger">{errors.anotherMotherName}</div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">النوع</label>
+                <select
+                  className={`form-select custom-select-style custom-input ${
+                    errors.gender ? "is-invalid" : ""
+                  }`}
+                  value={formData.gender}
+                  onChange={(e) => handleFieldChange("gender", e.target.value)}
+                >
+                  <option value="">اختر النوع</option>
+                  <option value="female">أنثي</option>
+                  <option value="male">ذكر</option>
+                </select>
+                {errors.gender && (
+                  <div className="text-danger">{errors.gender}</div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">عدد النسخ</label>
+                <select
+                  className={`form-select custom-select-style custom-input ${
+                    errors.numberOfCopies ? "is-invalid" : ""
+                  }`}
+                  value={formData.numberOfCopies}
+                  onChange={(e) =>
+                    handleFieldChange("numberOfCopies", e.target.value)
+                  }
+                >
+                  <option value="">اختر عدد النسخ</option>
+                  {[1, 2, 3, 4, 5].map((num) => (
+                    <option key={num} value={num}>
+                      {num}
+                    </option>
+                  ))}
+                </select>
+                {errors.numberOfCopies && (
+                  <div className="text-danger">{errors.numberOfCopies}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
     }
-    if (activeStep === 2) {
-      if (!governorate) {
-        newErrors.governorate = "المحافظة مطلوبة";
-      } else if (!isValidGovernorate(governorate)) {
-        newErrors.governorate = "يرجى إدخال اسم المحافظة بشكل صحيح";
-      }
-      if (!city) {
-        newErrors.city = "المدينة مطلوبة";
-      } else if (!isValidCity(city)) {
-        newErrors.city = "يرجى إدخال اسم المدينة بشكل صحيح";
-      }
-      if (!district) {
-        newErrors.district = "الحي / المركز مطلوب";
-      } else if (!isValidDistrict(district)) {
-        newErrors.district = "يرجى إدخال اسم الحي / المركز بشكل صحيح";
-      }
-      if (!detailedAddress) {
-        newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
-      } else if (!isValidDetailedAddress(detailedAddress)) {
-        newErrors.detailedAddress =
-          "يرجى إدخال العنوان التفصيلي بشكل كامل (10 أحرف على الأقل)";
-      }
-
-      setErrors(newErrors);
-
-      if (Object.keys(newErrors).length === 0) {
-        // Update formData with the address information
-        setFormData((prev) => ({
-          ...prev,
-          governorate,
-          city,
-          district,
-          detailedAddress,
-        }));
-        setActiveStep(3);
-      }
+    if (card.title === "شهادة ميلاد مميكنة لأول مرة") {
+      return (
+        <div className="mt-3 p-3">
+          <div className="row">
+            <h3 className="text-color mb-3">بيانات صاحب الوثيقة</h3>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label className="form-label">الاسم رباعي </label>
+                <input
+                  type="text"
+                  className={`form-control custom-input ${
+                    errors.quadriliteralName ? "is-invalid" : ""
+                  }`}
+                  value={formData.quadriliteralName}
+                  onChange={(e) =>
+                    handleFieldChange("quadriliteralName", e.target.value)
+                  }
+                />
+                {errors.quadriliteralName && (
+                  <div className="text-danger">{errors.quadriliteralName}</div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">صلة القرابة</label>
+                <select
+                  className={`form-select custom-select-style custom-input ${
+                    errors.kinship ? "is-invalid" : ""
+                  }`}
+                  value={formData.kinship}
+                  onChange={(e) => handleFieldChange("kinship", e.target.value)}
+                >
+                  <option value="">اختر صلة القرابة</option>
+                  <option value="الابن">الابن</option>
+                  <option value="الابنة">الابنة</option>
+                  <option value="الاب">الاب</option>
+                  <option value="الام">الام</option>
+                </select>
+                {errors.kinship && (
+                  <div className="text-danger">{errors.kinship}</div>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label className="form-label">اسم الام لصاحب الوثيقة</label>
+                <input
+                  type="text"
+                  className={`form-control custom-input ${
+                    errors.anotherMotherName ? "is-invalid" : ""
+                  }`}
+                  value={formData.anotherMotherName}
+                  onChange={(e) =>
+                    handleFieldChange("anotherMotherName", e.target.value)
+                  }
+                />
+                {errors.anotherMotherName && (
+                  <div className="text-danger">{errors.anotherMotherName}</div>
+                )}
+              </div>
+              <div className="mb-3">
+                <label className="form-label">النوع</label>
+                <select
+                  className={`form-select custom-select-style custom-input ${
+                    errors.gender ? "is-invalid" : ""
+                  }`}
+                  value={formData.gender}
+                  onChange={(e) => handleFieldChange("gender", e.target.value)}
+                >
+                  <option value="">اختر النوع</option>
+                  <option value="female">أنثي</option>
+                  <option value="male">ذكر</option>
+                </select>
+                {errors.gender && (
+                  <div className="text-danger">{errors.gender}</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
     }
+
+    const commonFields = (
+      <>
+        <div className="mb-3">
+          <label className="form-label">اسم الأم لمقدم الطلب</label>
+          <input
+            type="text"
+            className={`form-control custom-input ${
+              errors.motherName ? "is-invalid" : ""
+            }`}
+            value={formData.motherName}
+            onChange={(e) => handleFieldChange("motherName", e.target.value)}
+          />
+          {errors.motherName && (
+            <div className="text-danger">{errors.motherName}</div>
+          )}
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">
+            هل تريد إصدار {card.title} لنفسك ؟
+          </label>
+          <div className="d-flex gap-5">
+            <div className="form-check">
+              <input
+                type="radio"
+                name="isSelf"
+                className="form-check-input"
+                checked={formData.isSelf === true}
+                onChange={() => handleFieldChange("isSelf", true)}
+              />
+              <label className="form-check-label">نعم</label>
+            </div>
+            <div className="form-check">
+              <input
+                type="radio"
+                name="isSelf"
+                className="form-check-input"
+                checked={formData.isSelf === false}
+                onChange={() => handleFieldChange("isSelf", false)}
+              />
+              <label className="form-check-label">لا</label>
+            </div>
+          </div>
+          {errors.isSelf && <div className="text-danger">{errors.isSelf}</div>}
+        </div>
+      </>
+    );
+
+    const selfFields = (
+      <div className="mt-3">
+        <label className="form-label">عدد النسخ المطلوبة</label>
+        <select
+          className={`form-select custom-select-style custom-input ${
+            errors.numberOfCopies ? "is-invalid" : ""
+          }`}
+          value={formData.numberOfCopies}
+          onChange={(e) => handleFieldChange("numberOfCopies", e.target.value)}
+        >
+          <option value="">اختر عدد النسخ</option>
+          {[1, 2, 3, 4, 5].map((num) => (
+            <option key={num} value={num}>
+              {num}
+            </option>
+          ))}
+        </select>
+        {errors.numberOfCopies && (
+          <div className="text-danger">{errors.numberOfCopies}</div>
+        )}
+      </div>
+    );
+
+    const otherPersonFields = (
+      <div className="mt-3 p-3">
+        <div className="row">
+          <h3 className="text-color mb-3">بيانات صاحب الوثيقة</h3>
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">الاسم رباعي</label>
+              <input
+                type="text"
+                className={`form-control custom-input ${
+                  errors.quadriliteralName ? "is-invalid" : ""
+                }`}
+                value={formData.quadriliteralName}
+                onChange={(e) =>
+                  handleFieldChange("quadriliteralName", e.target.value)
+                }
+              />
+              {errors.quadriliteralName && (
+                <div className="text-danger">{errors.quadriliteralName}</div>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">الرقم القومي</label>
+              <input
+                type="text"
+                className={`form-control custom-input ${
+                  errors.id ? "is-invalid" : ""
+                }`}
+                value={formData.id}
+                onChange={(e) => handleFieldChange("id", e.target.value)}
+              />
+              {errors.id && <div className="text-danger">{errors.id}</div>}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">صلة القرابة</label>
+              <select
+                className={`form-select custom-select-style custom-input ${
+                  errors.kinship ? "is-invalid" : ""
+                }`}
+                value={formData.kinship}
+                onChange={(e) => handleFieldChange("kinship", e.target.value)}
+              >
+                <option value="">اختر صلة القرابة</option>
+                <option value="الابن">الابن</option>
+                <option value="الابنة">الابنة</option>
+                <option value="الاب">الاب</option>
+                <option value="الام">الام</option>
+                <option value="الزوج">الزوج</option>
+                <option value="الزوجة">الزوجة</option>
+              </select>
+              {errors.kinship && (
+                <div className="text-danger">{errors.kinship}</div>
+              )}
+            </div>
+          </div>
+          <div className="col-md-6">
+            <div className="mb-3">
+              <label className="form-label">اسم الام لصاحب الوثيقة</label>
+              <input
+                type="text"
+                className={`form-control custom-input ${
+                  errors.anotherMotherName ? "is-invalid" : ""
+                }`}
+                value={formData.anotherMotherName}
+                onChange={(e) =>
+                  handleFieldChange("anotherMotherName", e.target.value)
+                }
+              />
+              {errors.anotherMotherName && (
+                <div className="text-danger">{errors.anotherMotherName}</div>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">النوع</label>
+              <select
+                className={`form-select custom-select-style custom-input ${
+                  errors.gender ? "is-invalid" : ""
+                }`}
+                value={formData.gender}
+                onChange={(e) => handleFieldChange("gender", e.target.value)}
+              >
+                <option value="">اختر النوع</option>
+                <option value="female">أنثي</option>
+                <option value="male">ذكر</option>
+              </select>
+              {errors.gender && (
+                <div className="text-danger">{errors.gender}</div>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">عدد النسخ</label>
+              <select
+                className={`form-select custom-select-style custom-input ${
+                  errors.numberOfCopies ? "is-invalid" : ""
+                }`}
+                value={formData.numberOfCopies}
+                onChange={(e) =>
+                  handleFieldChange("numberOfCopies", e.target.value)
+                }
+              >
+                <option value="">اختر عدد النسخ</option>
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <option key={num} value={num}>
+                    {num}
+                  </option>
+                ))}
+              </select>
+              {errors.numberOfCopies && (
+                <div className="text-danger">{errors.numberOfCopies}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+    const partnerField = card.title === "قسيمة زواج" &&
+      formData.isSelf === false && (
+        <div className="mb-3">
+          <label className="form-label">اسم زوج / زوجة صاحب القسيمة</label>
+          <input
+            type="text"
+            className={`form-control custom-input ${
+              errors.partnerName ? "is-invalid" : ""
+            }`}
+            value={formData.partnerName}
+            onChange={(e) => handleFieldChange("partnerName", e.target.value)}
+          />
+          {errors.partnerName && (
+            <div className="text-danger">{errors.partnerName}</div>
+          )}
+        </div>
+      );
+
+    return (
+      <div>
+        {commonFields}
+        {formData.isSelf === true && selfFields}
+        {formData.isSelf === false && (
+          <>
+            {otherPersonFields}
+            {partnerField}
+          </>
+        )}
+      </div>
+    );
   };
 
+  // Render step content
   const renderStepContent = () => {
     if (!user) {
       return (
@@ -231,1084 +707,126 @@ const CivilServices = forwardRef((props, ref) => {
         </div>
       );
     }
+
     switch (activeStep) {
       case 1:
         return (
           <div>
-            {card.title === "شهادة ميلاد" && (
-              <div>
-                <div className="mb-3">
-                  <label className="form-label ">اسم الأم لمقدم الطلب</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                      errors.motherName ? "is-invalid" : ""
-                    }`}
-                    value={motherName}
-                    onChange={(e) => setMotherName(e.target.value)}
-                  />
-                  {errors.motherName && (
-                    <div className="text-danger">{errors.motherName}</div>
-                  )}
-                </div>
-
-                <div className="mb-3 ">
-                  <label className="form-label">
-                    هل تريد إصدار شهادة الميلاد لنفسك ؟
-                  </label>
-
-                  <div className="d-flex gap-5">
-                    <div className="form-check">
-                      <input
-                        type="radio"
-                        name="isSelf"
-                        className="form-check-input"
-                        value="yes"
-                        checked={isSelf === true}
-                        onChange={(e) => setIsSelf(true)}
-                      />
-                      <label className="form-check-label">نعم</label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        type="radio"
-                        name="isSelf"
-                        className="form-check-input"
-                        value="no"
-                        checked={isSelf === false}
-                        onChange={(e) => setIsSelf(false)}
-                      />
-                      <label className="form-check-label">لا</label>
-                    </div>
-                    {errors.isSelf && (
-                      <div className="text-danger">{errors.isSelf}</div>
-                    )}
-                  </div>
-
-                  {isSelf === true && (
-                    <div className="mt-3">
-                      <label className="form-label">عدد النسخ المطلوبة </label>
-                      <select
-                        className={`form-select custom-select-style custom-input ${
-                          errors.numberOfCopies ? "is-invalid" : ""
-                        }`}
-                        value={numberOfCopies}
-                        onChange={(e) => setNumberOfCopies(e.target.value)}
-                      >
-                        <option value=""> </option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                      </select>
-                      {errors.numberOfCopies && (
-                        <div className="text-danger">
-                          {errors.numberOfCopies}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {isSelf === false && (
-                    <div className=" mt-3 p-3">
-                      <div className="row">
-                        <h3 className="text-color mb-3">بيانات صاحب الشهادة</h3>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">الاسم رباعي</label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input ${
-                                errors.quadriliteralName ? "is-invalid" : ""
-                              }`}
-                              value={quadriliteralName}
-                              onChange={(e) =>
-                                setQuadriliteralName(e.target.value)
-                              }
-                            />
-                            {errors.quadriliteralName && (
-                              <div className="text-danger">
-                                {errors.quadriliteralName}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">الرقم القومي </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input ${
-                                errors.id ? "is-invalid" : ""
-                              }`}
-                              value={id}
-                              onChange={(e) => setId(e.target.value)}
-                            />
-                            {errors.id && (
-                              <div className="text-danger">{errors.id}</div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">صلة القرابة </label>
-                            <select
-                              type="text"
-                              className={`form-select custom-select-style custom-input ${
-                                errors.kinship ? "is-invalid" : ""
-                              }`}
-                              value={kinship}
-                              onChange={(e) => setKinship(e.target.value)}
-                            >
-                              <option value="">بالنسبة لمقدم الطلب </option>
-                              <option value="الابن">الابن</option>
-                              <option value="الابنة">الابنة</option>
-                              <option value="الاب">الاب</option>
-                              <option value="الام">الام</option>
-                              <option value="الزوج">الزوج</option>
-                              <option value="الزوجة">الزوجة</option>
-                            </select>
-                            {errors.kinship && (
-                              <div className="text-danger">
-                                {errors.kinship}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              اسم الام لصاحب الشهادة
-                            </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input ${
-                                errors.anotherMotherName ? "is-invalid" : ""
-                              }`}
-                              value={anotherMotherName}
-                              onChange={(e) =>
-                                setAnotherMotherName(e.target.value)
-                              }
-                            />
-                            {errors.anotherMotherName && (
-                              <div className="text-danger">
-                                {errors.anotherMotherName}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">النوع </label>
-                            <select
-                              type="text"
-                              className={`form-select custom-select-style custom-input ${
-                                errors.gender ? "is-invalid" : ""
-                              }`}
-                              value={gender}
-                              onChange={(e) => setGender(e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="female">أنثي</option>
-                              <option value="male">ذكر</option>
-                            </select>
-                            {errors.gender && (
-                              <div className="text-danger">{errors.gender}</div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">عدد النسخ </label>
-                            <select
-                              className={`form-select custom-select-style custom-input ${
-                                errors.numberOfCopies ? "is-invalid" : ""
-                              }`}
-                              value={numberOfCopies}
-                              onChange={(e) =>
-                                setNumberOfCopies(e.target.value)
-                              }
-                            >
-                              <option value=""> </option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                              <option value="5">5</option>
-                            </select>
-                            {errors.numberOfCopies && (
-                              <div className="text-danger">
-                                {errors.numberOfCopies}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
-                  <h4 className="mb-3">
-                    ⚠️ ضوابط استخراج شهادة ميلاد من خلال الانترنت
-                  </h4>
-                  <ul className="list-unstyled">
-                    <li className="mb-2 d-flex align-items-start">
-                      <span className="me-2 text-warning">💡</span>
-                      <span>
-                        يتم استخراج شهادة الميلاد المميكنة لثانى مرة بشرط
-                        استخراج شهادة ميلاد مميكنة مطبوعة سابقاً
-                      </span>
-                    </li>
-                    <li className="mb-2 d-flex align-items-start">
-                      <span className="me-2 text-warning">💡</span>
-                      <span>
-                        يجب كتابة اسم المستفيد واسم الام له بطريقة صحيحة حيث ان
-                        المستفيد هو الشخص الذي سوف يتم طباعه الشهادة له.
-                      </span>
-                    </li>
-                    <li className="mb-2 d-flex align-items-start">
-                      <span className="me-2 text-warning">💡</span>
-                      <span>
-                        يجب ان يكون مقدم الطلب هو صاحب الشأن او لاحد اقرباء
-                        الدرجة الأولى.
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-            {card.title === "شهادة ميلاد مميكنة لأول مرة" && (
-              <>
-                <div className=" mt-3 p-3">
-                  <div className="row">
-                    <h3 className="text-color mb-3">بيانات صاحب الوثيقة </h3>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label"> الاسم رباعي </label>
-                        <input
-                          type="text"
-                          className={`form-control custom-input  ${
-                            errors.quadriliteralName ? "is-invalid" : ""
-                          }`}
-                          value={quadriliteralName}
-                          onChange={(e) => setQuadriliteralName(e.target.value)}
-                        />
-                        {errors.quadriliteralName && (
-                          <div className="text-danger">
-                            {errors.quadriliteralName}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label">صلة القرابة </label>
-                        <select
-                          type="text"
-                          className={`form-select custom-select-style custom-input ${
-                            errors.kinship ? "is-invalid" : ""
-                          }`}
-                          value={kinship}
-                          onChange={(e) => setKinship(e.target.value)}
-                        >
-                          <option value=""> </option>
-                          <option value="الابنه">ابنة مقدم الطلب</option>
-                          <option value="الابن">ابن مقدم الطلب</option>
-                          <option value="الام">والدة مقدم الطلب</option>
-                          <option value="الاب">والد مقدم الطلب</option>
-                          <option value="الزوجة">زوجة مقدم الطلب</option>
-                          <option value="الزوج">زوج مقدم الطلب</option>
-                        </select>
-                        {errors.kinship && (
-                          <div className="text-danger">{errors.kinship}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">
-                          اسم الام لصاحب الوثيقة{" "}
-                        </label>
-                        <input
-                          type="text"
-                          className={`form-control custom-input  ${
-                            errors.anotherMotherName ? "is-invalid" : ""
-                          }`}
-                          value={anotherMotherName}
-                          onChange={(e) => setAnotherMotherName(e.target.value)}
-                        />
-                        {errors.anotherMotherName && (
-                          <div className="text-danger">
-                            {errors.anotherMotherName}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">النوع </label>
-                        <select
-                          type="text"
-                          className={`form-select custom-select-style custom-input ${
-                            errors.gender ? "is-invalid" : ""
-                          }`}
-                          value={gender}
-                          onChange={(e) => setGender(e.target.value)}
-                        >
-                          <option value=""> </option>
-                          <option value="female">أنثي</option>
-                          <option value="male">ذكر</option>
-                        </select>
-                        {errors.gender && (
-                          <div className="text-danger">{errors.gender}</div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-            {card.title === "شهادة وفاة" && (
-              <>
-                <div className=" mt-3 p-3">
-                  <div className="row">
-                    <h3 className="text-color mb-3">بيانات المتوفي </h3>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">
-                          {" "}
-                          الاسم رباعي للمتوفي
-                        </label>
-                        <input
-                          type="text"
-                          className={`form-control custom-input  ${
-                            errors.quadriliteralName ? "is-invalid" : ""
-                          }`}
-                          value={quadriliteralName}
-                          onChange={(e) => setQuadriliteralName(e.target.value)}
-                        />
-                        {errors.quadriliteralName && (
-                          <div className="text-danger">
-                            {errors.quadriliteralName}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">الرقم القومي </label>
-                        <input
-                          type="text"
-                          className={`form-control custom-input  ${
-                            errors.id ? "is-invalid" : ""
-                          }`}
-                          value={id}
-                          onChange={(e) => setId(e.target.value)}
-                        />
-                        {errors.id && (
-                          <div className="text-danger">{errors.id}</div>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">صلة القرابة </label>
-                        <select
-                          type="text"
-                          className={`form-select custom-select-style custom-input ${
-                            errors.kinship ? "is-invalid" : ""
-                          }`}
-                          value={kinship}
-                          onChange={(e) => setKinship(e.target.value)}
-                        >
-                           <option value=""> </option>
-                          <option value="الابنه">ابنة مقدم الطلب</option>
-                          <option value="الابن">ابن مقدم الطلب</option>
-                          <option value="الام">والدة مقدم الطلب</option>
-                          <option value="الاب">والد مقدم الطلب</option>
-                          <option value="الزوجة">زوجة مقدم الطلب</option>
-                          <option value="الزوج">زوج مقدم الطلب</option>
-                        </select>
-                        {errors.kinship && (
-                          <div className="text-danger">{errors.kinship}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label">اسم الام للمتوفي </label>
-                        <input
-                          type="text"
-                          className={`form-control custom-input  ${
-                            errors.anotherMotherName ? "is-invalid" : ""
-                          }`}
-                          value={anotherMotherName}
-                          onChange={(e) => setAnotherMotherName(e.target.value)}
-                        />
-                        {errors.anotherMotherName && (
-                          <div className="text-danger">
-                            {errors.anotherMotherName}
-                          </div>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">النوع </label>
-                        <select
-                          type="text"
-                          className={`form-select custom-select-style custom-input ${
-                            errors.gender ? "is-invalid" : ""
-                          }`}
-                          value={gender}
-                          onChange={(e) => setGender(e.target.value)}
-                        >
-                          <option value=""> </option>
-                          <option value="female">أنثي</option>
-                          <option value="male">ذكر</option>
-                        </select>
-                        {errors.gender && (
-                          <div className="text-danger">{errors.gender}</div>
-                        )}
-                      </div>
-                      <div className="mb-3">
-                        <label className="form-label">عدد النسخ </label>
-                        <select
-                          className={`form-select custom-select-style custom-input ${
-                            errors.numberOfCopies ? "is-invalid" : ""
-                          }`}
-                          value={numberOfCopies}
-                          onChange={(e) => setNumberOfCopies(e.target.value)}
-                        >
-                          <option value=""> </option>
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                        </select>
-                        {errors.numberOfCopies && (
-                          <div className="text-danger">
-                            {errors.numberOfCopies}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
-            {card.title === "قسيمة طلاق" && (
-              <div>
-                <div className="mb-3">
-                  <label className="form-label ">اسم الأم لمقدم الطلب</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                      errors.motherName ? "is-invalid" : ""
-                    }`}
-                    value={motherName}
-                    onChange={(e) => setMotherName(e.target.value)}
-                  />
-
-                  {errors.motherName && (
-                    <div className="text-danger">{errors.motherName}</div>
-                  )}
-                </div>
-
-                <div className="mb-3 ">
-                  <label className="form-label">
-                    هل تريد إصدار قسيمة طلاق لنفسك ؟
-                  </label>
-
-                  <div className="d-flex gap-5">
-                    <div className="form-check">
-                      <input
-                        type="radio"
-                        name="isSelf"
-                        className="form-check-input"
-                        value="yes"
-                        checked={isSelf === true}
-                        onChange={(e) => setIsSelf(true)}
-                      />
-                      <label className="form-check-label">نعم</label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        type="radio"
-                        name="isSelf"
-                        className="form-check-input"
-                        value="no"
-                        checked={isSelf === false}
-                        onChange={(e) => setIsSelf(false)}
-                      />
-                      <label className="form-check-label">لا</label>
-                    </div>
-                    {errors.isSelf && (
-                      <div className="text-danger">{errors.isSelf}</div>
-                    )}
-                  </div>
-
-                  {isSelf === true && (
-                    <div className="mt-3">
-                      <label className="form-label">عدد النسخ المطلوبة </label>
-                      <select
-                        className={`form-select custom-select-style custom-input ${
-                          errors.numberOfCopies ? "is-invalid" : ""
-                        }`}
-                        value={numberOfCopies}
-                        onChange={(e) => setNumberOfCopies(e.target.value)}
-                      >
-                        <option value=""> </option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                      </select>
-                      {errors.numberOfCopies && (
-                        <div className="text-danger">
-                          {errors.numberOfCopies}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {isSelf === false && (
-                    <div className=" mt-3 p-3">
-                      <div className="row">
-                        <h3 className="text-color mb-3">بيانات صاحب الوثيقة</h3>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              الاسم رباعي للمطلق / المطلقة
-                            </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.quadriliteralName ? "is-invalid" : ""
-                              }`}
-                              value={quadriliteralName}
-                              onChange={(e) =>
-                                setQuadriliteralName(e.target.value)
-                              }
-                            />
-                            {errors.quadriliteralName && (
-                              <div className="text-danger">
-                                {errors.quadriliteralName}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">الرقم القومي </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.id ? "is-invalid" : ""
-                              }`}
-                              value={id}
-                              onChange={(e) => setId(e.target.value)}
-                            />
-                            {errors.id && (
-                              <div className="text-danger">{errors.id}</div>
-                            )}
-                          </div>
-
-                          <div className="mb-3">
-                            <label className="form-label">صلة القرابة </label>
-                            <select
-                              type="text"
-                              className={`form-select custom-select-style custom-input ${
-                                errors.kinship ? "is-invalid" : ""
-                              }`}
-                              value={kinship}
-                              onChange={(e) => setKinship(e.target.value)}
-                            >
-                                 <option value=""> </option>
-                          <option value="الابنه">ابنة مقدم الطلب</option>
-                          <option value="الابن">ابن مقدم الطلب</option>
-                          <option value="الام">والدة مقدم الطلب</option>
-                          <option value="الاب">والد مقدم الطلب</option>
-                     
-                            </select>
-                            {errors.kinship && (
-                              <div className="text-danger">
-                                {errors.kinship}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              اسم الام لصاحب الوثيقة
-                            </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.anotherMotherName ? "is-invalid" : ""
-                              }`}
-                              value={anotherMotherName}
-                              onChange={(e) =>
-                                setAnotherMotherName(e.target.value)
-                              }
-                            />
-                            {errors.anotherMotherName && (
-                              <div className="text-danger">
-                                {errors.anotherMotherName}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="mb-3">
-                            <label className="form-label">النوع </label>
-                            <select
-                              type="text"
-                              className={`form-select custom-select-style custom-input ${
-                                errors.gender ? "is-invalid" : ""
-                              }`}
-                              value={gender}
-                              onChange={(e) => setGender(e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="female">أنثي</option>
-                              <option value="male">ذكر</option>
-                            </select>
-                            {errors.gender && (
-                              <div className="text-danger">{errors.gender}</div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">عدد النسخ </label>
-                            <select
-                              className={`form-select custom-select-style custom-input ${
-                                errors.numberOfCopies ? "is-invalid" : ""
-                              }`}
-                              value={numberOfCopies}
-                              onChange={(e) =>
-                                setNumberOfCopies(e.target.value)
-                              }
-                            >
-                              <option value=""> </option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                              <option value="5">5</option>
-                            </select>
-                            {errors.numberOfCopies && (
-                              <div className="text-danger">
-                                {errors.numberOfCopies}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            {card.title === "قسيمة زواج" && (
-              <div>
-                <div className="mb-3">
-                  <label className="form-label ">اسم الأم لمقدم الطلب</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input  ${
-                      errors.motherName ? "is-invalid" : ""
-                    }`}
-                    value={motherName}
-                    onChange={(e) => setMotherName(e.target.value)}
-                  />
-
-                  {errors.motherName && (
-                    <div className="text-danger">{errors.motherName}</div>
-                  )}
-                </div>
-
-                <div className="mb-3 ">
-                  <label className="form-label">
-                    هل تريد إصدار قسيمة زواج لنفسك ؟
-                  </label>
-
-                  <div className="d-flex gap-5">
-                    <div className="form-check">
-                      <input
-                        type="radio"
-                        name="isSelf"
-                        className="form-check-input"
-                        value="yes"
-                        checked={isSelf === true}
-                        onChange={(e) => setIsSelf(true)}
-                      />
-                      <label className="form-check-label">نعم</label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        type="radio"
-                        name="isSelf"
-                        className="form-check-input"
-                        value="no"
-                        checked={isSelf === false}
-                        onChange={(e) => setIsSelf(false)}
-                      />
-                      <label className="form-check-label">لا</label>
-                    </div>
-                    {errors.isSelf && (
-                      <div className="text-danger">{errors.isSelf}</div>
-                    )}
-                  </div>
-
-                  {isSelf === true && (
-                    <div className="mt-3">
-                      <label className="form-label">عدد النسخ المطلوبة </label>
-                      <select
-                        className={`form-select custom-select-style custom-input ${
-                          errors.numberOfCopies ? "is-invalid" : ""
-                        }`}
-                        value={numberOfCopies}
-                        onChange={(e) => setNumberOfCopies(e.target.value)}
-                      >
-                        <option value=""> </option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                      </select>
-                      {errors.numberOfCopies && (
-                        <div className="text-danger">
-                          {errors.numberOfCopies}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {isSelf === false && (
-                    <div className=" mt-3 p-3">
-                      <div className="row">
-                        <h3 className="text-color mb-3">بيانات صاحب القسيمة</h3>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">الاسم رباعي</label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.quadriliteralName ? "is-invalid" : ""
-                              }`}
-                              value={quadriliteralName}
-                              onChange={(e) =>
-                                setQuadriliteralName(e.target.value)
-                              }
-                            />
-                            {errors.quadriliteralName && (
-                              <div className="text-danger">
-                                {errors.quadriliteralName}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">الرقم القومي </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.id ? "is-invalid" : ""
-                              }`}
-                              value={id}
-                              onChange={(e) => setId(e.target.value)}
-                            />
-                            {errors.id && (
-                              <div className="text-danger">{errors.id}</div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">
-                              اسم الام لصاحب القسيمة
-                            </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.anotherMotherName ? "is-invalid" : ""
-                              }`}
-                              value={anotherMotherName}
-                              onChange={(e) =>
-                                setAnotherMotherName(e.target.value)
-                              }
-                            />
-                            {errors.anotherMotherName && (
-                              <div className="text-danger">
-                                {errors.anotherMotherName}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">صلة القرابة </label>
-                            <select
-                              type="text"
-                              className={`form-select custom-select-style custom-input ${
-                                errors.kinship ? "is-invalid" : ""
-                              }`}
-                              value={kinship}
-                              onChange={(e) => setKinship(e.target.value)}
-                            >
-                                <option value=""> </option>
-                          <option value="الابنه">ابنة مقدم الطلب</option>
-                          <option value="الابن">ابن مقدم الطلب</option>
-                          <option value="الام">والدة مقدم الطلب</option>
-                          <option value="الاب">والد مقدم الطلب</option>
-                          <option value="الزوجة">زوجة مقدم الطلب</option>
-                          <option value="الزوج">زوج مقدم الطلب</option>
-                            </select>
-                            {errors.kinship && (
-                              <div className="text-danger">
-                                {errors.kinship}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="mb-3">
-                            <label className="form-label">
-                              اسم زوج / زوجة صاحب القسيمة
-                            </label>
-                            <input
-                              type="text"
-                              className={`form-control custom-input  ${
-                                errors.partnerName ? "is-invalid" : ""
-                              }`}
-                              value={partnerName}
-                              onChange={(e) => setPartnerName(e.target.value)}
-                            />
-                            {errors.partnerName && (
-                              <div className="text-danger">
-                                {errors.partnerName}
-                              </div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">النوع </label>
-                            <select
-                              type="text"
-                              className={`form-select custom-select-style custom-input ${
-                                errors.gender ? "is-invalid" : ""
-                              }`}
-                              value={gender}
-                              onChange={(e) => setGender(e.target.value)}
-                            >
-                              <option value=""> </option>
-                              <option value="female">أنثي</option>
-                              <option value="male">ذكر</option>
-                            </select>
-                            {errors.gender && (
-                              <div className="text-danger">{errors.gender}</div>
-                            )}
-                          </div>
-                          <div className="mb-3">
-                            <label className="form-label">عدد النسخ </label>
-                            <select
-                              className={`form-select custom-select-style custom-input ${
-                                errors.numberOfCopies ? "is-invalid" : ""
-                              }`}
-                              value={numberOfCopies}
-                              onChange={(e) =>
-                                setNumberOfCopies(e.target.value)
-                              }
-                            >
-                              <option value=""> </option>
-                              <option value="1">1</option>
-                              <option value="2">2</option>
-                              <option value="3">3</option>
-                              <option value="4">4</option>
-                              <option value="5">5</option>
-                            </select>
-                            {errors.numberOfCopies && (
-                              <div className="text-danger">
-                                {errors.numberOfCopies}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            {renderServiceFields()}
+            <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
+              <h4 className="mb-3">
+                ⚠️ ضوابط استخراج {card.title} من خلال الانترنت
+              </h4>
+              <ul className="list-unstyled">
+                <li className="mb-2 d-flex align-items-start">
+                  <span className="me-2 text-warning">💡</span>
+                  <span>يجب كتابة اسم المستفيد واسم الام له بطريقة صحيحة</span>
+                </li>
+                <li className="mb-2 d-flex align-items-start">
+                  <span className="me-2 text-warning">💡</span>
+                  <span>
+                    يجب ان يكون مقدم الطلب هو صاحب الشأن او لاحد اقرباء الدرجة
+                    الأولى
+                  </span>
+                </li>
+              </ul>
+            </div>
           </div>
         );
       case 2:
         return (
-        <DeliveryData/>
-        )
+          <DeliveryData onDataChange={handleDeliveryData} errors={errors} />
+        );
       case 3:
         return (
           <div className="mt-3 p-3">
             <h3 className="text-color mb-4">تأكيد الطلب</h3>
-
-            {/* بيانات الطلب */}
             <div className="card mb-4">
               <div className="card-header bg-light">
                 <h5 className="mb-0 text-color">بيانات الطلب</h5>
               </div>
               <div className="card-body">
-                {card.title === "شهادة ميلاد"  && (
-                  <>
-                    <div className="row mb-3">
-                  <UserInfoDisplay/>
-                      <div className="col-md-6">
-                 
-                   
+                <div className="row mb-3">
+                  <UserInfoDisplay />
+                  <div className="col-md-6">
+                    {card.title === "شهادة وفاة" ? (
+                      <>
                         <p>
-                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
+                          <strong>الاسم الرباعي للمتوفي:</strong>{" "}
+                          {formData.quadriliteralName}
                         </p>
                         <p>
-                          <strong>صاحب الطلب: </strong>
-                          {isSelf ? user?.name : "شخص آخر"}
+                          <strong>الرقم القومي:</strong> {formData.id}
                         </p>
-                        {isSelf ? (
+                        <p>
+                          <strong>اسم الأم:</strong>{" "}
+                          {formData.anotherMotherName}
+                        </p>
+                        <p>
+                          <strong>صلة القرابة:</strong> {formData.kinship}
+                        </p>
+                        <p>
+                          <strong>النوع:</strong>{" "}
+                          {formData.gender === "male" ? "ذكر" : "أنثى"}
+                        </p>
+                        <p>
+                          <strong>عدد النسخ:</strong> {formData.numberOfCopies}
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <p>
+                          <strong>اسم الأم لمقدم الطلب:</strong>{" "}
+                          {formData.motherName}
+                        </p>
+                        <p>
+                          <strong>صاحب الطلب:</strong>{" "}
+                          {formData.isSelf ? user?.name : "شخص آخر"}
+                        </p>
+                        {formData.isSelf ? (
                           <p>
-                            <strong>عدد النسخ:</strong> {numberOfCopies}
-                          </p>
-                        ) : (
-                          <>
-                            <p>
-                              <strong>الاسم الرباعي:</strong>
-                              {quadriliteralName}
-                            </p>
-                            <p>
-                              <strong>الرقم القومي:</strong> {id}
-                            </p>
-                            <p>
-                              <strong>اسم الأم:</strong> {anotherMotherName}
-                            </p>
-                            <p>
-                              <strong>صلة القرابة:</strong> {kinship}
-                            </p>
-                            <p>
-                              <strong>النوع:</strong>
-                              {gender === "male" ? "ذكر" : "أنثى"}
-                            </p>
-                            <p>
-                              <strong>عدد النسخ:</strong> {numberOfCopies}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-                {card.title === "قسيمة طلاق"  && (
-                  <>
-                    <div className="row mb-3">
-                  <UserInfoDisplay/>
-                      <div className="col-md-6">
-                 
-                   
-                        <p>
-                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
-                        </p>
-                        <p>
-                          <strong>صاحب الطلب: </strong>
-                          {isSelf ? user?.name : "شخص آخر"}
-                        </p>
-                        {isSelf ? (
-                          <p>
-                            <strong>عدد النسخ:</strong> {numberOfCopies}
-                          </p>
-                        ) : (
-                          <>
-                            <p>
-                              <strong>الاسم الرباعي:</strong>
-                              {quadriliteralName}
-                            </p>
-                            <p>
-                              <strong>الرقم القومي:</strong> {id}
-                            </p>
-                            <p>
-                              <strong>اسم الأم:</strong> {anotherMotherName}
-                            </p>
-                            <p>
-                              <strong>صلة القرابة:</strong> {kinship}
-                            </p>
-                            <p>
-                              <strong>النوع:</strong>
-                              {gender === "male" ? "ذكر" : "أنثى"}
-                            </p>
-                            <p>
-                              <strong>عدد النسخ:</strong> {numberOfCopies}
-                            </p>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
-                {card.title === "قسيمة زواج" && (
-                  <>
-                    <div className="row mb-3">
-                      <div className="col-md-6">
-                        <p>
-                          <strong>اسم الأم لمقدم الطلب:</strong> {motherName}
-                        </p>
-                        <p>
-                          <strong>نوع الطلب:</strong>{" "}
-                          {isSelf ? "لنفسي" : "لشخص آخر"}
-                        </p>
-                        {isSelf ? (
-                          <p>
-                            <strong>عدد النسخ:</strong> {numberOfCopies}
+                            <strong>عدد النسخ:</strong>{" "}
+                            {formData.numberOfCopies}
                           </p>
                         ) : (
                           <>
                             <p>
                               <strong>الاسم الرباعي:</strong>{" "}
-                              {quadriliteralName}
+                              {formData.quadriliteralName}
                             </p>
                             <p>
-                              <strong>الرقم القومي:</strong> {id}
+                              <strong>الرقم القومي:</strong> {formData.id}
                             </p>
                             <p>
-                              <strong>اسم الأم:</strong> {anotherMotherName}
+                              <strong>اسم الأم:</strong>{" "}
+                              {formData.anotherMotherName}
                             </p>
                             <p>
-                              <strong>صلة القرابة:</strong> {kinship}
+                              <strong>صلة القرابة:</strong> {formData.kinship}
                             </p>
                             <p>
                               <strong>النوع:</strong>{" "}
-                              {gender === "male" ? "ذكر" : "أنثى"}
+                              {formData.gender === "male" ? "ذكر" : "أنثى"}
                             </p>
                             <p>
-                              <strong>عدد النسخ:</strong> {numberOfCopies}
+                              <strong>عدد النسخ:</strong>{" "}
+                              {formData.numberOfCopies}
                             </p>
+                            {formData.partnerName && (
+                              <p>
+                                <strong>اسم الزوج/الزوجة:</strong>{" "}
+                                {formData.partnerName}
+                              </p>
+                            )}
                           </>
                         )}
-                      </div>
-                    </div>
-                  </>
-                )}
-           
-                {card.title === "شهادة وفاة" && (
-                  <>
-                    <div className="row mb-3">
-                        <UserInfoDisplay/>
-                      <div className="col-md-6">
- 
-                          <>
-                            <p>
-                              <strong>الاسم الرباعي:</strong>{" "}
-                              {quadriliteralName}
-                            </p>
-                            <p>
-                              <strong>الرقم القومي:</strong> {id}
-                            </p>
-                            <p>
-                              <strong>اسم الأم:</strong> {anotherMotherName}
-                            </p>
-                            <p>
-                              <strong>صلة القرابة:</strong> {kinship}
-                            </p>
-                            <p>
-                              <strong>النوع:</strong>{" "}
-                              {gender === "male" ? "ذكر" : "أنثى"}
-                            </p>
-                            <p>
-                              <strong>عدد النسخ:</strong> {numberOfCopies}
-                            </p>
-                          </>
-                        
-                      </div>
-                    </div>
-                  </>
-                )}
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* بيانات الاستلام */}
             <div className="card mb-4">
               <div className="card-header bg-light">
                 <h5 className="mb-0 text-color">بيانات الاستلام</h5>
@@ -1317,60 +835,25 @@ const CivilServices = forwardRef((props, ref) => {
                 <div className="row">
                   <div className="col-md-6">
                     <p>
-                      <strong>المحافظة:</strong> {governorate}
+                      <strong>المحافظة:</strong> {deliveryData.governorate}
                     </p>
                     <p>
-                      <strong>المدينة:</strong> {city}
+                      <strong>المدينة:</strong> {deliveryData.city}
                     </p>
                   </div>
                   <div className="col-md-6">
                     <p>
-                      <strong>الحي/المركز:</strong> {district}
+                      <strong>الحي/المركز:</strong> {deliveryData.district}
                     </p>
                     <p>
-                      <strong>العنوان التفصيلي:</strong> {detailedAddress}
+                      <strong>العنوان التفصيلي:</strong>{" "}
+                      {deliveryData.detailedAddress}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* خيارات الدفع */}
-            <div className="card mb-4">
-              <div className="card-header bg-light">
-                <h5 className="mb-0 text-color">اختر طريقة الدفع</h5>
-              </div>
-              <div className="card-body">
-                <div className="form-check mb-3">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="paymentMethod"
-                    id="cash"
-                    value="cash"
-                    defaultChecked
-                  />
-                  <label className="form-check-label" htmlFor="cash">
-                    الدفع عند الاستلام
-                  </label>
-                </div>
-                <div className="form-check mb-3">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    name="paymentMethod"
-                    id="creditCard"
-                    value="creditCard"
-                  />
-                  <label className="form-check-label" htmlFor="creditCard">
-                    بطاقة ائتمان
-                  </label>
-                </div>
-              
-              </div>
-            </div>
-
-            {/* ملخص التكلفة */}
             <div className="card mb-4">
               <div className="card-header bg-light">
                 <h5 className="mb-0 text-color">ملخص التكلفة</h5>
@@ -1404,43 +887,13 @@ const CivilServices = forwardRef((props, ref) => {
         <Steppar
           active={activeStep}
           setActive={setActiveStep}
-          formData={{
-            card,
-            motherName,
-            isSelf,
-            numberOfCopies,
-            quadriliteralName,
-            id,
-            anotherMotherName,
-            kinship,
-            gender,
-            partnerName,
-            governorate,
-            city,
-            district,
-            detailedAddress,
-          }}
+          formData={{ ...formData, ...deliveryData, card }}
           disabled={!user}
         />
         <NavigationButtons
           activeStep={activeStep}
           setActiveStep={setActiveStep}
-          formData={{
-            card,
-            motherName,
-            isSelf,
-            numberOfCopies,
-            quadriliteralName,
-            id,
-            anotherMotherName,
-            kinship,
-            partnerName,
-            gender,
-            governorate,
-            city,
-            district,
-            detailedAddress,
-          }}
+          formData={{ ...formData, ...deliveryData, card }}
           disabled={!user}
         />
       </div>
@@ -1467,7 +920,11 @@ const CivilServices = forwardRef((props, ref) => {
         </div>
       )}
 
-     
+      {errors.submit && (
+        <Alert variant="danger" className="mt-3">
+          {errors.submit}
+        </Alert>
+      )}
     </>
   );
 });

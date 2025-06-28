@@ -4,11 +4,10 @@ import rafikiImg from "../images/panaa.svg";
 import MainComponent from "../MainComponent";
 import permitsImg from "../images/Printing invoices-amico.svg"
 import ReverseSection from "../ReverseSection";
-import elctricImg from "../images/freepik__background__92199.png";
 import captionImg from "../images/services.svg"
 import trafficImg from "../images/freepik__background__3598.png";
 import Footer from "../Footer";
-import phoneImg from "../images/phone.png";
+
 import billImg from "../images/freepik__background__59718.png"
 
 import { useLocation } from "react-router-dom";
@@ -221,23 +220,23 @@ function WelcomePage() {
         cardsData={services}
       />
 
-      <div id="housing-section">
+      {/* <div id="housing-section">
         <ReverseSection
           title=" خدمات الطاقة والمرافق "
           image={elctricImg}
           cardsData={housingServices}
         />
-      </div>
+      </div> */}
       <div id="civil-section">
-        <MainComponent
+        <ReverseSection
+
           title=" الأحوال المدنية"
           image={permitsImg}
           cardsData={certificates}
         />
       </div>
-
       <div id="utility-section">
-        <ReverseSection
+      <MainComponent
           title=" سداد الفواتير"
           image={billImg}
           cardsData={utilityServices}
@@ -245,14 +244,17 @@ function WelcomePage() {
       </div>
 
       <div id="traffic-section">
-        <MainComponent
+      <ReverseSection
+
           title=" خدمات المرور"
           image={trafficImg}
           cardsData={trafficServices}
         />
       </div>
 
-      <ReverseSection image={captionImg} title="نبذة عننا" cardsData={caption} />
+      <ReverseSection
+
+ image={captionImg} title="نبذة عننا" cardsData={caption} />
      
       <Footer />
     </>

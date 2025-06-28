@@ -1,11 +1,5 @@
 
 import Footer from "../components/Footer"
-
-
-
-
-
-
 import "../Css/services.css";
 import MainComponent from "../components/MainComponent";
 import permitsImg from "../components/images/Printing invoices-amico.svg"
@@ -14,7 +8,6 @@ import elctricImg from "../components/images/freepik__background__92199.png";
 
 import trafficImg from "../components/images/freepik__background__3598.png";
 
-import phoneImg from "../components/images/phone.png";
 import billImg from "../components/images/freepik__background__59718.png"
 function Services() {
   //اشهر الخدامات
@@ -187,23 +180,27 @@ function Services() {
         />
       </div>
      
-      <div id="housing-section">
+      {/* <div id="housing-section">
         <ReverseSection
           title=" خدمات الطاقة والمرافق "
           image={elctricImg}
           cardsData={housingServices}
         />
-      </div>
+      </div> */}
 
       <div id="traffic-section">
-        <MainComponent
+      <ReverseSection
+
           title=" خدمات المرور"
           image={trafficImg}
           cardsData={trafficServices}
         />
       </div>
+
       <div id="utility-section">
-        <ReverseSection
+      <MainComponent
+
+
           title=" سداد الفواتير"
           image={billImg}
           cardsData={utilityServices}
