@@ -1,7 +1,6 @@
 // Base URL for API requests
 export const API_BASE_URL =
   "https://government-c8bqb5c6gwfnf2h8.canadacentral-01.azurewebsites.net/api";
-  
 
 // API Configuration
 export const API_CONFIG = {
@@ -14,6 +13,11 @@ export const API_CONFIG = {
     PAYMENT: {
       INITIATE: "/Payment/initiate-payment",
       STATUS: "/Payment/payment-status",
+    },
+    CIVIL: {
+      SUBMIT_REQUEST: "/CivilDocuments/request",
+      GET_TYPES: "/CivilServices/types",
+      GET_USER_REQUESTS: "/CivilServices/user-requests",
     },
   },
 };

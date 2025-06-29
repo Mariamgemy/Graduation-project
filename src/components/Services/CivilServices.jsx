@@ -62,6 +62,19 @@ const CivilServices = forwardRef((props, ref) => {
     }
   }, [user]);
 
+  // Fetch user's civil service requests
+  const fetchUserRequests = async () => {
+    if (!user) return;
+
+    try {
+      const requests = await civilService.getUserCivilRequests();
+      console.log("User civil requests:", requests);
+      // You can store these requests in state if needed
+    } catch (error) {
+      console.error("Error fetching user requests:", error);
+    }
+  };
+
   // Get document type for backend
   const getDocumentType = (title) => {
     if (title.includes("ميلاد مميكنة لأول مرة"))
@@ -86,7 +99,7 @@ const CivilServices = forwardRef((props, ref) => {
     const newErrors = {};
 
     if (step === 1) {
-      // Special validation for death certificate
+      // Special validation for death certificate and first time birth certificate
       if (card.title === "شهادة وفاة") {
         if (!formData.quadriliteralName) {
           newErrors.quadriliteralName = "هذا الحقل مطلوب";
@@ -111,6 +124,22 @@ const CivilServices = forwardRef((props, ref) => {
         if (!formData.numberOfCopies) {
           newErrors.numberOfCopies = "هذا الحقل مطلوب";
         }
+      }
+      if (card.title === "شهادة ميلاد مميكنة لأول مرة") {
+        if (!formData.quadriliteralName) {
+          newErrors.quadriliteralName = "هذا الحقل مطلوب";
+        } else if (!isValidName(formData.quadriliteralName)) {
+          newErrors.quadriliteralName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+        }
+
+        if (!formData.anotherMotherName) {
+          newErrors.anotherMotherName = "هذا الحقل مطلوب";
+        } else if (!isValidMotherName(formData.anotherMotherName)) {
+          newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
+        }
+
+        if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
+        if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
       } else {
         // Regular validation for other certificates
         if (!formData.motherName) {
@@ -169,23 +198,6 @@ const CivilServices = forwardRef((props, ref) => {
         newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
     }
 
-    if (card.title === "شهادة ميلاد مميكنة لأول مرة") {
-      if (!formData.quadriliteralName) {
-        newErrors.quadriliteralName = "هذا الحقل مطلوب";
-      } else if (!isValidName(formData.quadriliteralName)) {
-        newErrors.quadriliteralName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
-      }
-
-      if (!formData.anotherMotherName) {
-        newErrors.anotherMotherName = "هذا الحقل مطلوب";
-      } else if (!isValidMotherName(formData.anotherMotherName)) {
-        newErrors.anotherMotherName = "يجب ان لا يقل طول الحقل عن 3 احرف";
-      }
-
-      if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
-      if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -208,30 +220,35 @@ const CivilServices = forwardRef((props, ref) => {
 
     setIsSubmitting(true);
     try {
+      // Prepare request data according to backend object structure
       const requestData = {
         documentType: getDocumentType(card.title),
         applicantName: user.name,
         applicantNID: user.nationalId,
         relation:
-          card.title === "شهادة وفاة"
+          card.title === "شهادة وفاة" ||
+          card.title === "شهادة ميلاد مميكنة لأول مرة"
             ? formData.kinship
             : formData.isSelf
             ? "Self"
             : formData.kinship,
         ownerName:
-          card.title === "شهادة وفاة"
+          card.title === "شهادة وفاة" ||
+          card.title === "شهادة ميلاد مميكنة لأول مرة"
             ? formData.quadriliteralName
             : formData.isSelf
             ? user.name
             : formData.quadriliteralName,
         ownerNID:
-          card.title === "شهادة وفاة"
+          card.title === "شهادة وفاة" ||
+          card.title === "شهادة ميلاد مميكنة لأول مرة"
             ? formData.id
             : formData.isSelf
             ? user.nationalId
             : formData.id,
         ownerMotherName:
-          card.title === "شهادة وفاة"
+          card.title === "شهادة وفاة" ||
+          card.title === "شهادة ميلاد مميكنة لأول مرة"
             ? formData.anotherMotherName
             : formData.isSelf
             ? formData.motherName
@@ -253,11 +270,13 @@ const CivilServices = forwardRef((props, ref) => {
       );
       console.log("Backend response:", response);
 
-      navigate("/payment-success", {
+      // Navigate to success page with response data
+      navigate("/civilDone", {
         state: {
           serviceType: "civil",
           documentType: card.title,
-          requestId: response.requestId,
+          requestId: response.requestId || response.id,
+          responseData: response,
         },
       });
     } catch (error) {
@@ -749,10 +768,11 @@ const CivilServices = forwardRef((props, ref) => {
                 <div className="row mb-3">
                   <UserInfoDisplay />
                   <div className="col-md-6">
-                    {card.title === "شهادة وفاة" ? (
+                    {card.title === "شهادة وفاة" ||
+                    card.title === "شهادة ميلاد مميكنة لأول مرة" ? (
                       <>
                         <p>
-                          <strong>الاسم الرباعي للمتوفي:</strong>{" "}
+                          <strong>الاسم الرباعي:</strong>{" "}
                           {formData.quadriliteralName}
                         </p>
                         <p>
@@ -903,7 +923,7 @@ const CivilServices = forwardRef((props, ref) => {
       {activeStep < 3 && user && <Button handleNext={handleNext} />}
 
       {activeStep === 3 && (
-        <div className="text-start">
+        <div className="d-flex justify-content-end">
           <button
             className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
             onClick={handleSubmit}

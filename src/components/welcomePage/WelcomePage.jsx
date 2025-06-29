@@ -17,11 +17,11 @@ import LoginCard from "../../pages/LoginCard";
 function WelcomePage() {
   //اشهر الخدامات
   const services = [
-    {
-      icon: "💡",
-      title: "خدمات الطاقة والمرافق ",
-      scrollTarget: "housing-section",
-    },
+    // {
+    //   icon: "💡",
+    //   title: "خدمات الطاقة والمرافق ",
+    //   scrollTarget: "housing-section",
+    // },
     {
       icon: "📑",
       title: "الأحوال المدنية",

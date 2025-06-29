@@ -9,7 +9,7 @@ import Questions from "./pages/Questions";
 import CardDetails from "./pages/ServicesSteps";
 import Layout from "./components/Layout";
 import CustomModal from "./pages/IdValidation";
-import BackendPage from "./pages/Backend";
+
 import PopularServices from "./pages/PopularServices";
 import Suggestions from "./pages/Suggestions";
 import ComplaintDone from "./pages/complaintDone";
@@ -25,6 +25,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { ModalProvider } from './components/ModalManager';
 import ModalContainer from './components/ModalContainer'; 
 import NavBar from './components/NavBar';
+import CivilServicesDone from "./pages/CivilServicesDone.jsx";
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
 
@@ -76,14 +77,16 @@ function App() {
             </Layout>
           }
         />
+    
         <Route
-          path="backend"
+          path="civilDone"
           element={
             <Layout>
-              <BackendPage />
+              <CivilServicesDone />
             </Layout>
           }
         />
+        
         <Route
           path="popularServices"
           element={

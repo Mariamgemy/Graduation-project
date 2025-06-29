@@ -5,7 +5,7 @@ import { FiMenu } from "react-icons/fi";
 import { MdPerson } from "react-icons/md";
 import { FaChevronLeft } from "react-icons/fa";
 import "../Css/navBar.css";
-import "../Css/test.css";
+
 import { IoSearch } from "react-icons/io5";
 import SearchBox from "./SearchBox";
 import { useAuth } from "../context/AuthContext.jsx";
