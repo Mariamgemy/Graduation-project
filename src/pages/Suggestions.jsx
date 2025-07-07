@@ -6,22 +6,25 @@ import "../Css/Suggestions.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRef } from "react";
+import { API_CONFIG } from "../api/config";
 
 const Suggestions = () => {
   const [formData, setFormData] = useState({
-    userName: "",
-    email: "",
-    phone: "",
-    complaint: "",
-    textComplaint: "",
+    
+      name: "",
+      email: "",
+      phone: "",
+      type: "",
+      content: ""
+    
   });
 
   const [errors, setErrors] = useState({
-    userName: "",
+    name: "",
     email: "",
     phone: "",
-    complaint: "",
-    textComplaint: "",
+    type: "",
+    content: "",
     captcha: "",
   });
   const [flag, setFlag] = useState(false);
@@ -49,10 +52,10 @@ const Suggestions = () => {
     e.preventDefault();
     const newErrors = {};
 
-    if (!formData.userName) {
-      newErrors.userName = "هذا الحقل مطلوب";
-    } else if (!isValidName(formData.userName)) {
-      newErrors.userName = "الاسم غير صالح";
+    if (!formData.name) {
+      newErrors.name = "هذا الحقل مطلوب";
+    } else if (!isValidName(formData.name)) {
+      newErrors.name = "الاسم غير صالح";
     }
     if (!formData.phone) {
       newErrors.phone = "هذا الحقل مطلوب";
@@ -64,8 +67,8 @@ const Suggestions = () => {
     } else if (!isValidEmail(formData.email)) {
       newErrors.email = "البريد الالكتروني غير صالح";
     }
-    if (!formData.complaint) newErrors.complaint = "هذا الحقل مطلوب";
-    if (!formData.textComplaint) newErrors.textComplaint = "هذا الحقل مطلوب";
+    if (!formData.type) newErrors.type = "هذا الحقل مطلوب";
+    if (!formData.content) newErrors.content = "هذا الحقل مطلوب";
 
     // التحقق من صحة الكابتشا
     const isCaptchaValid = captchaRef.current.validateCaptchaField();
@@ -83,14 +86,25 @@ const Suggestions = () => {
     console.log("بيانات الشكوي:", formData);
 
     try {
-      // يمكنك إضافة كود الاتصال بال API هنا
-      // const response = await submitToAPI(formData);
-      // console.log("استجابة submitToAPI:", response);
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_CONFIG.BASE_URL}/complaints`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
 
-      // التوجيه للصفحة التالية فقط بعد نجاح التحقق
+      if (!response.ok) {
+        throw new Error("فشل في إرسال الشكوى");
+      }
+
+      // const data = await response.json(); // لو عايزة تستخدمي الرد
       navigate("/complaintDone");
     } catch (error) {
       console.error("خطأ أثناء الإرسال:", error.message);
+    
     }
   };
 
@@ -122,16 +136,16 @@ const Suggestions = () => {
                   </label>
                   <input
                     className={`form-control custom-input ${
-                      errors.userName ? "is-invalid" : ""
+                      errors.name ? "is-invalid" : ""
                     }`}
                     type="text"
-                    name="userName"
+                    name="name"
                     autoComplete="name"
                     placeholder="الاسم"
-                    value={formData.userName}
+                    value={formData.name}
                     onChange={handleChange}
                   />
-                  {errors.userName && (
+                  {errors.name && (
                     <div className="text-danger">{errors.userName}</div>
                   )}
                   <label className="form-label" htmlFor="email">
@@ -174,10 +188,10 @@ const Suggestions = () => {
                   </label>
                   <select
                     className={`form-select custom-input ${
-                      errors.complaint ? "is-invalid" : ""
+                      errors.type ? "is-invalid" : ""
                     }`}
-                    name="complaint"
-                    value={formData.complaint}
+                    name="type"
+                    value={formData.type}
                     onChange={handleChange}
                   >
                     <option value="اختر"></option>
@@ -185,21 +199,21 @@ const Suggestions = () => {
                     <option value="شكوى لخدمة "> شكوى لخدمة </option>
                     <option value="شكوى لطلب "> شكوى لطلب </option>
                   </select>
-                  {errors.complaint && (
-                    <div className="text-danger">{errors.complaint}</div>
+                  {errors.type && (
+                    <div className="text-danger">{errors.type}</div>
                   )}
                   <label className="form-label">محتوى الشكوى </label>
                   <textarea
                     className={`form-control customW ${
-                      errors.textComplaint ? "is-invalid" : ""
+                      errors.content ? "is-invalid" : ""
                     }`}
-                    name="textComplaint"
+                    name="content"
                     rows="4"
-                    value={formData.textComplaint}
+                    value={formData.content}
                     onChange={handleChange}
                   ></textarea>
-                  {errors.textComplaint && (
-                    <div className="text-danger">{errors.textComplaint}</div>
+                  {errors.content && (
+                    <div className="text-danger">{errors.content}</div>
                   )}
                   <div className="mt-3">
                     <CaptchaComponent ref={captchaRef} />

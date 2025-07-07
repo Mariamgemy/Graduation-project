@@ -8,21 +8,14 @@ const apiClient = axios.create({
   },
 });
 
-// Optional: Add interceptors for request or response handling (e.g., adding auth tokens)
-apiClient.interceptors.request.use(
-  (config) => {
-    // Retrieve the token from localStorage
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      // Add the token to the Authorization header
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+// إضافة interceptor لإضافة التوكن تلقائياً
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
   }
-);
+  return config;
+});
 
 apiClient.interceptors.response.use(
   (response) => {

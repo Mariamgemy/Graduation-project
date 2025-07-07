@@ -75,18 +75,16 @@ const LoginCard = forwardRef(({ show, handleClose }, ref) => {
         `${API_CONFIG.BASE_URL}/Auth/login`
       );
 
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_CONFIG.BASE_URL}/Auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+        body: JSON.stringify({ email, password }),
       });
-      
-      
+
       // تأكد إن API_CONFIG.BASE_URL صحيح
       console.log(API_CONFIG); // شوف إيه القيمة بالضبط
       console.log("تم استلام الرد من API:", response.status);

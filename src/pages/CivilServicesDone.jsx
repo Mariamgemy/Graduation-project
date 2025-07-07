@@ -1,7 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Badge, Card, Container, Row, Col } from "react-bootstrap";
-import { useState, useEffect } from "react";
 import {
   Copy,
   Download,
@@ -10,11 +8,83 @@ import {
   Share2,
   Calendar,
   Clock,
+  CheckCircle,
+  FileText,
+  User,
+  Phone,
+  Mail,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import SuccessAnimation from "../components/SuccessAnimation";
-import Toast from "../components/Toast";
 import "../Css/CivilServicesDone.css";
+import { useAuth } from "../context/AuthContext";
+
+
+
+
+
+
+ 
+// مكون الرسوم المتحركة للنجاح
+const SuccessAnimation = () => (
+  <div className="d-flex justify-content-center align-items-center mb-4">
+    <div className="success-animation">
+      <div className="success-circle">
+        <CheckCircle className="success-icon" />
+      </div>
+      <div className="sparkle-badge">
+        <Sparkles style={{ width: "1rem", height: "1rem", color: "white" }} />
+      </div>
+    </div>
+  </div>
+);
+
+// مكون Toast للإشعارات
+const Toast = ({ message, isVisible, onClose, type = "success" }) => {
+  useEffect(() => {
+    if (isVisible) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
+
+  if (!isVisible) return null;
+
+  const toastClass = `custom-toast toast-${type}`;
+
+  return (
+    <div className={toastClass}>
+      <div className="d-flex align-items-center">
+        <CheckCircle
+          style={{ width: "1.25rem", height: "1.25rem", marginRight: "0.5rem" }}
+        />
+        <span>{message}</span>
+      </div>
+    </div>
+  );
+};
+
+// مكون الكونفيتي
+const Confetti = ({ show }) => {
+  if (!show) return null;
+
+  return (
+    <div className="confetti-container">
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="confetti-piece"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 2}s`,
+            animationDuration: `${2 + Math.random() * 2}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 function CivilServicesDone() {
   const location = useLocation();
@@ -22,39 +92,71 @@ function CivilServicesDone() {
   const [showConfetti, setShowConfetti] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+  const [toastType, setToastType] = useState("success");
   const [currentTime, setCurrentTime] = useState(new Date());
+  const { user } = useAuth();
 
-  // استقبال البيانات من الصفحة السابقة
-  const { serviceType, documentType, requestId, responseData } =
-    location.state || {};
+  // الحصول على البيانات من localStorage
+  const getUserData = () => {
+    try {
+      const token = localStorage.getItem("token");
+      const userData = localStorage.getItem("userData");
+      
+      if (userData) {
+        return JSON.parse(userData);
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting user data:", error);
+      return null;
+    }
+  };
 
-  // للتأكد من وصول البيانات
-  console.log("Location state:", location.state);
-  console.log("Received data:", {
-    serviceType,
-    documentType,
-    requestId,
+  // الحصول على البيانات المرسلة من الصفحة السابقة
+  const { 
+    serviceType, 
+    documentType, 
+    requestId, 
+    trackingNumber,
     responseData,
-  });
+    certificateId,
+    backendResponse 
+  } = location.state || {};
 
-  // بيانات الطلب
+  // بيانات المستخدم من localStorage
+  const userData = getUserData();
+
+  // بيانات الطلب مع البيانات الحقيقية
   const orderData = {
+    // بيانات الخدمة
     serviceType: serviceType || "الخدمات المدنية",
     documentType: documentType || "شهادة ميلاد",
-    requestId:
-      requestId ||
-      responseData?.requestId ||
-      responseData?.id ||
-      "undefined",
-    submissionDate: new Date().toLocaleDateString("ar-EG"),
-    submissionTime: new Date().toLocaleTimeString("ar-EG", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    estimatedCompletion: "3-5 أيام عمل",
-    status: "قيد المراجعة",
-    priority: "عادي",
-    department: "الأحوال المدنية",
+    requestId: requestId || certificateId || responseData?.id || responseData?.requestId || "REQ-" + Date.now(),
+    trackingNumber: trackingNumber || responseData?.trackingNumber || "TRK-" + Date.now(),
+    
+    // بيانات التوقيت
+    submissionDate: responseData?.submissionDate 
+      ? new Date(responseData.submissionDate).toLocaleDateString("ar-EG")
+      : new Date().toLocaleDateString("ar-EG"),
+    submissionTime: responseData?.submissionTime 
+      ? new Date(responseData.submissionTime).toLocaleTimeString("ar-EG")
+      : new Date().toLocaleTimeString("ar-EG"),
+    
+    // بيانات الطلب
+    estimatedCompletion: responseData?.estimatedCompletion || "3-5 أيام عمل",
+    status: responseData?.status || "قيد المراجعة",
+    priority: responseData?.priority || "عادي",
+    department: responseData?.department || "الأحوال المدنية",
+    fees: responseData?.fees || "70 جنيه",
+    
+    // بيانات المستخدم الحقيقية من localStorage
+    applicantName: userData?.name || responseData?.applicantName || "غير محدد",
+    nationalId: userData?.nationalId || responseData?.nationalId || "غير محدد",
+    phone: userData?.phone || responseData?.phone || "غير محدد",
+    email: userData?.email || responseData?.email || "غير محدد",
+    address: userData?.address || responseData?.address || "غير محدد",
+    birthDate: userData?.birthDate || responseData?.birthDate || "غير محدد",
+    gender: userData?.gender || responseData?.gender || "غير محدد",
   };
 
   useEffect(() => {
@@ -66,6 +168,11 @@ function CivilServicesDone() {
       setCurrentTime(new Date());
     }, 1000);
 
+    // طباعة البيانات للتحقق
+    console.log("Location state:", location.state);
+    console.log("User data from localStorage:", userData);
+    console.log("Order data:", orderData);
+
     return () => {
       clearTimeout(timer);
       clearInterval(timeInterval);
@@ -74,52 +181,39 @@ function CivilServicesDone() {
 
   const showToastMessage = (message, type = "success") => {
     setToastMessage(message);
+    setToastType(type);
     setShowToast(true);
   };
 
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (text, label) => {
     try {
-      await navigator.clipboard.writeText(orderData.requestId);
+      await navigator.clipboard.writeText(text);
       setCopied(true);
-      showToastMessage("تم نسخ رقم الطلب بنجاح!");
+      showToastMessage(`تم نسخ ${label} بنجاح!`);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      showToastMessage("فشل في نسخ رقم الطلب", "error");
+      showToastMessage(`فشل في نسخ ${label}`, "error");
     }
   };
 
-  const downloadReceipt = () => {
-    const receiptContent = `
-إيصال تقديم الطلب
-==================
+  const copyBackendResponse = async () => {
+    if (!backendResponse && !responseData) {
+      showToastMessage("لا توجد بيانات للنسخ", "error");
+      return;
+    }
 
-رقم الطلب: ${orderData.requestId}
-نوع الخدمة: ${orderData.serviceType}
-نوع الوثيقة: ${orderData.documentType}
-تاريخ التقديم: ${orderData.submissionDate}
-وقت التقديم: ${orderData.submissionTime}
-المدة المتوقعة: ${orderData.estimatedCompletion}
-حالة الطلب: ${orderData.status}
-الأولوية: ${orderData.priority}
-الإدارة المختصة: ${orderData.department}
-
-تم إنشاء هذا الإيصال في: ${currentTime.toLocaleString("ar-EG")}
-
-شكراً لاستخدام خدماتنا
-    `;
-
-    const element = document.createElement("a");
-    const file = new Blob([receiptContent], {
-      type: "text/plain;charset=utf-8",
-    });
-    element.href = URL.createObjectURL(file);
-    element.download = `receipt-${orderData.requestId}.txt`;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-
-    showToastMessage("تم تحميل الإيصال بنجاح!");
+    try {
+      const dataToShow = backendResponse || responseData;
+      const responseText = JSON.stringify(dataToShow, null, 2);
+      await navigator.clipboard.writeText(responseText);
+      
+      showToastMessage("تم نسخ رقم الطلب بنجاح!");
+    } catch (err) {
+      showToastMessage("فشل في نسخ رقم الطلب  ", "error");
+    }
   };
+
+ 
 
   const shareOrder = async () => {
     const shareData = {
@@ -134,7 +228,7 @@ function CivilServicesDone() {
         showToastMessage("تم مشاركة تفاصيل الطلب!");
       } else {
         await navigator.clipboard.writeText(
-          `${shareData.text}\nرقم الطلب: ${orderData.requestId}`
+          `${shareData.text}\nرقم الطلب: ${orderData.requestId}\nرقم التتبع: ${orderData.trackingNumber}`
         );
         showToastMessage("تم نسخ تفاصيل الطلب للمشاركة!");
       }
@@ -145,330 +239,250 @@ function CivilServicesDone() {
 
   const trackOrder = () => {
     showToastMessage("سيتم توجيهك لصفحة متابعة الطلب...", "info");
-    // محاكاة التوجيه لصفحة المتابعة
     setTimeout(() => {
-      window.open("#/track-order", "_blank");
+      // يمكنك تغيير الرابط حسب النظام الخاص بك
+      window.open(`#/track-order/${orderData.requestId}`, "_blank");
     }, 1500);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 relative overflow-hidden">
+    <div className="bg-gradient-custom">
       {/* Toast للإشعارات */}
       <Toast
         message={toastMessage}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
+        type={toastType}
       />
 
-      {/* خلفية متحركة محسنة */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-        <div className="absolute top-1/2 right-1/3 w-60 h-60 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-blob animation-delay-6000"></div>
-      </div>
+      {/* الخلفية المتحركة */}
+      <div className="animated-bg"></div>
 
-      {/* كونفيتي متحرك محسن */}
-      {showConfetti && (
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(30)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-3 h-3 rounded-full"
-              style={{
-                background: `linear-gradient(45deg, ${
-                  ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"][i % 5]
-                }, ${
-                  ["#1D4ED8", "#059669", "#D97706", "#DC2626", "#7C3AED"][i % 5]
-                })`,
-              }}
-              initial={{
-                x: Math.random() * window.innerWidth,
-                y: -20,
-                rotate: 0,
-                scale: 0,
-              }}
-              animate={{
-                y: window.innerHeight + 20,
-                rotate: 720,
-                scale: [0, 1, 0.5, 0],
-              }}
-              transition={{
-                duration: 4 + Math.random() * 2,
-                delay: Math.random() * 3,
-                ease: "easeOut",
-              }}
+      {/* كونفيتي متحرك */}
+      <Confetti show={showConfetti} />
+
+      <div className="container py-5 position-relative" style={{ zIndex: 10 }}>
+        {/* أيقونة النجاح */}
+        <SuccessAnimation />
+
+        {/* العنوان الرئيسي */}
+        <div className="text-center mb-5">
+          <h1 className="display-4 fw-bold text-clor mb-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
+            تم تقديم الطلب بنجاح
+            <Sparkles
+              className="text-warning"
+              style={{ width: "2rem", height: "2rem" }}
             />
-          ))}
+          </h1>
+          <p className="fs-5 text-muted mx-auto" style={{ maxWidth: "600px" }}>
+            شكراً لك {orderData.applicantName}! تم استلام طلبك وسيتم مراجعته في أقرب وقت ممكن. 
+            ستصلك تحديثات دورية حول حالة طلبك.
+          </p>
         </div>
-      )}
 
-      <Container className="relative z-10 py-8 min-h-screen d-flex align-items-center justify-content-center">
-        <motion.div
-          className="w-100"
-          style={{ maxWidth: "1200px" }}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          {/* أيقونة النجاح المحسنة */}
-          <motion.div
-            className="text-center mb-5"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{
-              delay: 0.3,
-              duration: 0.6,
-              type: "spring",
-              bounce: 0.4,
-            }}
-          >
-            <SuccessAnimation />
-          </motion.div>
+  
 
-          {/* العنوان الرئيسي */}
-          <motion.div
-            className="text-center mb-5"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            <h1 className="display-4 fw-bold text-color mb-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
-              تم تقديم الطلب بنجاح
-              <motion.div
-                animate={{ rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 2, repeat: Infinity, delay: 2 }}
-              >
-                <Sparkles className="w-8 h-8 text-warning" />
-              </motion.div>
-            </h1>
-            <p
-              className="lead text-muted mx-auto text-clor"
-              style={{ maxWidth: "600px" }}
-            >
-              شكراً لك! تم استلام طلبك وسيتم مراجعته في أقرب وقت ممكن. ستصلك
-              تحديثات دورية حول حالة طلبك.
-            </p>
-          </motion.div>
-
-          {/* معلومات سريعة */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.6 }}
-          >
-            <Row className="mb-5 g-4">
-              <Col md={4}>
-                <Card className="text-center bg-white bg-opacity-80 border-0 shadow-lg h-100">
-                  <Card.Body className="p-4">
-                    <Calendar className="w-8 h-8 text-primary mx-auto mb-2" />
-                    <p className="text-muted small">تاريخ التقديم</p>
-                    <p className="fw-bold text-dark">
-                      {orderData.submissionDate}
-                    </p>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col md={4}>
-                <Card className="text-center bg-white bg-opacity-80 border-0 shadow-lg h-100">
-                  <Card.Body className="p-4">
-                    <Clock className="w-8 h-8 text-success mx-auto mb-2" />
-                    <p className="text-muted small">وقت التقديم</p>
-                    <p className="fw-bold text-dark">
-                      {orderData.submissionTime}
-                    </p>
-                  </Card.Body>
-                </Card>
-              </Col>
-              <Col md={4}>
-                <Card className="text-center bg-white bg-opacity-80 border-0 shadow-lg h-100">
-                  <Card.Body className="p-4">
-                    <Sparkles className="w-8 h-8 text-purple mx-auto mb-2" />
-                    <p className="text-muted small">الأولوية</p>
-                    <Badge bg="purple" className="px-3 py-1">
-                      {orderData.priority}
-                    </Badge>
-                  </Card.Body>
-                </Card>
-              </Col>
-            </Row>
-          </motion.div>
-
-          {/* بطاقة تفاصيل الطلب المحسنة */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.6 }}
-          >
-            <Card className="mb-4 shadow-lg border-0 bg-white bg-opacity-90">
-              <Card.Header className="bg-gradient text-white text-center">
-                <h5 className="mb-0 d-flex align-items-center justify-content-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  تفاصيل الطلب
-                  <Sparkles className="w-5 h-5" />
-                </h5>
-              </Card.Header>
-              <Card.Body className="p-4">
-                <Row className="g-4">
-                  <Col md={6} lg={4}>
-                    <div className="mb-3">
-                      <label className="form-label text-muted small fw-medium">
-                        نوع الخدمة
-                      </label>
-                      <Badge bg="primary" className="px-3 py-1">
-                        {orderData.serviceType}
-                      </Badge>
-                    </div>
-                  </Col>
-                  <Col md={6} lg={4}>
-                    <div className="mb-3">
-                      <label className="form-label text-muted small fw-medium">
-                        نوع الوثيقة
-                      </label>
-                      <Badge bg="success" className="px-3 py-1">
-                        {orderData.documentType}
-                      </Badge>
-                    </div>
-                  </Col>
-                  <Col md={6} lg={4}>
-                    <div className="mb-3">
-                      <label className="form-label text-muted small fw-medium">
-                        الإدارة المختصة
-                      </label>
-                      <p className="text-dark fw-medium mb-0">
-                        {orderData.department}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col md={6} lg={4}>
-                    <div className="mb-3">
-                      <label className="form-label text-muted small fw-medium">
-                        المدة المتوقعة
-                      </label>
-                      <p className="text-dark fw-medium mb-0">
-                        {orderData.estimatedCompletion}
-                      </p>
-                    </div>
-                  </Col>
-                  <Col md={6} lg={4}>
-                    <div className="mb-3">
-                      <label className="form-label text-muted small fw-medium">
-                        حالة الطلب
-                      </label>
-                      <Badge bg="warning" text="dark" className="px-3 py-1">
-                        {orderData.status}
-                      </Badge>
-                    </div>
-                  </Col>
-                  <Col md={6} lg={4}>
-                    <div className="mb-3">
-                      <label className="form-label text-muted small fw-medium">
-                        الوقت الحالي
-                      </label>
-                      <p className="text-dark fw-medium mb-0 font-monospace">
-                        {currentTime.toLocaleTimeString("ar-EG")}
-                      </p>
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </motion.div>
-
-          {/* بطاقة رقم الطلب المحسنة */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.6 }}
-          >
-            <Card className="mb-4 shadow-lg border-0 bg-white bg-opacity-90">
-              <Card.Header>
-                <h6 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
-                  <Copy className="w-4 h-4" />
-                  رقم الطلب للمتابعة
-                </h6>
-              </Card.Header>
-              <Card.Body className="p-4">
-                <div className="bg-light rounded p-3 border border-2 border-dashed">
-                  <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
-                    <code className="fs-6 fw-bold text-dark flex-grow-1 text-break">
-                      {orderData.requestId}
-                    </code>
-                    <div className="d-flex gap-2 flex-shrink-0">
-                      <Button
-                        onClick={copyToClipboard}
-                        variant="outline-primary"
-                        size="sm"
-                        className="d-flex align-items-center gap-2"
-                      >
-                        <Copy className="w-3 h-3" />
-                        {copied ? "تم النسخ!" : "نسخ"}
-                      </Button>
-                      <Button
-                        onClick={shareOrder}
-                        variant="outline-success"
-                        size="sm"
-                        className="d-flex align-items-center gap-2"
-                      >
-                        <Share2 className="w-3 h-3" />
-                        مشاركة
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-muted small mt-3 mb-0">
-                  احتفظ برقم الطلب هذا لمتابعة حالة طلبك أو تواصل مع خدمة
-                  العملاء
+        {/* تفاصيل الطلب */}
+        <div className="card card-custom mb-4 shadow-custom">
+          <div className="card-header card-header-gradient">
+            <h5 className="card-title mb-0 d-flex align-items-center gap-2">
+              <FileText style={{ width: "1.25rem", height: "1.25rem" }} />
+              تفاصيل الطلب
+            </h5>
+          </div>
+          <div className="card-body">
+            <div className="row g-4">
+              <div className="col-md-6 col-lg-4">
+                <label className="text-muted small fw-medium">نوع الخدمة</label>
+                <p className="fw-bold text-dark mb-0">
+                  {orderData.serviceType}
                 </p>
-              </Card.Body>
-            </Card>
-          </motion.div>
-
-          {/* أزرار الإجراءات المحسنة */}
-          <motion.div
-            className="d-flex flex-column flex-sm-row gap-3 justify-content-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 0.6 }}
-          >
-            <Button
-              onClick={downloadReceipt}
-              variant="primary"
-              size="lg"
-              className="d-flex align-items-center gap-2 shadow"
-            >
-              <Download className="w-4 h-4" />
-              تحميل الإيصال
-            </Button>
-            <Button
-              onClick={trackOrder}
-              variant="outline-success"
-              size="lg"
-              className="d-flex align-items-center gap-2 shadow"
-            >
-              متابعة الطلب
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </motion.div>
-
-          {/* رسالة إضافية محسنة */}
-          <motion.div
-            className="text-center mt-5 bg-white bg-opacity-60 rounded p-4 shadow"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.3, duration: 0.6 }}
-          >
-            <p className="text-dark fs-5 mb-2">
-              سيتم إرسال تحديثات حول حالة طلبك عبر:
-            </p>
-            <div className="d-flex justify-content-center gap-4 text-muted small">
-              <span>📧 البريد الإلكتروني</span>
-              <span>📱 الرسائل النصية</span>
-              <span>🔔 الإشعارات</span>
+              </div>
+              <div className="col-md-6 col-lg-4">
+                <label className="text-muted small fw-medium">
+                  نوع الوثيقة
+                </label>
+                <p className="fw-bold text-dark mb-0">
+                  {orderData.documentType}
+                </p>
+              </div>
+              <div className="col-md-6 col-lg-4">
+                <label className="text-muted small fw-medium">
+                  الإدارة المختصة
+                </label>
+                <p className="fw-bold text-dark mb-0">{orderData.department}</p>
+              </div>
+              <div className="col-md-6 col-lg-4">
+                <label className="text-muted small fw-medium">
+                  المدة المتوقعة
+                </label>
+                <p className="fw-bold text-dark mb-0">
+                  {orderData.estimatedCompletion}
+                </p>
+              </div>
+              <div className="col-md-6 col-lg-4">
+                <label className="text-muted small fw-medium">حالة الطلب</label>
+                <br />
+                <span className="badge status-pending">{orderData.status}</span>
+              </div>
+              <div className="col-md-6 col-lg-4">
+                <label className="text-muted small fw-medium">الرسوم</label>
+                <p className="fw-bold text-dark mb-0">{orderData.fees}</p>
+              </div>
             </div>
-          </motion.div>
-        </motion.div>
-      </Container>
+          </div>
+        </div>
+
+        {/* أرقام الطلب */}
+        <div className="card card-custom mb-4 shadow-custom">
+          <div className="card-header border-bottom">
+            <h6 className="fw-bold text-color mb-0 d-flex align-items-center gap-2">
+              <Copy style={{ width: "1rem", height: "1rem" }} />
+              رقم الطلب للمتابعة
+            </h6>
+          </div>
+          <div className="card-body">
+            <div className="mb-4">
+              <div className="copy-code-box">
+                <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+                  <div className="flex-grow-1">
+                    <p className="text-color  small mb-2">رقم الطلب </p>
+                    <code> {JSON.stringify(backendResponse || responseData, null, 2)}</code>
+                  </div>
+                  <button
+                   onClick={copyBackendResponse}
+                    className="btn btn-primary btn-custom"
+                  >
+                    <Copy style={{ width: "1rem", height: "1rem" }} />
+                    {copied ? "تم النسخ!" : "نسخ"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+    
+          </div>
+        </div>
+
+       
+
+        {/* معلومات مقدم الطلب */}
+        {/* <div className="card card-custom mb-4 shadow-custom">
+          <div className="card-header border-bottom">
+            <h6 className="fw-bold text-color mb-0 d-flex align-items-center gap-2">
+              <User style={{ width: "1rem", height: "1rem" }} />
+              معلومات مقدم الطلب
+            </h6>
+          </div>
+          <div className="card-body">
+            <div className="row g-4">
+              <div className="col-md-6">
+                <label className="text-muted small fw-medium">
+                  الاسم الكامل
+                </label>
+                <p className="fw-bold text-dark mb-0">
+                {user?.name || "غير متوفر"}
+                </p>
+              </div>
+              <div className="col-md-6">
+                <label className="text-muted small fw-medium">
+                  الرقم القومي
+                </label>
+                <p className="fw-bold text-dark mb-0"> {user?.nationalId || "غير متوفر"}</p>
+              </div>
+              <div className="col-md-6">
+                <label className="text-muted small fw-medium">رقم الهاتف</label>
+                <p className="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                  <Phone style={{ width: "1rem", height: "1rem" }} />
+                  {user?.phone || "غير متوفر"}
+                </p>
+              </div>
+              <div className="col-md-6">
+                <label className="text-muted small fw-medium">
+                  البريد الإلكتروني
+                </label>
+                <p className="text-dark fw-semibold d-flex align-items-center gap-2">
+                  <Mail style={{ width: "1rem", height: "1rem" }} />
+                  {user?.email || "غير متوفر"}
+                </p>
+              </div>
+              <div className="col-md-6">
+                <label className="text-muted small fw-medium">العنوان</label>
+                <p className="fw-bold text-dark mb-0">{user.address || "غير محدد"}</p>
+              </div>
+              <div className="col-md-6">
+                <label className="text-muted small fw-medium">تاريخ الميلاد</label>
+                <p className="fw-bold text-dark mb-0">{user.birthDate || "غير محدد"}</p>
+              </div>
+            </div>
+          </div>
+        </div> */}
+
+        {/* الخطوات التالية */}
+        <div className="card card-custom mb-4 shadow-custom">
+          <div className="card-header border-bottom">
+            <h6 className="fw-bold text-color mb-0">الخطوات التالية</h6>
+          </div>
+          <div className="card-body">
+            <ul className="list-unstyled">
+              {((backendResponse?.nextSteps || responseData?.nextSteps) || [
+                "انتظر رسالة تأكيد عبر الهاتف أو البريد الإلكتروني",
+                "قم بمتابعة حالة الطلب باستخدام رقم التتبع",
+                "احضر الأوراق المطلوبة عند الاستلام",
+                "تواصل مع خدمة العملاء في حالة وجود استفسارات"
+              ]).map((step, index) => (
+                <li
+                  key={index}
+                  className="d-flex align-items-start gap-3 mb-3"
+                >
+                  <span
+                    className="flex-shrink-0 badge bg-primary rounded-pill d-flex align-items-center justify-content-center"
+                    style={{
+                      width: "24px",
+                      height: "24px",
+                      fontSize: "12px",
+                     
+                    }}
+                  >
+                    {index + 1}
+                  </span>
+                  <span className="text-muted">{step}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* أزرار الإجراءات */}
+        <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-4">
+       
+         
+          <button
+            onClick={trackOrder}
+            className="btn nav-btn btn-outline-secondry d-flex align-items-center justify-content-center gap-2 px-4 py-2 shadow"
+          >
+            متابعة الطلب
+            <ArrowRight style={{ width: "1.25rem", height: "1.25rem" }} />
+          </button>
+        </div>
+
+        {/* رسالة إضافية */}
+        <div className="text-center mt-4 bg-white bg-opacity-75 rounded p-4 shadow">
+          <p className="text-color fs-5 mb-3">
+            سيتم إرسال تحديثات حول حالة طلبك عبر:
+          </p>
+          <div className="d-flex justify-content-center gap-4 text-bold">
+            <span className="d-flex align-items-center gap-2">
+              <Mail style={{ width: "1.25rem", height: "1.25rem", color: "#3377A9"}} />
+            البريد الالكتروني
+            </span>
+            <span className="d-flex align-items-center gap-2">
+              <Phone style={{ width: "1.25rem", height: "1.25rem", color: "#3377A9" }} />
+             رقم الهاتف
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

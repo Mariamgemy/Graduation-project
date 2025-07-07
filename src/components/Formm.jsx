@@ -11,8 +11,6 @@ import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-bootstrap";
 
-
-
 const stripePromise = loadStripe(
   "pk_test_51QTN1AK1FEwOxerZfCn4zCfYZPLxgw3WwLdL2kaTBfEmexHfeoyiP2BoAWQMVkFM5w5xTrk7OPWUMelS4ktPgXqK00TW5tdcvp"
 ); // استبدل بمفتاحك
@@ -35,9 +33,8 @@ function Formm() {
     card.title === "سداد فاتورة الكهرباء" ||
     card.title === "سداد فاتورة المياه" ||
     card.title === "سداد فاتورة الغاز";
-  
 
-   const isConsumptionCard = card.title === "متابعة الاستهلاك بشكل لحظي";
+  const isConsumptionCard = card.title === "متابعة الاستهلاك بشكل لحظي";
 
   const isCivilCard =
     card.title === "شهادة ميلاد" ||
@@ -54,7 +51,6 @@ function Formm() {
 
   const isEnergyCard =
     card.title === "شهادة كفاءة الطاقة " ||
-
     card.title === "التقديم على عداد كهرباء / مياه" ||
     card.title === "نقل ملكية عداد" ||
     card.title === "تقديم شكوى مرافق";
@@ -143,12 +139,15 @@ function Formm() {
     try {
       setFormSubmitted(true);
 
+      const token = localStorage.getItem("token");
+
       const response = await fetch(
         "https://smartgovernment-fpcxb3cmfef3e6c0.uaenorth-01.azurewebsites.net/api/bills/register-meter/api/bills/generate-and-pay",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             ...formData,
@@ -180,7 +179,6 @@ function Formm() {
     if (title.includes("كهرباء")) return "Electricity";
     if (title.includes("مياه")) return "Water";
     if (title.includes("غاز")) return "Gas";
-   
 
     // For Civil, Traffic, Housing, this might need adjustment or the backend handles generic types.
     return "Other";

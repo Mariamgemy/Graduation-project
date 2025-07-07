@@ -278,6 +278,13 @@ const CivilServices = forwardRef((props, ref) => {
           responseData: response,
         },
       });
+      // حفظ بيانات الطلب في localStorage
+      localStorage.setItem("lastCivilOrder", JSON.stringify({
+        serviceType: "الخدمات المدنية",
+        documentType: card.title,
+        requestId: response.requestId || response.id,
+        responseData: response,
+      }));
     } catch (error) {
       console.error("Error submitting request:", error);
       setErrors({

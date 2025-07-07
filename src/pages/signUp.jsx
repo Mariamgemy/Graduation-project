@@ -106,12 +106,14 @@ const SignUp = () => {
 
       console.log("البيانات المرسلة:", registerData);
 
+      const token = localStorage.getItem("token");
       const response = await fetch(
         `${API_CONFIG.BASE_URL}/auth/register-with-otp`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(registerData),
         }

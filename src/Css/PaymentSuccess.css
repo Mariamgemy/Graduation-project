@@ -577,3 +577,12 @@
   }
 }
 
+.payment-summary-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}

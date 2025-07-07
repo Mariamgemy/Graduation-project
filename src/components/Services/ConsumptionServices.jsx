@@ -207,13 +207,15 @@ const ConsumptionServices = forwardRef((props, ref) => {
     setApiError(null);
     setIsSubmitting(true);
     try {
+      const token = localStorage.getItem("token");
+      console.log(token);
       const response = await axios.post(
         `${API_CONFIG.BASE_URL}/BillRecommendations/analyze`,
         formData,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -397,45 +399,47 @@ const ConsumptionServices = forwardRef((props, ref) => {
                         </h3>
                       </Card.Header>
                       <Card.Body className="p-4">
-                      <ResponsiveContainer width="100%" height={400}> {/* قلل الارتفاع من 550 */}
-  <PieChart>
-    <Pie
-      data={analysisResults.featureImportanceChart}
-      dataKey="value"
-      nameKey="name"
-      cx="50%"
-      cy="50%" 
-      outerRadius={120}
-      innerRadius={40}
-      paddingAngle={2}
-      label={({ value }) => ` ${value}%`}
-      labelLine={false}
-      fontSize={11}
-    >
-      {analysisResults.featureImportanceChart?.map(
-        (entry, index) => (
-          <Cell
-            key={`cell-${index}`}
-            fill={COLORS[index % COLORS.length]}
-          />
-        )
-      )}
-    </Pie>
-    <Tooltip
-      formatter={(value) => [
-        `${value}`,
-        "نسبة التأثير",
-      ]}
-      contentStyle={{
-        backgroundColor: "#fff",
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        fontSize: "13px",
-        direction: "rtl",
-      }}
-    />
-  </PieChart>
-</ResponsiveContainer>
+                        <ResponsiveContainer width="100%" height={400}>
+                          {" "}
+                          {/* قلل الارتفاع من 550 */}
+                          <PieChart>
+                            <Pie
+                              data={analysisResults.featureImportanceChart}
+                              dataKey="value"
+                              nameKey="name"
+                              cx="50%"
+                              cy="50%"
+                              outerRadius={120}
+                              innerRadius={40}
+                              paddingAngle={2}
+                              label={({ value }) => ` ${value}%`}
+                              labelLine={false}
+                              fontSize={11}
+                            >
+                              {analysisResults.featureImportanceChart?.map(
+                                (entry, index) => (
+                                  <Cell
+                                    key={`cell-${index}`}
+                                    fill={COLORS[index % COLORS.length]}
+                                  />
+                                )
+                              )}
+                            </Pie>
+                            <Tooltip
+                              formatter={(value) => [
+                                `${value}`,
+                                "نسبة التأثير",
+                              ]}
+                              contentStyle={{
+                                backgroundColor: "#fff",
+                                border: "1px solid #ccc",
+                                borderRadius: "8px",
+                                fontSize: "13px",
+                                direction: "rtl",
+                              }}
+                            />
+                          </PieChart>
+                        </ResponsiveContainer>
 
                         <div className="custom-legend ">
                           <div className="row g-2">
@@ -468,7 +472,6 @@ const ConsumptionServices = forwardRef((props, ref) => {
                                     >
                                       {entry.name}
                                     </span>
-                        
                                   </div>
                                 </div>
                               )
@@ -500,7 +503,7 @@ const ConsumptionServices = forwardRef((props, ref) => {
                         style={{ borderRadius: "20px 20px 0 0" }}
                       >
                         <h3 className="mb-2 mt-1 fw-bold fs-5">
-                          <i className="fas fa-chart-line ms-2 me-2"></i> 
+                          <i className="fas fa-chart-line ms-2 me-2"></i>
                           أهم العوامل المؤثرة
                         </h3>
                       </Card.Header>
@@ -611,7 +614,7 @@ const ConsumptionServices = forwardRef((props, ref) => {
                                   }}
                                 >
                                   <div className="d-flex align-items-start">
-                                     {/* <div className="recommendation-icon me-3 mt-1">
+                                    {/* <div className="recommendation-icon me-3 mt-1">
                                       <FaLightbulb
                                         size={24}
                                         style={{

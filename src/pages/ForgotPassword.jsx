@@ -29,6 +29,7 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
   const navigate = useNavigate();
   const { openModal } = useModal();
   const countdownIntervalRef = useRef(null);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!show) {
@@ -229,7 +230,7 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
         setSuccessMessage("تم تغيير كلمة المرور بنجاح");
         setTimeout(() => {
           handleClose();
-          openModal('login')
+          openModal("login");
         }, 2000);
       }
     } catch (error) {
@@ -322,7 +323,6 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
             <div className="mb-3">
               <label className="fw-bold form-label">كلمة المرور الجديدة</label>
               <PasswordInput
-          
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="أدخل كلمة المرور الجديدة"
@@ -332,7 +332,7 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
                 <div className="text-danger">{errors.newPassword}</div>
               )}
             </div>
-      
+
             <div className="mb-3">
               <label className="fw-bold form-label">تأكيد كلمة المرور</label>
               <PasswordInput
@@ -366,8 +366,6 @@ const ForgotPassword = ({ show, handleClose }, ref) => {
       backdropClassName="custom-backdrop"
     >
       <Modal.Body className="p-4 rounded-4">
-       
-
         {apiError && (
           <div className="alert alert-danger text-center" role="alert">
             {apiError}
