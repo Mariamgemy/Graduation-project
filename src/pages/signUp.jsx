@@ -123,6 +123,9 @@ const SignUp = () => {
         throw new Error(data.message || "فشل في إنشاء الحساب");
       }
 
+      // حفظ تاريخ التسجيل في localStorage
+      localStorage.setItem("memberSince", new Date().toISOString());
+
       setApiSuccess("تم إنشاء الحساب بنجاح! سيتم تحويلك للصفحة الرئيسية.");
       setTimeout(() => {
         navigate("/");

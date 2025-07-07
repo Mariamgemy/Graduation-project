@@ -5,7 +5,7 @@
 //   const [message, setMessage] = useState({ text: "", type: "" });
 //   const [showEditModal, setShowEditModal] = useState(false);
 //   const [showChangePassword, setShowChangePassword] = useState(false);
-  
+
 //   // بيانات المستخدم
 //   const [user, setUser] = useState({
 //     name: "أحمد محمد علي",
@@ -60,15 +60,15 @@
 //         </div>
 //         <h3 className="user-name">{user.name}</h3>
 //         <p className="member-since">عضو منذ {user.memberSince}</p>
-        
+
 //         <div className="profile-completion">
 //           <div className="completion-header">
 //             <span>اكتمال الملف الشخصي</span>
 //             <span className="percentage">{user.profileComplete}%</span>
 //           </div>
 //           <div className="progress-bar">
-//             <div 
-//               className="progress-fill" 
+//             <div
+//               className="progress-fill"
 //               style={{width: `${user.profileComplete}%`}}
 //             ></div>
 //           </div>
@@ -92,7 +92,7 @@
 //             <span className="value">{user.nationalId}</span>
 //           </div>
 //         </div>
-        
+
 //         <div className="info-row">
 //           <div className="info-item">
 //             <span className="label">
@@ -109,7 +109,7 @@
 //             <span className="value">{user.birthDate}</span>
 //           </div>
 //         </div>
-        
+
 //         <div className="info-item full-width">
 //           <span className="label">
 //             <span className="icon">📍</span>
@@ -120,14 +120,14 @@
 //       </div>
 
 //       <div className="profile-actions">
-//         <button 
+//         <button
 //           className="btn btn-primary"
 //           onClick={() => setShowEditModal(true)}
 //         >
 //           <span className="btn-icon">✏️</span>
 //           تعديل البيانات
 //         </button>
-//         <button 
+//         <button
 //           className="btn btn-secondary"
 //           onClick={() => setShowChangePassword(true)}
 //         >
@@ -174,8 +174,8 @@
 //       </div>
 //       <div className="notifications-list">
 //         {notifications.map(notification => (
-//           <div 
-//             key={notification.id} 
+//           <div
+//             key={notification.id}
 //             className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
 //           >
 //             <div className="notification-content">
@@ -281,7 +281,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 import { API_CONFIG } from "../api/config";
-import "../Css/profile.css"
+import "../Css/profile.css";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -290,21 +290,21 @@ const Profile = () => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [apiError, setApiError] = useState("");
-  
+
   const { user: authUser, logout } = useAuth();
-  
+
   // بيانات المستخدم الكاملة (من API + localStorage)
   const [user, setUser] = useState({
     name: authUser?.name || "",
     email: authUser?.email || "",
-    nationalId:authUser?.nationalId || "",
-    phone:authUser?.phone|| "",
-    address:authUser?.address|| "",
-    birthDate:authUser?.birthDate|| "",
-    gender:authUser?.gender|| "",
+    nationalId: authUser?.nationalId || "",
+    phone: authUser?.phone || "",
+    address: authUser?.address || "",
+    birthDate: authUser?.birthDate || "",
+    gender: authUser?.gender || "",
     profileComplete: 0,
     isVerified: false,
-    memberSince: ""
+    memberSince: "",
   });
 
   // الخدمات الحكومية (هنخليها فاضية لحد ما نجيب من API)
@@ -330,7 +330,7 @@ const Profile = () => {
         const userResponse = await fetch(`${API_CONFIG.BASE_URL}/Auth/me`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${authUser.token}`,
+            Authorization: `Bearer ${authUser.token}`,
             "Content-Type": "application/json",
           },
         });
@@ -338,43 +338,59 @@ const Profile = () => {
         if (userResponse.ok) {
           const userData = await userResponse.json();
           console.log("بيانات المستخدم من API:", userData);
-          
+
           // دمج البيانات من localStorage مع البيانات من API
-          setUser(prevUser => ({
+          setUser((prevUser) => ({
             ...prevUser,
             name: userData.data?.displayName || authUser.name || prevUser.name,
             email: userData.data?.email || authUser.email || prevUser.email,
-            nationalId: userData.data?.nid ||authUser?.nationalId|| prevUser.nationalId,
-            phone: userData.data?.phoneNumber ||authUser?.phone||prevUser.phone,
-            address: userData.data?.address ||authUser?.address||prevUser.address,
-            birthDate: userData.data?.dateOfBirth ||authUser?.birthDate||prevUser.birthDate,
-            gender: userData.data?.gender ||authUser?.gender||prevUser.gender,
+            nationalId:
+              userData.data?.nid || authUser?.nationalId || prevUser.nationalId,
+            phone:
+              userData.data?.phoneNumber || authUser?.phone || prevUser.phone,
+            address:
+              userData.data?.address || authUser?.address || prevUser.address,
+            birthDate:
+              userData.data?.dateOfBirth ||
+              authUser?.birthDate ||
+              prevUser.birthDate,
+            gender:
+              userData.data?.gender || authUser?.gender || prevUser.gender,
             profileComplete: calculateProfileCompletion(userData.data),
             isVerified: userData.data?.isVerified || false,
-            memberSince: userData.data?.createdAt ? new Date(userData.data.createdAt).toLocaleDateString('ar-EG') : ""
+            memberSince: userData.data?.createdAt
+              ? new Date(userData.data.createdAt).toLocaleDateString("ar-EG")
+              : localStorage.getItem("memberSince")
+              ? new Date(
+                  localStorage.getItem("memberSince")
+                ).toLocaleDateString("ar-EG")
+              : "",
           }));
         } else {
           console.warn("فشل في جلب بيانات المستخدم:", userResponse.status);
           // استخدام البيانات من localStorage كـ fallback
-          setUser(prevUser => ({
+          setUser((prevUser) => ({
             ...prevUser,
             name: authUser.name || prevUser.name,
             email: authUser.email || prevUser.email,
             profileComplete: calculateProfileCompletion(authUser),
-            memberSince: "undefined "
+            memberSince: "undefined ",
           }));
         }
 
         // جلب الخدمات (اختياري - لو عندك API للخدمات)
         try {
-          const servicesResponse = await fetch(`${API_CONFIG.BASE_URL}/Services/user-services`, {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${authUser.token}`,
-              "Content-Type": "application/json",
-            },
-          });
-          
+          const servicesResponse = await fetch(
+            `${API_CONFIG.BASE_URL}/Services/user-services`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${authUser.token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
           if (servicesResponse.ok) {
             const servicesData = await servicesResponse.json();
             setServices(servicesData.data || []);
@@ -389,14 +405,17 @@ const Profile = () => {
 
         // جلب الإشعارات (اختياري - لو عندك API للإشعارات)
         try {
-          const notificationsResponse = await fetch(`${API_CONFIG.BASE_URL}/Notifications/user-notifications`, {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${authUser.token}`,
-              "Content-Type": "application/json",
-            },
-          });
-          
+          const notificationsResponse = await fetch(
+            `${API_CONFIG.BASE_URL}/Notifications/user-notifications`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${authUser.token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
           if (notificationsResponse.ok) {
             const notificationsData = await notificationsResponse.json();
             setNotifications(notificationsData.data || []);
@@ -407,18 +426,17 @@ const Profile = () => {
           console.log("لم يتم العثور على API الإشعارات، سيتم عرض قائمة فارغة");
           setNotifications([]);
         }
-
       } catch (error) {
         console.error("خطأ في جلب البيانات:", error);
         setApiError("حدث خطأ في جلب البيانات. يرجى المحاولة لاحقاً");
-        
+
         // استخدام البيانات من localStorage كـ fallback
-        setUser(prevUser => ({
+        setUser((prevUser) => ({
           ...prevUser,
           name: authUser.name || prevUser.name,
           email: authUser.email || prevUser.email,
           profileComplete: calculateProfileCompletion(authUser),
-          memberSince: "undefined "
+          memberSince: "undefined ",
         }));
       } finally {
         setIsLoading(false);
@@ -431,38 +449,49 @@ const Profile = () => {
   // حساب نسبة اكتمال الملف الشخصي
   const calculateProfileCompletion = (userData) => {
     if (!userData) return 20; // اسم وإيميل من تسجيل الدخول
-    
+
     let completed = 0;
-    const fields = ['displayName', 'email', 'nationalId', 'phoneNumber', 'address', 'birthDate', 'gender'];
-    
-    fields.forEach(field => {
-      if (userData[field] && userData[field].trim() !== '') {
-        completed += (100 / fields.length);
+    const fields = [
+      "displayName",
+      "email",
+      "nationalId",
+      "phoneNumber",
+      "address",
+      "birthDate",
+      "gender",
+    ];
+
+    fields.forEach((field) => {
+      if (userData[field] && userData[field].trim() !== "") {
+        completed += 100 / fields.length;
       }
     });
-    
+
     return Math.round(completed);
   };
 
   const handleSaveProfile = async () => {
     try {
       setIsLoading(true);
-      
+
       // هنا هتحطي الـ API call لحفظ التعديلات
-      const response = await fetch(`${API_CONFIG.BASE_URL}/User/update-profile`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${authUser.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          displayName: user.name,
-          phoneNumber: user.phone,
-          address: user.address,
-          birthDate: user.birthDate,
-          gender: user.gender
-        }),
-      });
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/User/update-profile`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${authUser.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            displayName: user.name,
+            phoneNumber: user.phone,
+            address: user.address,
+            birthDate: user.birthDate,
+            gender: user.gender,
+          }),
+        }
+      );
 
       if (response.ok) {
         setMessage({ text: "تم حفظ التعديلات بنجاح", type: "success" });
@@ -482,18 +511,21 @@ const Profile = () => {
   const handleChangePassword = async () => {
     try {
       setIsLoading(true);
-      
+
       // هنا هتحطي الـ API call لتغيير كلمة المرور
-      const response = await fetch(`${API_CONFIG.BASE_URL}/Auth/change-password`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${authUser.token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          // هنا هتحطي باقي البيانات المطلوبة للـ API
-        }),
-      });
+      const response = await fetch(
+        `${API_CONFIG.BASE_URL}/Auth/change-password`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${authUser.token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            // هنا هتحطي باقي البيانات المطلوبة للـ API
+          }),
+        }
+      );
 
       if (response.ok) {
         setMessage({ text: "تم تغيير كلمة المرور بنجاح", type: "success" });
@@ -543,17 +575,19 @@ const Profile = () => {
               </div>
             </div>
             <h3 className="user-name">{user.name || "undefined "}</h3>
-            <p className="member-since">عضو منذ {user.memberSince || "undefined "}</p>
-            
+            <p className="member-since">
+              عضو منذ {user.memberSince || "undefined "}
+            </p>
+
             <div className="profile-completion">
               <div className="completion-header">
                 <span>اكتمال الملف الشخصي</span>
                 <span className="percentage">{user.profileComplete}%</span>
               </div>
               <div className="progress-bar">
-                <div 
-                  className="progress-fill" 
-                  style={{width: `${user.profileComplete}%`}}
+                <div
+                  className="progress-fill"
+                  style={{ width: `${user.profileComplete}%` }}
                 ></div>
               </div>
             </div>
@@ -576,7 +610,7 @@ const Profile = () => {
                 <span className="value">{user.nationalId || "غير محدد"}</span>
               </div>
             </div>
-            
+
             <div className="info-row">
               <div className="info-item">
                 <span className="label">
@@ -593,7 +627,7 @@ const Profile = () => {
                 <span className="value">{user.birthDate || "غير محدد"}</span>
               </div>
             </div>
-            
+
             <div className="info-item full-width">
               <span className="label">
                 <span className="icon">📍</span>
@@ -604,7 +638,7 @@ const Profile = () => {
           </div>
 
           <div className="profile-actions">
-            <button 
+            <button
               className="btn btn-primary"
               onClick={() => setShowEditModal(true)}
               disabled={isLoading}
@@ -612,7 +646,7 @@ const Profile = () => {
               <span className="btn-icon">✏️</span>
               تعديل البيانات
             </button>
-            <button 
+            <button
               className="btn btn-secondary"
               onClick={() => setShowChangePassword(true)}
               disabled={isLoading}
@@ -643,21 +677,30 @@ const Profile = () => {
       <div className="services-list">
         {isLoading ? (
           <div className="text-center p-3">
-            <div className="spinner-border spinner-border-sm" role="status"></div>
+            <div
+              className="spinner-border spinner-border-sm"
+              role="status"
+            ></div>
             <span className="ms-2">جاري تحميل الخدمات...</span>
           </div>
         ) : services.length > 0 ? (
-          services.map(service => (
+          services.map((service) => (
             <div key={service.id} className="service-item">
               <div className="service-content">
                 <div className="service-info">
                   <h5>{service.name || service.serviceName}</h5>
                   <small className="service-date">
-                    {service.date || service.createdAt ? new Date(service.date || service.createdAt).toLocaleDateString('ar-EG') : 'غير محدد'}
+                    {service.date || service.createdAt
+                      ? new Date(
+                          service.date || service.createdAt
+                        ).toLocaleDateString("ar-EG")
+                      : "غير محدد"}
                   </small>
                 </div>
-                <span className={`status-badge ${getStatusClass(service.status)}`}>
-                  {service.status || 'غير محدد'}
+                <span
+                  className={`status-badge ${getStatusClass(service.status)}`}
+                >
+                  {service.status || "غير محدد"}
                 </span>
               </div>
             </div>
@@ -684,23 +727,30 @@ const Profile = () => {
       <div className="notifications-list">
         {isLoading ? (
           <div className="text-center p-3">
-            <div className="spinner-border spinner-border-sm" role="status"></div>
+            <div
+              className="spinner-border spinner-border-sm"
+              role="status"
+            ></div>
             <span className="ms-2">جاري تحميل الإشعارات...</span>
           </div>
         ) : notifications.length > 0 ? (
-          notifications.map(notification => (
-            <div 
-              key={notification.id} 
-              className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
+          notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`notification-item ${
+                !notification.isRead ? "unread" : ""
+              }`}
             >
               <div className="notification-content">
                 <div className="notification-info">
                   <h6>{notification.title}</h6>
                   <p>{notification.message}</p>
                   <small>
-                    {notification.date || notification.createdAt ? 
-                      new Date(notification.date || notification.createdAt).toLocaleDateString('ar-EG') : 
-                      'غير محدد'}
+                    {notification.date || notification.createdAt
+                      ? new Date(
+                          notification.date || notification.createdAt
+                        ).toLocaleDateString("ar-EG")
+                      : "غير محدد"}
                   </small>
                 </div>
                 {!notification.isRead && (
@@ -722,23 +772,23 @@ const Profile = () => {
 
   // مساعد لتحديد class الحالة
   const getStatusClass = (status) => {
-    if (!status) return 'secondary';
-    
+    if (!status) return "secondary";
+
     switch (status.toLowerCase()) {
-      case 'مكتملة':
-      case 'completed':
-      case 'approved':
-        return 'success';
-      case 'قيد المراجعة':
-      case 'pending':
-      case 'in_progress':
-        return 'warning';
-      case 'مرفوضة':
-      case 'rejected':
-      case 'failed':
-        return 'danger';
+      case "مكتملة":
+      case "completed":
+      case "approved":
+        return "success";
+      case "قيد المراجعة":
+      case "pending":
+      case "in_progress":
+        return "warning";
+      case "مرفوضة":
+      case "rejected":
+      case "failed":
+        return "danger";
       default:
-        return 'secondary';
+        return "secondary";
     }
   };
 
@@ -752,12 +802,18 @@ const Profile = () => {
       {message.text && (
         <div className={`alert alert-${message.type}`}>
           <span className="alert-icon">
-            {message.type === 'success' ? (
-              <span role="img" aria-label="نجاح">✅</span>
-            ) : message.type === 'danger' ? (
-              <span role="img" aria-label="خطأ">❌</span>
-            ) : message.type === 'warning' ? (
-              <span role="img" aria-label="تحذير">⚠️</span>
+            {message.type === "success" ? (
+              <span role="img" aria-label="نجاح">
+                ✅
+              </span>
+            ) : message.type === "danger" ? (
+              <span role="img" aria-label="خطأ">
+                ❌
+              </span>
+            ) : message.type === "warning" ? (
+              <span role="img" aria-label="تحذير">
+                ⚠️
+              </span>
             ) : null}
           </span>
           <span className="alert-text">{message.text}</span>
@@ -767,20 +823,20 @@ const Profile = () => {
       {/* أزرار التبديل بين التبويبات */}
       <div className="tabs">
         <button
-          className={`tab-btn${activeTab === 'profile' ? ' active' : ''}`}
-          onClick={() => setActiveTab('profile')}
+          className={`tab-btn${activeTab === "profile" ? " active" : ""}`}
+          onClick={() => setActiveTab("profile")}
         >
           الملف الشخصي
         </button>
         <button
-          className={`tab-btn${activeTab === 'services' ? ' active' : ''}`}
-          onClick={() => setActiveTab('services')}
+          className={`tab-btn${activeTab === "services" ? " active" : ""}`}
+          onClick={() => setActiveTab("services")}
         >
           الخدمات
         </button>
         <button
-          className={`tab-btn${activeTab === 'notifications' ? ' active' : ''}`}
-          onClick={() => setActiveTab('notifications')}
+          className={`tab-btn${activeTab === "notifications" ? " active" : ""}`}
+          onClick={() => setActiveTab("notifications")}
         >
           الإشعارات
         </button>
@@ -788,9 +844,9 @@ const Profile = () => {
 
       {/* محتوى التبويبات */}
       <div className="tab-content">
-        {activeTab === 'profile' && <ProfileTab />}
-        {activeTab === 'services' && <ServicesTab />}
-        {activeTab === 'notifications' && <NotificationsTab />}
+        {activeTab === "profile" && <ProfileTab />}
+        {activeTab === "services" && <ServicesTab />}
+        {activeTab === "notifications" && <NotificationsTab />}
       </div>
 
       {/* مودال تعديل البيانات */}
@@ -801,41 +857,43 @@ const Profile = () => {
             <div className="modal-body">
               <div className="mb-3">
                 <label className="form-label">الاسم</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
+                <input
+                  type="text"
+                  className="form-control"
                   value={user.name}
-                  onChange={(e) => setUser({...user, name: e.target.value})}
+                  onChange={(e) => setUser({ ...user, name: e.target.value })}
                 />
               </div>
               <div className="mb-3">
                 <label className="form-label">رقم الهاتف</label>
-                <input 
-                  type="tel" 
-                  className="form-control" 
+                <input
+                  type="tel"
+                  className="form-control"
                   value={user.phone}
-                  onChange={(e) => setUser({...user, phone: e.target.value})}
+                  onChange={(e) => setUser({ ...user, phone: e.target.value })}
                 />
               </div>
               <div className="mb-3">
                 <label className="form-label">العنوان</label>
-                <textarea 
-                  className="form-control" 
+                <textarea
+                  className="form-control"
                   value={user.address}
-                  onChange={(e) => setUser({...user, address: e.target.value})}
+                  onChange={(e) =>
+                    setUser({ ...user, address: e.target.value })
+                  }
                 />
               </div>
             </div>
             <div className="modal-actions">
-              <button 
-                className="btn btn-primary" 
+              <button
+                className="btn btn-primary"
                 onClick={handleSaveProfile}
                 disabled={isLoading}
               >
                 {isLoading ? "جاري الحفظ..." : "حفظ"}
               </button>
-              <button 
-                className="btn btn-secondary" 
+              <button
+                className="btn btn-secondary"
                 onClick={() => setShowEditModal(false)}
                 disabled={isLoading}
               >
@@ -866,15 +924,15 @@ const Profile = () => {
               </div>
             </div>
             <div className="modal-actions">
-              <button 
-                className="btn btn-primary" 
+              <button
+                className="btn btn-primary"
                 onClick={handleChangePassword}
                 disabled={isLoading}
               >
                 {isLoading ? "جاري التغيير..." : "تغيير"}
               </button>
-              <button 
-                className="btn btn-secondary" 
+              <button
+                className="btn btn-secondary"
                 onClick={() => setShowChangePassword(false)}
                 disabled={isLoading}
               >
