@@ -10,6 +10,7 @@ import { IoSearch } from "react-icons/io5";
 import SearchBox from "./SearchBox";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useModal } from "./ModalManager"; // إضافة import
+import logo from "../logo/Group 34198.svg"
 
 const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -48,7 +49,7 @@ const NavBar = () => {
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
-          <img src="/src/logo/Group 34198.svg" alt="Logo" />
+           <img src={logo} alt="Logo" />
         </Link>
 
         <button
