@@ -160,6 +160,7 @@ const Suggestions = () => {
                     }`}
                     type="tel"
                     name="phone"
+                    dir="rtl"
                     autoComplete="tel"
                     placeholder="رقم الموبايل"
                     value={formData.phone}
@@ -208,7 +209,7 @@ const Suggestions = () => {
                   </div>
                   <button
                     type="submit"
-                    className={`btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2 `}
+                    className={`btn nav-btn btn-outline-secondry px-4 py-2 fs-5 mb-2 customW`}
                   >
                     ارسال
                   </button>

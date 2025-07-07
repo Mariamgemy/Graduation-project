@@ -152,7 +152,7 @@ function UtilityFormFields({
   return (
     <>
       <div className="mb-3">
-        <label className="form-label">الرقم القومي</label>
+        <label className="form-label">رقم العداد </label>
         <input
           type="text"
           className={`form-control custom-input ${
@@ -162,7 +162,7 @@ function UtilityFormFields({
           autoComplete="off"
           value={formData.NID}
           onChange={handleChange}
-          placeholder="ادخل الرقم القومي"
+          placeholder="ادخل رقم العداد "
           maxLength="14"
         />
         {errors.NID && <div className="invalid-feedback">{errors.NID}</div>}
@@ -178,7 +178,7 @@ function UtilityFormFields({
           autoComplete="off"
           value={formData.currentReading}
           onChange={handleChange}
-          placeholder="ادخل رقم العداد"
+          placeholder="ادخل قراءة العداد"
           min="0"
         />
         {errors.currentReading && (

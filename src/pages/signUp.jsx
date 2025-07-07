@@ -123,8 +123,11 @@ const SignUp = () => {
         throw new Error(data.message || "فشل في إنشاء الحساب");
       }
 
-      setApiSuccess("تم إنشاء الحساب بنجاح! سيتم تحويلك لصفحة تسجيل الدخول.");
-      setTimeout(() =>  openModal('login'), 2000);
+      setApiSuccess("تم إنشاء الحساب بنجاح! سيتم تحويلك للصفحة الرئيسية.");
+      setTimeout(() => {
+        navigate("/");
+        setTimeout(() => openModal("login"), 500);
+      }, 1000);
     } catch (error) {
       setApiError(error.message || "حدث خطأ أثناء إنشاء الحساب.");
       console.error("خطأ في التسجيل:", error);
@@ -231,7 +234,7 @@ const SignUp = () => {
                     errors.phoneNumber ? "is-invalid" : ""
                   }`}
                   name="phoneNumber"
-                  dir="rtl" 
+                  dir="rtl"
                   autoComplete="tel"
                   value={formData.phoneNumber}
                   onChange={handleChange}

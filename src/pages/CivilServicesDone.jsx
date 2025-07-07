@@ -17,17 +17,35 @@ import Toast from "../components/Toast";
 import "../Css/CivilServicesDone.css";
 
 function CivilServicesDone() {
+  const location = useLocation();
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // بيانات تجريبية للطلب
+  // استقبال البيانات من الصفحة السابقة
+  const { serviceType, documentType, requestId, responseData } =
+    location.state || {};
+
+  // للتأكد من وصول البيانات
+  console.log("Location state:", location.state);
+  console.log("Received data:", {
+    serviceType,
+    documentType,
+    requestId,
+    responseData,
+  });
+
+  // بيانات الطلب
   const orderData = {
-    serviceType: "الخدمات المدنية",
-    documentType: "شهادة وفاة",
-    requestId: "da6df65e-cfae-4e3a-8030-205ee90bb0b9",
+    serviceType: serviceType || "الخدمات المدنية",
+    documentType: documentType || "شهادة ميلاد",
+    requestId:
+      requestId ||
+      responseData?.requestId ||
+      responseData?.id ||
+      "undefined",
     submissionDate: new Date().toLocaleDateString("ar-EG"),
     submissionTime: new Date().toLocaleTimeString("ar-EG", {
       hour: "2-digit",
@@ -215,7 +233,7 @@ function CivilServicesDone() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
           >
-            <h1 className="display-4 fw-bold text-dark mb-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
+            <h1 className="display-4 fw-bold text-color mb-4 d-flex align-items-center justify-content-center gap-3 flex-wrap">
               تم تقديم الطلب بنجاح
               <motion.div
                 animate={{ rotate: [0, 15, -15, 0] }}
@@ -225,7 +243,7 @@ function CivilServicesDone() {
               </motion.div>
             </h1>
             <p
-              className="lead text-muted mx-auto"
+              className="lead text-muted mx-auto text-clor"
               style={{ maxWidth: "600px" }}
             >
               شكراً لك! تم استلام طلبك وسيتم مراجعته في أقرب وقت ممكن. ستصلك

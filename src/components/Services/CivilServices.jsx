@@ -35,7 +35,7 @@ const CivilServices = forwardRef((props, ref) => {
     anotherMotherName: "",
     kinship: "",
     gender: "",
-    partnerName: "",
+    spouseName: "",
   });
 
   // Validation functions
@@ -174,13 +174,13 @@ const CivilServices = forwardRef((props, ref) => {
           if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
           if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
 
-          if (card.title === "قسيمة زواج" && !formData.partnerName) {
-            newErrors.partnerName = "هذا الحقل مطلوب";
+          if (card.title === "قسيمة زواج" && !formData.spouseName) {
+            newErrors.spouseName = "هذا الحقل مطلوب";
           } else if (
             card.title === "قسيمة زواج" &&
-            !isValidName(formData.partnerName)
+            !isValidName(formData.spouseName)
           ) {
-            newErrors.partnerName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+            newErrors.spouseName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
           }
         }
 
@@ -259,7 +259,6 @@ const CivilServices = forwardRef((props, ref) => {
         city: deliveryData.city,
         detailsAddress: deliveryData.detailedAddress,
         extraFields: {
-          partnerName: formData.partnerName || "",
           gender: formData.gender || "",
         },
       };
@@ -273,7 +272,7 @@ const CivilServices = forwardRef((props, ref) => {
       // Navigate to success page with response data
       navigate("/civilDone", {
         state: {
-          serviceType: "civil",
+          serviceType: "الخدمات المدنية",
           documentType: card.title,
           requestId: response.requestId || response.id,
           responseData: response,
@@ -690,13 +689,13 @@ const CivilServices = forwardRef((props, ref) => {
           <input
             type="text"
             className={`form-control custom-input ${
-              errors.partnerName ? "is-invalid" : ""
+              errors.spouseName ? "is-invalid" : ""
             }`}
-            value={formData.partnerName}
-            onChange={(e) => handleFieldChange("partnerName", e.target.value)}
+            value={formData.spouseName}
+            onChange={(e) => handleFieldChange("spouseName", e.target.value)}
           />
-          {errors.partnerName && (
-            <div className="text-danger">{errors.partnerName}</div>
+          {errors.spouseName && (
+            <div className="text-danger">{errors.spouseName}</div>
           )}
         </div>
       );
@@ -832,10 +831,10 @@ const CivilServices = forwardRef((props, ref) => {
                               <strong>عدد النسخ:</strong>{" "}
                               {formData.numberOfCopies}
                             </p>
-                            {formData.partnerName && (
+                            {formData.spouseName && (
                               <p>
                                 <strong>اسم الزوج/الزوجة:</strong>{" "}
-                                {formData.partnerName}
+                                {formData.spouseName}
                               </p>
                             )}
                           </>

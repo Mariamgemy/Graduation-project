@@ -1,6 +1,6 @@
 // Base URL for API requests
 export const API_BASE_URL =
-  "https://government-c8bqb5c6gwfnf2h8.canadacentral-01.azurewebsites.net/api";
+  "https://smartgovernment-fpcxb3cmfef3e6c0.uaenorth-01.azurewebsites.net/api";
 
 // API Configuration
 export const API_CONFIG = {

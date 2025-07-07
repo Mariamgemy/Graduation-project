@@ -144,7 +144,7 @@ function Formm() {
       setFormSubmitted(true);
 
       const response = await fetch(
-        "https://government-c8bqb5c6gwfnf2h8.canadacentral-01.azurewebsites.net/api/bills/register-meter/api/bills/generate-and-pay",
+        "https://smartgovernment-fpcxb3cmfef3e6c0.uaenorth-01.azurewebsites.net/api/bills/register-meter/api/bills/generate-and-pay",
         {
           method: "POST",
           headers: {
