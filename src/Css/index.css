@@ -45,3 +45,6 @@ button {
 .container {
   direction: rtl !important;
 }
+.offcanvas-backdrop.show {
+  opacity: 0 !important;
+}

@@ -1,7 +1,7 @@
 /* الخلفية المغبشة */
 .custom-backdrop {
   backdrop-filter: blur(8px);
-  background-color: rgba(0, 0, 0, 0.3); /* تعتيم خفيف */
+  
 }
 
 /* ستايل الكارت اللي جوه */
@@ -29,4 +29,7 @@
   transform: translateY(-2px) !important;
   font-size: 19px !important;
   box-shadow: 0 4px 8px rgba(35, 36, 36, 0.1) !important;
+}
+.offcanvas-backdrop.show {
+  opacity: 0 !important;
 }
