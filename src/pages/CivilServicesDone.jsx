@@ -1,28 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   Copy,
-  Download,
   ArrowRight,
   Sparkles,
-  Share2,
-  Calendar,
-  Clock,
   CheckCircle,
   FileText,
-  User,
   Phone,
   Mail,
 } from "lucide-react";
 import "../Css/CivilServicesDone.css";
 import { useAuth } from "../context/AuthContext";
 
-
-
-
-
-
- 
 // مكون الرسوم المتحركة للنجاح
 const SuccessAnimation = () => (
   <div className="d-flex justify-content-center align-items-center mb-4">
@@ -88,112 +77,56 @@ const Confetti = ({ show }) => {
 
 function CivilServicesDone() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("success");
-  const [currentTime, setCurrentTime] = useState(new Date());
   const { user } = useAuth();
 
-  // الحصول على البيانات من localStorage
-  const getUserData = () => {
-    try {
-      const token = localStorage.getItem("token");
-      const userData = localStorage.getItem("userData");
-      
-      if (userData) {
-        return JSON.parse(userData);
-      }
-      return null;
-    } catch (error) {
-      console.error("Error getting user data:", error);
-      return null;
-    }
-  };
-
   // الحصول على البيانات المرسلة من الصفحة السابقة
-  const { 
-    serviceType, 
-    documentType, 
-    requestId, 
+  const {
+    serviceType,
+    documentType,
+    requestId,
     trackingNumber,
     responseData,
     certificateId,
-    backendResponse 
+    backendResponse,
   } = location.state || {};
 
-  // بيانات المستخدم من localStorage
-  const userData = getUserData();
-
-  // بيانات الطلب مع البيانات الحقيقية
+  // بيانات الطلب
   const orderData = {
-    // بيانات الخدمة
     serviceType: serviceType || "الخدمات المدنية",
     documentType: documentType || "شهادة ميلاد",
-    requestId: requestId || certificateId || responseData?.id || responseData?.requestId || "REQ-" + Date.now(),
-    trackingNumber: trackingNumber || responseData?.trackingNumber || "TRK-" + Date.now(),
-    
-    // بيانات التوقيت
-    submissionDate: responseData?.submissionDate 
+    requestId:
+      requestId ||
+      certificateId ||
+      responseData?.id ||
+      responseData?.requestId ||
+      "REQ-" + Date.now(),
+    trackingNumber:
+      trackingNumber || responseData?.trackingNumber || "TRK-" + Date.now(),
+    submissionDate: responseData?.submissionDate
       ? new Date(responseData.submissionDate).toLocaleDateString("ar-EG")
       : new Date().toLocaleDateString("ar-EG"),
-    submissionTime: responseData?.submissionTime 
-      ? new Date(responseData.submissionTime).toLocaleTimeString("ar-EG")
-      : new Date().toLocaleTimeString("ar-EG"),
-    
-    // بيانات الطلب
     estimatedCompletion: responseData?.estimatedCompletion || "3-5 أيام عمل",
     status: responseData?.status || "قيد المراجعة",
-    priority: responseData?.priority || "عادي",
     department: responseData?.department || "الأحوال المدنية",
     fees: responseData?.fees || "70 جنيه",
-    
-    // بيانات المستخدم الحقيقية من localStorage
-    applicantName: userData?.name || responseData?.applicantName || "غير محدد",
-    nationalId: userData?.nationalId || responseData?.nationalId || "غير محدد",
-    phone: userData?.phone || responseData?.phone || "غير محدد",
-    email: userData?.email || responseData?.email || "غير محدد",
-    address: userData?.address || responseData?.address || "غير محدد",
-    birthDate: userData?.birthDate || responseData?.birthDate || "غير محدد",
-    gender: userData?.gender || responseData?.gender || "غير محدد",
   };
 
   useEffect(() => {
     setShowConfetti(true);
     const timer = setTimeout(() => setShowConfetti(false), 3000);
-
-    // تحديث الوقت كل ثانية
-    const timeInterval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    // طباعة البيانات للتحقق
-    console.log("Location state:", location.state);
-    console.log("User data from localStorage:", userData);
-    console.log("Order data:", orderData);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(timeInterval);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
   const showToastMessage = (message, type = "success") => {
     setToastMessage(message);
     setToastType(type);
     setShowToast(true);
-  };
-
-  const copyToClipboard = async (text, label) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      showToastMessage(`تم نسخ ${label} بنجاح!`);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      showToastMessage(`فشل في نسخ ${label}`, "error");
-    }
   };
 
   const copyBackendResponse = async () => {
@@ -204,45 +137,30 @@ function CivilServicesDone() {
 
     try {
       const dataToShow = backendResponse || responseData;
-      const responseText = JSON.stringify(dataToShow, null, 2);
-      await navigator.clipboard.writeText(responseText);
+      // تحويل البيانات لنص وإزالة العلامتين " من البداية والنهاية
+      let responseText = JSON.stringify(dataToShow, null, 2);
       
-      showToastMessage("تم نسخ رقم الطلب بنجاح!");
-    } catch (err) {
-      showToastMessage("فشل في نسخ رقم الطلب  ", "error");
-    }
-  };
-
- 
-
-  const shareOrder = async () => {
-    const shareData = {
-      title: "تم تقديم الطلب بنجاح",
-      text: `تم تقديم طلب ${orderData.documentType} برقم: ${orderData.requestId}`,
-      url: window.location.href,
-    };
-
-    try {
-      if (navigator.share) {
-        await navigator.share(shareData);
-        showToastMessage("تم مشاركة تفاصيل الطلب!");
-      } else {
-        await navigator.clipboard.writeText(
-          `${shareData.text}\nرقم الطلب: ${orderData.requestId}\nرقم التتبع: ${orderData.trackingNumber}`
-        );
-        showToastMessage("تم نسخ تفاصيل الطلب للمشاركة!");
+      // إزالة العلامتين من البداية والنهاية إذا كانت موجودة
+      if (responseText.startsWith('"') && responseText.endsWith('"')) {
+        responseText = responseText.slice(1, -1);
       }
+      
+      await navigator.clipboard.writeText(responseText);
+      setCopied(true);
+      showToastMessage("تم نسخ رقم الطلب بنجاح!");
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      showToastMessage("فشل في مشاركة الطلب", "error");
+      showToastMessage("فشل في نسخ رقم الطلب", "error");
     }
   };
 
   const trackOrder = () => {
-    showToastMessage("سيتم توجيهك لصفحة متابعة الطلب...", "info");
-    setTimeout(() => {
-      // يمكنك تغيير الرابط حسب النظام الخاص بك
-      window.open(`#/track-order/${orderData.requestId}`, "_blank");
-    }, 1500);
+    const requestIdToUse = orderData.requestId;
+    if (!requestIdToUse) {
+      showToastMessage("لا يوجد رقم طلب للبحث عنه", "error");
+      return;
+    }
+    navigate(`/track-order/${requestIdToUse}`);
   };
 
   return (
@@ -275,12 +193,10 @@ function CivilServicesDone() {
             />
           </h1>
           <p className="fs-5 text-muted mx-auto" style={{ maxWidth: "600px" }}>
-            شكراً لك {orderData.applicantName}! تم استلام طلبك وسيتم مراجعته في أقرب وقت ممكن. 
-            ستصلك تحديثات دورية حول حالة طلبك.
+            شكراً لك {user?.name || "عميلنا الكريم"}! تم استلام طلبك وسيتم مراجعته في
+            أقرب وقت ممكن.
           </p>
         </div>
-
-  
 
         {/* تفاصيل الطلب */}
         <div className="card card-custom mb-4 shadow-custom">
@@ -346,11 +262,13 @@ function CivilServicesDone() {
               <div className="copy-code-box">
                 <div className="d-flex align-items-center justify-content-between gap-3 flex-wrap">
                   <div className="flex-grow-1">
-                    <p className="text-color  small mb-2">رقم الطلب </p>
-                    <code> {JSON.stringify(backendResponse || responseData, null, 2)}</code>
+                    <p className="text-color small mb-2">رقم الطلب</p>
+                    <code>
+                      {JSON.stringify(backendResponse || responseData, null, 2)}
+                    </code>
                   </div>
                   <button
-                   onClick={copyBackendResponse}
+                    onClick={copyBackendResponse}
                     className="btn btn-primary btn-custom"
                   >
                     <Copy style={{ width: "1rem", height: "1rem" }} />
@@ -359,64 +277,8 @@ function CivilServicesDone() {
                 </div>
               </div>
             </div>
-
-    
           </div>
         </div>
-
-       
-
-        {/* معلومات مقدم الطلب */}
-        {/* <div className="card card-custom mb-4 shadow-custom">
-          <div className="card-header border-bottom">
-            <h6 className="fw-bold text-color mb-0 d-flex align-items-center gap-2">
-              <User style={{ width: "1rem", height: "1rem" }} />
-              معلومات مقدم الطلب
-            </h6>
-          </div>
-          <div className="card-body">
-            <div className="row g-4">
-              <div className="col-md-6">
-                <label className="text-muted small fw-medium">
-                  الاسم الكامل
-                </label>
-                <p className="fw-bold text-dark mb-0">
-                {user?.name || "غير متوفر"}
-                </p>
-              </div>
-              <div className="col-md-6">
-                <label className="text-muted small fw-medium">
-                  الرقم القومي
-                </label>
-                <p className="fw-bold text-dark mb-0"> {user?.nationalId || "غير متوفر"}</p>
-              </div>
-              <div className="col-md-6">
-                <label className="text-muted small fw-medium">رقم الهاتف</label>
-                <p className="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-                  <Phone style={{ width: "1rem", height: "1rem" }} />
-                  {user?.phone || "غير متوفر"}
-                </p>
-              </div>
-              <div className="col-md-6">
-                <label className="text-muted small fw-medium">
-                  البريد الإلكتروني
-                </label>
-                <p className="text-dark fw-semibold d-flex align-items-center gap-2">
-                  <Mail style={{ width: "1rem", height: "1rem" }} />
-                  {user?.email || "غير متوفر"}
-                </p>
-              </div>
-              <div className="col-md-6">
-                <label className="text-muted small fw-medium">العنوان</label>
-                <p className="fw-bold text-dark mb-0">{user.address || "غير محدد"}</p>
-              </div>
-              <div className="col-md-6">
-                <label className="text-muted small fw-medium">تاريخ الميلاد</label>
-                <p className="fw-bold text-dark mb-0">{user.birthDate || "غير محدد"}</p>
-              </div>
-            </div>
-          </div>
-        </div> */}
 
         {/* الخطوات التالية */}
         <div className="card card-custom mb-4 shadow-custom">
@@ -425,23 +287,22 @@ function CivilServicesDone() {
           </div>
           <div className="card-body">
             <ul className="list-unstyled">
-              {((backendResponse?.nextSteps || responseData?.nextSteps) || [
-                "انتظر رسالة تأكيد عبر الهاتف أو البريد الإلكتروني",
-                "قم بمتابعة حالة الطلب باستخدام رقم التتبع",
-                "احضر الأوراق المطلوبة عند الاستلام",
-                "تواصل مع خدمة العملاء في حالة وجود استفسارات"
-              ]).map((step, index) => (
-                <li
-                  key={index}
-                  className="d-flex align-items-start gap-3 mb-3"
-                >
+              {(
+                backendResponse?.nextSteps ||
+                responseData?.nextSteps || [
+                  "انتظر رسالة تأكيد عبر الهاتف أو البريد الإلكتروني",
+                  "قم بمتابعة حالة الطلب باستخدام رقم التتبع",
+                  "احضر الأوراق المطلوبة عند الاستلام",
+                  "تواصل مع خدمة العملاء في حالة وجود استفسارات",
+                ]
+              ).map((step, index) => (
+                <li key={index} className="d-flex align-items-start gap-3 mb-3">
                   <span
                     className="flex-shrink-0 badge bg-primary rounded-pill d-flex align-items-center justify-content-center"
                     style={{
                       width: "24px",
                       height: "24px",
                       fontSize: "12px",
-                     
                     }}
                   >
                     {index + 1}
@@ -454,9 +315,7 @@ function CivilServicesDone() {
         </div>
 
         {/* أزرار الإجراءات */}
-        <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-4">
-       
-         
+        <div className="d-flex justify-content-center mb-4">
           <button
             onClick={trackOrder}
             className="btn nav-btn btn-outline-secondry d-flex align-items-center justify-content-center gap-2 px-4 py-2 shadow"
@@ -473,12 +332,24 @@ function CivilServicesDone() {
           </p>
           <div className="d-flex justify-content-center gap-4 text-bold">
             <span className="d-flex align-items-center gap-2">
-              <Mail style={{ width: "1.25rem", height: "1.25rem", color: "#3377A9"}} />
-            البريد الالكتروني
+              <Mail
+                style={{
+                  width: "1.25rem",
+                  height: "1.25rem",
+                  color: "#3377A9",
+                }}
+              />
+              البريد الالكتروني
             </span>
             <span className="d-flex align-items-center gap-2">
-              <Phone style={{ width: "1.25rem", height: "1.25rem", color: "#3377A9" }} />
-             رقم الهاتف
+              <Phone
+                style={{
+                  width: "1.25rem",
+                  height: "1.25rem",
+                  color: "#3377A9",
+                }}
+              />
+              رقم الهاتف
             </span>
           </div>
         </div>

@@ -45,7 +45,7 @@ function Formm() {
 
   const isTrafficCard =
     card.title === "تجديد رخصة قيادة" ||
-    card.title === "تجديد رخصة مركبة" ||
+    card.title === "رخصة إلكترونية" ||
     card.title === "بدل فاقد / تالف للرخص" ||
     card.title === "مخالفات المرور ودفعها";
 
