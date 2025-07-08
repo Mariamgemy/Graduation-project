@@ -912,11 +912,8 @@ const CivilServices = forwardRef((props, ref) => {
   };
 
   return (
-    <div className="row">
-      <div className="col-md-4 col-lg-3 mb-3">
-        <Sidebar />
-      </div>
-      <div className="col-md-8 col-lg-9">
+
+      <div className="">
         <div className="mb-3">
           <Steppar
             active={activeStep}
@@ -960,7 +957,7 @@ const CivilServices = forwardRef((props, ref) => {
           </Alert>
         )}
       </div>
-    </div>
+  
   );
 });
 

@@ -495,15 +495,13 @@ const UtilityServices = forwardRef((props, ref) => {
   };
 
   return (
-    <div className="row">
-      <div className="col-md-4 col-lg-3 mb-3">
-        <Sidebar />
-      </div>
-      <div className="col-md-8 col-lg-9">
-        {/* باقي محتوى الخدمة */}
+  
+    
+      <div className="">
+ 
         {renderContent()}
       </div>
-    </div>
+
   );
 });
 
