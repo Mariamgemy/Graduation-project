@@ -10,7 +10,7 @@ import { IoSearch } from "react-icons/io5";
 import SearchBox from "./SearchBox";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useModal } from "./ModalManager"; // إضافة import
-import logo from "../logo/Group 34198.svg"
+import logo from "../logo/Group 34198.svg";
 
 const NavBar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -38,6 +38,35 @@ const NavBar = () => {
     navigate("/orders");
   };
 
+  const handleLoginClick = () => {
+    // إذا كنا في شاشة صغيرة (الهامبرجر ظاهر)
+    if (window.innerWidth < 992) {
+      // أغلق الـ offcanvas إذا كان مفتوح
+      const offcanvas = document.querySelector(".offcanvas.show");
+      if (offcanvas) {
+        // Bootstrap 5 API
+        const bsOffcanvas =
+          window.bootstrap && window.bootstrap.Offcanvas
+            ? window.bootstrap.Offcanvas.getInstance(offcanvas)
+            : null;
+        if (bsOffcanvas) {
+          bsOffcanvas.hide();
+        } else {
+          // fallback: إزالة الكلاس يدوياً
+          offcanvas.classList.remove("show");
+          document.body.classList.remove("offcanvas-backdrop", "show");
+        }
+      }
+      // انتقل للصفحة الرئيسية ثم افتح المودال بعد قليل
+      navigate("/");
+      setTimeout(() => {
+        openModal("login");
+      }, 300);
+    } else {
+      openModal("login");
+    }
+  };
+
   return (
     <Navbar className="navbar fixed-top" expand="lg">
       <Container
@@ -49,7 +78,7 @@ const NavBar = () => {
           to="/"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
         >
-           <img src={logo} alt="Logo" />
+          <img src={logo} alt="Logo" />
         </Link>
 
         <button
@@ -175,7 +204,7 @@ const NavBar = () => {
                 <button
                   type="button"
                   className="btn nav-btn btn-outline-success px-4 py-2 fs-5 mb-2"
-                  onClick={() => openModal('login')} // استخدام openModal بدلاً من setShowModal
+                  onClick={handleLoginClick}
                 >
                   <MdPerson size={30} /> تسجيل الدخول
                 </button>

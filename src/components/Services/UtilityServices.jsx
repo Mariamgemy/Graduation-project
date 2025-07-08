@@ -19,6 +19,7 @@ import {
   FaSpinner,
 } from "react-icons/fa";
 import { FaArrowLeftLong } from "react-icons/fa6";
+import Sidebar from "../SideBar";
 
 function BillDetailsCard({ paymentData, formData, card }) {
   const getUtilityType = (title) => {
@@ -493,7 +494,17 @@ const UtilityServices = forwardRef((props, ref) => {
     }
   };
 
-  return <div className="">{renderContent()}</div>;
+  return (
+    <div className="row">
+      <div className="col-md-4 col-lg-3 mb-3">
+        <Sidebar />
+      </div>
+      <div className="col-md-8 col-lg-9">
+        {/* باقي محتوى الخدمة */}
+        {renderContent()}
+      </div>
+    </div>
+  );
 });
 
 export default UtilityServices;

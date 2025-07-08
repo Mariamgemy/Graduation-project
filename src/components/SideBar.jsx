@@ -1,5 +1,6 @@
 import React from "react";
-import { Accordion } from "react-bootstrap";
+import { Accordion, Offcanvas, Button } from "react-bootstrap";
+import { useState } from "react";
 
 import { SiContactlesspayment } from "react-icons/si";
 import "../Css/Sidebar.css";
@@ -11,10 +12,14 @@ import { MdOutlinePayments, MdWatchLater } from "react-icons/md";
 import { IoOptionsSharp, IoPeople } from "react-icons/io5";
 import { FaCcVisa } from "react-icons/fa";
 import { GiMoneyStack } from "react-icons/gi";
+import { FaBars } from "react-icons/fa";
 
 function Sidebar() {
   const location = useLocation();
   const card = location.state;
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   const sidebarItems = [
     {
@@ -68,28 +73,74 @@ function Sidebar() {
   ];
 
   return (
-    <div className="sidebar-container">
-      <div className="sidebar-header">
-        <SiContactlesspayment size={40} color="#3373a3" />
-        <h5 className="sidebar-title">{card.title}</h5>
+    <>
+      {/* أيقونة القائمة تظهر فقط على الموبايل */}
+      <div className="d-block d-md-none text-end mb-2">
+        <Button
+          variant="outline-primary"
+          onClick={handleShow}
+          style={{ border: "none", background: "none" }}
+        >
+          <FaBars size={28} />
+        </Button>
       </div>
-
-      <Accordion className="sidebar-accordion">
-        {sidebarItems.map((item) => (
-          <Accordion.Item key={item.eventKey} eventKey={item.eventKey} className="sidebar-item">
-            <Accordion.Header className="sidebar-header-item">
-              <div className="d-flex align-items-center gap-2">
-                {item.icon}
-                <span>{item.title}</span>
-              </div>
-            </Accordion.Header>
-            <Accordion.Body className="sidebar-body">
-              {item.content}
-            </Accordion.Body>
-          </Accordion.Item>
-        ))}
-      </Accordion>
-    </div>
+      {/* السايد بار العادي على الديسكتوب */}
+      <div className="sidebar-container d-none d-md-block">
+        <div className="sidebar-header">
+          <SiContactlesspayment size={40} color="#3373a3" />
+          <h5 className="sidebar-title">{card.title}</h5>
+        </div>
+        <Accordion className="sidebar-accordion">
+          {sidebarItems.map((item) => (
+            <Accordion.Item
+              key={item.eventKey}
+              eventKey={item.eventKey}
+              className="sidebar-item"
+            >
+              <Accordion.Header className="sidebar-header-item">
+                <div className="d-flex align-items-center gap-2">
+                  {item.icon}
+                  <span>{item.title}</span>
+                </div>
+              </Accordion.Header>
+              <Accordion.Body className="sidebar-body">
+                {item.content}
+              </Accordion.Body>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+      </div>
+      {/* Offcanvas للعرض على الموبايل */}
+      <Offcanvas show={show} onHide={handleClose} placement="end">
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>
+            <SiContactlesspayment size={32} color="#3373a3" className="me-2" />
+            {card.title}
+          </Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <Accordion className="sidebar-accordion">
+            {sidebarItems.map((item) => (
+              <Accordion.Item
+                key={item.eventKey}
+                eventKey={item.eventKey}
+                className="sidebar-item"
+              >
+                <Accordion.Header className="sidebar-header-item">
+                  <div className="d-flex align-items-center gap-2">
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </div>
+                </Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                  {item.content}
+                </Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
+        </Offcanvas.Body>
+      </Offcanvas>
+    </>
   );
 }
 

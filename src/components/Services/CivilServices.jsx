@@ -12,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 import UserInfoDisplay from "../UserInfoDisplay";
 import DeliveryData from "../DeliveryData";
 import { civilService } from "../../services/civilService";
+import Sidebar from "../SideBar";
 
 const CivilServices = forwardRef((props, ref) => {
   const location = useLocation();
@@ -911,50 +912,55 @@ const CivilServices = forwardRef((props, ref) => {
   };
 
   return (
-    <>
-      <div className="mb-3">
-        <Steppar
-          active={activeStep}
-          setActive={setActiveStep}
-          formData={{ ...formData, ...deliveryData, card }}
-          disabled={!user}
-        />
-        <NavigationButtons
-          activeStep={activeStep}
-          setActiveStep={setActiveStep}
-          formData={{ ...formData, ...deliveryData, card }}
-          disabled={!user}
-        />
+    <div className="row">
+      <div className="col-md-4 col-lg-3 mb-3">
+        <Sidebar />
       </div>
-
-      {renderStepContent()}
-
-      {activeStep < 3 && user && <Button handleNext={handleNext} />}
-
-      {activeStep === 3 && (
-        <div className="d-flex justify-content-end">
-          <button
-            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              "جاري الاستعلام..."
-            ) : (
-              <>
-                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-              </>
-            )}
-          </button>
+      <div className="col-md-8 col-lg-9">
+        <div className="mb-3">
+          <Steppar
+            active={activeStep}
+            setActive={setActiveStep}
+            formData={{ ...formData, ...deliveryData, card }}
+            disabled={!user}
+          />
+          <NavigationButtons
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            formData={{ ...formData, ...deliveryData, card }}
+            disabled={!user}
+          />
         </div>
-      )}
 
-      {errors.submit && (
-        <Alert variant="danger" className="mt-3">
-          {errors.submit}
-        </Alert>
-      )}
-    </>
+        {renderStepContent()}
+
+        {activeStep < 3 && user && <Button handleNext={handleNext} />}
+
+        {activeStep === 3 && (
+          <div className="d-flex justify-content-end">
+            <button
+              className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                "جاري الاستعلام..."
+              ) : (
+                <>
+                  تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {errors.submit && (
+          <Alert variant="danger" className="mt-3">
+            {errors.submit}
+          </Alert>
+        )}
+      </div>
+    </div>
   );
 });
 

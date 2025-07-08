@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { Alert } from "react-bootstrap";
 import { FaFileAlt, FaCheck } from "react-icons/fa";
 import { BsFillPersonVcardFill } from "react-icons/bs";
+import Sidebar from "../SideBar";
 
 const TrafficServices = forwardRef((props, ref) => {
   const location = useLocation();
@@ -1100,73 +1101,78 @@ const TrafficServices = forwardRef((props, ref) => {
   };
 
   return (
-    <>
-      <div className="mb-3">
-        <Steppar
-          active={activeStep}
-          setActive={setActiveStep}
-          formData={{
-            card,
-            licenseType,
-            licenseNumber,
-            personalPhoto,
-            medicalResult,
-            renewalPeriod,
-            governorate,
-            city,
-            district,
-            detailedAddress,
-          }}
-          disabled={!user}
-        />
-        <NavigationButtons
-          activeStep={activeStep}
-          setActiveStep={setActiveStep}
-          formData={{
-            card,
-            licenseType,
-            licenseNumber,
-            personalPhoto,
-            medicalResult,
-            renewalPeriod,
-            governorate,
-            city,
-            district,
-            detailedAddress,
-          }}
-          stepLabels={currentStepLabels}
-          disabled={!user}
-        />
+    <div className="row">
+      <div className="col-md-4 col-lg-3 mb-3">
+        <Sidebar />
       </div>
-
-      {renderStepContent()}
-
-      {activeStep < 3 && user && <Button handleNext={handleNext} />}
-
-      {activeStep === 3 && (
-        <div className="text-start">
-          <button
-            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              "جاري الاستعلام..."
-            ) : (
-              <>
-                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-              </>
-            )}
-          </button>
+      <div className="col-md-8 col-lg-9">
+        <div className="mb-3">
+          <Steppar
+            active={activeStep}
+            setActive={setActiveStep}
+            formData={{
+              card,
+              licenseType,
+              licenseNumber,
+              personalPhoto,
+              medicalResult,
+              renewalPeriod,
+              governorate,
+              city,
+              district,
+              detailedAddress,
+            }}
+            disabled={!user}
+          />
+          <NavigationButtons
+            activeStep={activeStep}
+            setActiveStep={setActiveStep}
+            formData={{
+              card,
+              licenseType,
+              licenseNumber,
+              personalPhoto,
+              medicalResult,
+              renewalPeriod,
+              governorate,
+              city,
+              district,
+              detailedAddress,
+            }}
+            stepLabels={currentStepLabels}
+            disabled={!user}
+          />
         </div>
-      )}
 
-      {errors.submit && (
-        <Alert variant="danger" className="mt-3">
-          {errors.submit}
-        </Alert>
-      )}
-    </>
+        {renderStepContent()}
+
+        {activeStep < 3 && user && <Button handleNext={handleNext} />}
+
+        {activeStep === 3 && (
+          <div className="text-start">
+            <button
+              className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                "جاري الاستعلام..."
+              ) : (
+                <>
+                  تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {errors.submit && (
+          <Alert variant="danger" className="mt-3">
+            {errors.submit}
+          </Alert>
+        )}
+      </div>
+    </div>
   );
 });
 

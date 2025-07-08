@@ -11,9 +11,6 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
   color: rgb(13, 12, 12);
 }
-.custom-backdrop {
-  pointer-events: none !important; /* يمنع أي تفاعل مع الخلفية */
-}
 
 .modal-content {
   pointer-events: auto !important; /* يعيد التفاعل للمحتوى فقط */
@@ -26,8 +23,6 @@
 .btn-outline-cancel:hover {
   color: var(--primary-color) !important;
 }
-
-
 
 .btn-outline-cancel:hover {
   background-color: #e9ecef !important;
