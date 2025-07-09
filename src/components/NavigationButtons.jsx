@@ -28,22 +28,6 @@ const NavigationButtons = ({
       anotherMotherName,
       kinship,
       gender,
-      phone,
-      idPhoto,
-      certificateType,
-      facilityType,
-      elctricBill,
-      detailedAddress,
-      subscriberNumber,
-      fullName,
-      email,
-      complaintType,
-      governorate,
-      complaintDescription,
-      utilityType,
-      meterNumber,
-      city,
-      district,
       licenseNumber,
       licenseType,
       personalPhoto,
@@ -52,9 +36,9 @@ const NavigationButtons = ({
     } = formData;
 
     if (
-      card.title === "شهادة ميلاد" ||
-      card.title === "قسيمة زواج" ||
-      card.title === "قسيمة طلاق"
+      card?.title === "شهادة ميلاد" ||
+      card?.title === "قسيمة زواج" ||
+      card?.title === "قسيمة طلاق"
     ) {
       if (!motherName || isSelf === "") return false;
       if (isSelf === true && !numberOfCopies) return false;
@@ -69,8 +53,8 @@ const NavigationButtons = ({
       )
         return false;
     } else if (
-      card.title === "شهادة ميلاد مميكنة لأول مرة" ||
-      card.title === "شهادة وفاة"
+      card?.title === "شهادة ميلاد مميكنة لأول مرة" ||
+      card?.title === "شهادة وفاة"
     ) {
       if (
         !quadriliteralName ||
@@ -81,37 +65,9 @@ const NavigationButtons = ({
         !numberOfCopies
       )
         return false;
-    } else if (card.title === "شهادة كفاءة الطاقة") {
-      if (
-        !quadriliteralName ||
-        !id ||
-        !detailedAddress ||
-        !phone ||
-        !facilityType ||
-        !certificateType ||
-        !elctricBill ||
-        !idPhoto
-      )
-        return false;
-    } else if (card.title === "تقديم شكوى مرافق") {
-      if (
-        !fullName ||
-        !subscriberNumber ||
-        !complaintType ||
-        !complaintDescription ||
-        !governorate ||
-        !utilityType ||
-        !detailedAddress ||
-        !phone ||
-        !email
-      )
-        return false;
-    } else if (card.title === "التقديم على عداد كهرباء / مياه") {
-      if (!id || !email || !phone || !fullName) return false;
-    } else if (card.title === "نقل ملكية عداد") {
-      if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
-        return false;
-    } else if (card.title === "تجديد رخصة قيادة") {
+    
+
+    } else if (card?.title === "تجديد رخصة قيادة") {
       if (
         !licenseNumber ||
         !licenseType ||

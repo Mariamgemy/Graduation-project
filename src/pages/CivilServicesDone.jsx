@@ -97,6 +97,19 @@ function CivilServicesDone() {
   } = location.state || {};
 
   // بيانات الطلب
+  const getTotalFees = () => {
+    // حاول جلب المبلغ النهائي من responseData.fees أو backendResponse.fees
+    if (responseData?.fees) return responseData.fees;
+    if (backendResponse?.fees) return backendResponse.fees;
+    // إذا لم يوجد، احسبه من عدد النسخ
+    const copies = parseInt(
+      responseData?.numberOfCopies || backendResponse?.numberOfCopies || 1
+    );
+    const docCost = copies * 50;
+    const deliveryCost = 20;
+    return `${docCost + deliveryCost} جنيه`;
+  };
+
   const orderData = {
     serviceType: serviceType || "الخدمات المدنية",
     documentType: documentType || "شهادة ميلاد",
@@ -114,7 +127,7 @@ function CivilServicesDone() {
     estimatedCompletion: responseData?.estimatedCompletion || "3-5 أيام عمل",
     status: responseData?.status || "قيد المراجعة",
     department: responseData?.department || "الأحوال المدنية",
-    fees: responseData?.fees || "70 جنيه",
+    fees: getTotalFees(),
   };
 
   useEffect(() => {
@@ -139,12 +152,12 @@ function CivilServicesDone() {
       const dataToShow = backendResponse || responseData;
       // تحويل البيانات لنص وإزالة العلامتين " من البداية والنهاية
       let responseText = JSON.stringify(dataToShow, null, 2);
-      
+
       // إزالة العلامتين من البداية والنهاية إذا كانت موجودة
       if (responseText.startsWith('"') && responseText.endsWith('"')) {
         responseText = responseText.slice(1, -1);
       }
-      
+
       await navigator.clipboard.writeText(responseText);
       setCopied(true);
       showToastMessage("تم نسخ رقم الطلب بنجاح!");
@@ -154,13 +167,8 @@ function CivilServicesDone() {
     }
   };
 
-  const trackOrder = () => {
-    const requestIdToUse = orderData.requestId;
-    if (!requestIdToUse) {
-      showToastMessage("لا يوجد رقم طلب للبحث عنه", "error");
-      return;
-    }
-    navigate(`/track-order/${requestIdToUse}`);
+  const handleOrdersClick = () => {
+    navigate("/orders");
   };
 
   return (
@@ -193,8 +201,8 @@ function CivilServicesDone() {
             />
           </h1>
           <p className="fs-5 text-muted mx-auto" style={{ maxWidth: "600px" }}>
-            شكراً لك {user?.name || "عميلنا الكريم"}! تم استلام طلبك وسيتم مراجعته في
-            أقرب وقت ممكن.
+            شكراً لك {user?.name || "عميلنا الكريم"}! تم استلام طلبك وسيتم
+            مراجعته في أقرب وقت ممكن.
           </p>
         </div>
 
@@ -317,7 +325,7 @@ function CivilServicesDone() {
         {/* أزرار الإجراءات */}
         <div className="d-flex justify-content-center mb-4">
           <button
-            onClick={trackOrder}
+            onClick={handleOrdersClick}
             className="btn nav-btn btn-outline-secondry d-flex align-items-center justify-content-center gap-2 px-4 py-2 shadow"
           >
             متابعة الطلب

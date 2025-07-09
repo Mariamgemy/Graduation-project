@@ -124,3 +124,42 @@
     gap: 10px;
   }
 }
+
+.copy-code-box {
+    background: #f9fafb;
+    border: 2px dashed #d1d5db;
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  .bg-color-subtle{
+    background-color: #cfe9ff !important;
+  }
+  .bordercolor{
+    border-color: #3377A9 !important;
+  }
+  .request-id-code {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    word-break: break-all;
+    background: #ffffff;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #e5e7eb;
+  }
+  
+  .btn-custom {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -1px rgba(0, 0, 0, 0.15);
+  }

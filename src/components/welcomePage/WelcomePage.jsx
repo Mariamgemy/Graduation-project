@@ -70,12 +70,12 @@ function WelcomePage() {
     //   title: "بدل فاقد لبطاقة الرقم القومي",
     //   description: "تتيح لك هذه الخدمة استخراج بدل فاقد لبطاقتك الشخصية.",
     // },
-    {
-      id: "first-birth-cert",
-      category: "civil",
-      title: "شهادة ميلاد مميكنة لأول مرة",
-      description: "خدمة خاصة باستخراج شهادة الميلاد الإلكترونية لأول مرة.",
-    },
+    // {
+    //   id: "first-birth-cert",
+    //   category: "civil",
+    //   title: "شهادة ميلاد مميكنة لأول مرة",
+    //   description: "خدمة خاصة باستخراج شهادة الميلاد الإلكترونية لأول مرة.",
+    // },
   ];
   // خدمات المرور
   const trafficServices = [
@@ -96,7 +96,7 @@ function WelcomePage() {
     {
       id: "traffic-3",
       category: "traffic",
-      title: "رخصة إلكترونية",
+      title: "طلب رخصة إلكترونية",
       description: "خدمة لاستخراج رخصة سيارة جديدة سواء كانت ملاكي أو نقل.",
     },
     // {

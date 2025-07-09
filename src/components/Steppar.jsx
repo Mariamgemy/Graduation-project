@@ -49,14 +49,12 @@ const Steppar = ({ active, setActive, formData }) => {
       // NumberOfAirConditioners,
       // AirConditionerUsageHours,
       // AirConditionerType,
-     
-
     } = formData;
 
     if (
-      card.title === "شهادة ميلاد" ||
-      card.title === "قسيمة زواج" ||
-      card.title === "قسيمة طلاق"
+      card?.title === "شهادة ميلاد" ||
+      card?.title === "قسيمة زواج" ||
+      card?.title === "قسيمة طلاق"
     ) {
       if (!motherName || isSelf === "") return false;
       if (isSelf === true && !numberOfCopies) return false;
@@ -71,8 +69,8 @@ const Steppar = ({ active, setActive, formData }) => {
       )
         return false;
     } else if (
-      card.title === "شهادة ميلاد مميكنة لأول مرة" ||
-      card.title === "شهادة وفاة"
+      card?.title === "شهادة ميلاد مميكنة لأول مرة" ||
+      card?.title === "شهادة وفاة"
     ) {
       if (
         !quadriliteralName ||
@@ -83,7 +81,7 @@ const Steppar = ({ active, setActive, formData }) => {
         !numberOfCopies
       )
         return false;
-    } else if (card.title === "شهادة كفاءة الطاقة") {
+    } else if (card?.title === "شهادة كفاءة الطاقة") {
       if (
         !quadriliteralName ||
         !id ||
@@ -95,7 +93,7 @@ const Steppar = ({ active, setActive, formData }) => {
         !idPhoto
       )
         return false;
-    } else if (card.title === "تقديم شكوى مرافق") {
+    } else if (card?.title === "تقديم شكوى مرافق") {
       if (
         !email ||
         !subscriberNumber ||
@@ -106,12 +104,12 @@ const Steppar = ({ active, setActive, formData }) => {
         !utilityType
       )
         return false;
-    } else if (card.title === "التقديم على عداد كهرباء / مياه") {
+    } else if (card?.title === "التقديم على عداد كهرباء / مياه") {
       if (!email || !phone || !fullName || !id) return false;
-    } else if (card.title === "نقل ملكية عداد") {
+    } else if (card?.title === "نقل ملكية عداد") {
       if (!fullName || !id || !phone || !meterNumber || !detailedAddress)
         return false;
-    } else if (card.title === "تجديد رخصة قيادة") {
+    } else if (card?.title === "تجديد رخصة قيادة") {
       if (
         !licenseNumber ||
         !licenseType ||
@@ -120,7 +118,6 @@ const Steppar = ({ active, setActive, formData }) => {
         !renewalPeriod
       )
         return false;
-
     }
     // else if (card.title==="متابعة الاستهلاك بشكل لحظي"){
     //   if(            !BillAmount||
@@ -141,7 +138,11 @@ const Steppar = ({ active, setActive, formData }) => {
 
   const isStep2Completed = () => {
     if (!formData) return false;
-    const { governorate, city, district, detailedAddress, 
+    const {
+      governorate,
+      city,
+      district,
+      detailedAddress,
       // NumberOfLights,
       // LightType,
       // LightUsageHours,
@@ -150,29 +151,26 @@ const Steppar = ({ active, setActive, formData }) => {
       // HouseholdSize,
       // HomeType_Encoded,
       // ConsumptionTrend,
-      // SeasonalConsumptionPattern, 
-      } = formData;
-      
-   
-
+      // SeasonalConsumptionPattern,
+    } = formData;
 
     if (!governorate || !city || !district || !detailedAddress) {
       return false;
     }
-  
-  // if(card.title==="متابعة الاستهلاك بشكل لحظي"){
-  //   if(   !NumberOfLights||
-  //     !LightType||
-  //     !LightUsageHours||
-  //     !OtherMajorAppliances_Count||
-  //     !ApplianceUsage_Encoded||
-  //     !HouseholdSize||
-  //     !HomeType_Encoded||
-  //     !ConsumptionTrend||
-  //     !SeasonalConsumptionPattern){
-  //       return false
-  //     }
-  //   }
+
+    // if(card.title==="متابعة الاستهلاك بشكل لحظي"){
+    //   if(   !NumberOfLights||
+    //     !LightType||
+    //     !LightUsageHours||
+    //     !OtherMajorAppliances_Count||
+    //     !ApplianceUsage_Encoded||
+    //     !HouseholdSize||
+    //     !HomeType_Encoded||
+    //     !ConsumptionTrend||
+    //     !SeasonalConsumptionPattern){
+    //       return false
+    //     }
+    //   }
     return true;
   };
 

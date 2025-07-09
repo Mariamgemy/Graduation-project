@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { FaArrowRightLong } from "react-icons/fa6";
+
 import {
   Container,
   Row,
@@ -16,13 +18,13 @@ import { Link } from "react-router-dom";
 import "../Css/orders.css";
 import { useAuth } from "../context/AuthContext";
 import { civilService } from "../services/civilService";
-
+import { API_CONFIG } from "../api/config";
 const Orders = () => {
   const { user } = useAuth();
   const [civilRequests, setCivilRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  
   // حالات متابعة الطلب
   const [trackingId, setTrackingId] = useState("");
   const [trackingResult, setTrackingResult] = useState(null);
@@ -43,10 +45,10 @@ const Orders = () => {
     try {
       setLoading(true);
       setError(null);
-
+      
       // استخدام الـ API الجديد
       const response = await fetch(
-        `https://smartgovernment-fpcxb3cmfef3e6c0.uaenorth-01.azurewebsites.net/api/CivilDocuments/my-requests?userNID=${
+        `${API_CONFIG.BASE_URL}/CivilDocuments/my-requests?userNID=${
           user.nationalId || user.nid
         }`,
         {
@@ -84,9 +86,9 @@ const Orders = () => {
     try {
       setTrackingLoading(true);
       setTrackingError(null);
-
+      
       const response = await fetch(
-        `https://smartgovernment-fpcxb3cmfef3e6c0.uaenorth-01.azurewebsites.net/api/CivilDocuments/request/${requestId}/status`,
+        `${API_CONFIG.BASE_URL}/CivilDocuments/request/${requestId}/status`,
         {
           method: "GET",
           headers: {
@@ -190,8 +192,8 @@ const Orders = () => {
   return (
     <Container className="mt-5 pt-5">
       {activeView === null && (
-        <Row className="justify-content-center g-4 mb-5">
-          <Col xs={12} md={6} lg={4}>
+      <Row className="justify-content-center g-4 mb-5">
+        <Col xs={12} md={6} lg={4}>
             <Card
               className="h-100 order-card"
               style={{ cursor: "pointer" }}
@@ -203,8 +205,8 @@ const Orders = () => {
                 <Card.Text>عرض جميع الطلبات السابقة والحالية</Card.Text>
               </Card.Body>
             </Card>
-          </Col>
-          <Col xs={12} md={6} lg={4}>
+        </Col>
+        <Col xs={12} md={6} lg={4}>
             <Card
               className="h-100 order-card"
               style={{ cursor: "pointer" }}
@@ -216,16 +218,17 @@ const Orders = () => {
                 <Card.Text>تتبع حالة طلباتك الحالية</Card.Text>
               </Card.Body>
             </Card>
-          </Col>
-        </Row>
+        </Col>
+      </Row>
       )}
       {activeView === "orders" && (
         <>
           <Button
-            variant="outline-secondary"
-            className="mb-3"
+       
+           className="btn nav-btn btn-outline-secondry py-1 mb-3"
             onClick={() => setActiveView(null)}
           >
+                   <FaArrowRightLong size={20} />
             رجوع
           </Button>
           <Card className="mb-4">
@@ -235,7 +238,7 @@ const Orders = () => {
                 جميع طلبات الأحوال المدنية
               </h5>
               <Button
-                variant="outline-primary"
+               variant="outline-primry"
                 size="sm"
                 onClick={fetchCivilRequests}
               >
@@ -325,7 +328,7 @@ const Orders = () => {
                           )}
                           <div className="mt-3">
                             <Button
-                              variant="outline-primary"
+                              variant="outline-primry"
                               size="sm"
                               onClick={() =>
                                 trackRequest(
@@ -351,53 +354,55 @@ const Orders = () => {
       {activeView === "track" && (
         <>
           <Button
-            variant="outline-secondary"
-            className="mb-3"
+       
+       className="btn nav-btn btn-outline-secondry py-1 mb-3"
+
             onClick={() => setActiveView(null)}
           >
+             <FaArrowRightLong size={20} />
             رجوع
           </Button>
-          <Card className="mb-4">
-            <Card.Header>
-              <h5 className="mb-0">
-                <FaSearch className="me-2" />
-                متابعة طلب بالرقم المرجعي
-              </h5>
-            </Card.Header>
-            <Card.Body>
-              <Form onSubmit={handleTrackByReference}>
-                <Row>
-                  <Col md={8}>
-                    <Form.Group>
-                      <Form.Label>الرقم المرجعي للطلب</Form.Label>
-                      <Form.Control
-                        type="text"
-                        value={trackingId}
-                        onChange={(e) => setTrackingId(e.target.value)}
-                        placeholder="أدخل الرقم المرجعي للطلب"
-                        required
-                      />
-                    </Form.Group>
-                  </Col>
-                  <Col md={4} className="d-flex align-items-end">
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      disabled={trackingLoading}
-                      className="w-100"
-                    >
-                      {trackingLoading ? "جاري البحث..." : "تتبع الطلب"}
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
-              {trackingError && (
-                <Alert variant="danger" className="mt-3">
-                  {trackingError}
-                </Alert>
-              )}
-            </Card.Body>
-          </Card>
+        <Card className="mb-4">
+          <Card.Header>
+            <h5 className="mb-0">
+              <FaSearch className="me-2" />
+              متابعة طلب بالرقم المرجعي
+            </h5>
+          </Card.Header>
+          <Card.Body>
+            <Form onSubmit={handleTrackByReference}>
+              <Row>
+                <Col md={8}>
+                  <Form.Group>
+                    <Form.Label>الرقم المرجعي للطلب</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={trackingId}
+                      onChange={(e) => setTrackingId(e.target.value)}
+                      placeholder="أدخل الرقم المرجعي للطلب"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={4} className="d-flex align-items-end">
+                  <Button 
+                    type="submit" 
+                    variant="primary" 
+                    disabled={trackingLoading}
+                    className="w-100"
+                  >
+                    {trackingLoading ? "جاري البحث..." : "تتبع الطلب"}
+                  </Button>
+                </Col>
+              </Row>
+            </Form>
+            {trackingError && (
+              <Alert variant="danger" className="mt-3">
+                {trackingError}
+              </Alert>
+            )}
+          </Card.Body>
+        </Card>
         </>
       )}
       {/* Modal لعرض تفاصيل متابعة الطلب */}
@@ -413,7 +418,7 @@ const Orders = () => {
           {trackingResult && (
             <div>
               <div className="mb-3">
-                <strong>حالة الطلب:</strong>{" "}
+                <strong>حالة الطلب:</strong>
                 {getStatusBadge(trackingResult.status)}
               </div>
               {trackingResult.documentType && (
@@ -459,25 +464,25 @@ const Orders = () => {
               )}
               {trackingResult.statusHistory &&
                 trackingResult.statusHistory.length > 0 && (
-                  <div className="mt-3">
-                    <strong>تاريخ الحالات:</strong>
-                    <div className="mt-2">
-                      {trackingResult.statusHistory.map((history, index) => (
+                <div className="mt-3">
+                  <strong>تاريخ الحالات:</strong>
+                  <div className="mt-2">
+                    {trackingResult.statusHistory.map((history, index) => (
                         <div
                           key={index}
                           className="d-flex justify-content-between align-items-center p-2 border-bottom"
                         >
-                          <span>{getStatusBadge(history.status)}</span>
-                          <small className="text-muted">
+                        <span>{getStatusBadge(history.status)}</span>
+                        <small className="text-muted">
                             {new Date(history.timestamp).toLocaleDateString(
                               "ar-EG"
                             )}
-                          </small>
-                        </div>
-                      ))}
-                    </div>
+                        </small>
+                      </div>
+                    ))}
                   </div>
-                )}
+                </div>
+              )}
             </div>
           )}
         </Modal.Body>

@@ -27,6 +27,7 @@ import ModalContainer from "./components/ModalContainer";
 import NavBar from "./components/NavBar";
 import CivilServicesDone from "./pages/CivilServicesDone.jsx";
 import TrackOrder from "./pages/TrackOrder.jsx";
+import TrafficDone from "./pages/TrafficDone.jsx";
 // Initialize Stripe - replace with your publishable key
 const stripePromise = loadStripe("your_stripe_publishable_key");
 
@@ -141,11 +142,20 @@ function App() {
               </Layout>
             }
           />
+
           <Route
             path="profile"
             element={
               <Layout>
                 <Profile />
+              </Layout>
+            }
+          />
+          <Route
+            path="trafficDone"
+            element={
+              <Layout>
+                <TrafficDone />
               </Layout>
             }
           />

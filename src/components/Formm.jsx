@@ -5,7 +5,6 @@ import "../Css/UniqueCard.css";
 import "../Css/Form.css";
 import CivilServices from "./Services/CivilServices";
 import TrafficServices from "./Services/TrafficServices";
-import EnergyServices from "./Services/EnergyServices";
 import ConsumptionServices from "./Services/ConsumptionServices";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "../context/AuthContext";
@@ -45,15 +44,11 @@ function Formm() {
 
   const isTrafficCard =
     card.title === "تجديد رخصة قيادة" ||
-    card.title === "رخصة إلكترونية" ||
+    card.title === "طلب رخصة إلكترونية" ||
     card.title === "بدل فاقد / تالف للرخص" ||
     card.title === "مخالفات المرور ودفعها";
 
-  const isEnergyCard =
-    card.title === "شهادة كفاءة الطاقة " ||
-    card.title === "التقديم على عداد كهرباء / مياه" ||
-    card.title === "نقل ملكية عداد" ||
-    card.title === "تقديم شكوى مرافق";
+
 
   // This handlePayment function seems to be part of Formm.jsx's own payment flow for non-utility services.
   // It's kept as is for now, as the focus is on fixing UtilityServices nesting.
@@ -128,11 +123,7 @@ function Formm() {
       if (!isValidTraffic) isFormValid = false;
       else formData = trafficRef.current?.getFormData();
     }
-    if (isEnergyCard) {
-      const isValidEnergy = energyRef.current?.validateForm();
-      if (!isValidEnergy) isFormValid = false;
-      else formData = energyRef.current?.getFormData();
-    }
+ 
 
     if (!isFormValid) return;
 
@@ -200,7 +191,6 @@ function Formm() {
           )}
           {isCivilCard && <CivilServices ref={civilRef} />}
           {isTrafficCard && <TrafficServices ref={trafficRef} />}
-          {isEnergyCard && <EnergyServices ref={energyRef} />}
           {isConsumptionCard && <ConsumptionServices ref={consumptionRef} />}
         </div>
       )}

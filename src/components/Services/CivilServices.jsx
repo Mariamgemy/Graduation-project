@@ -12,7 +12,6 @@ import { useAuth } from "../../context/AuthContext";
 import UserInfoDisplay from "../UserInfoDisplay";
 import DeliveryData from "../DeliveryData";
 import { civilService } from "../../services/civilService";
-import Sidebar from "../SideBar";
 
 const CivilServices = forwardRef((props, ref) => {
   const location = useLocation();
@@ -125,8 +124,7 @@ const CivilServices = forwardRef((props, ref) => {
         if (!formData.numberOfCopies) {
           newErrors.numberOfCopies = "هذا الحقل مطلوب";
         }
-      }
-      if (card.title === "شهادة ميلاد مميكنة لأول مرة") {
+      } else if (card.title === "شهادة ميلاد مميكنة لأول مرة") {
         if (!formData.quadriliteralName) {
           newErrors.quadriliteralName = "هذا الحقل مطلوب";
         } else if (!isValidName(formData.quadriliteralName)) {
@@ -153,7 +151,13 @@ const CivilServices = forwardRef((props, ref) => {
           newErrors.isSelf = "اختر نعم أو لا";
         }
 
-        if (formData.isSelf === false) {
+        if (formData.isSelf === true) {
+          // فقط إذا كان لنفسه
+          if (!formData.numberOfCopies) {
+            newErrors.numberOfCopies = "هذا الحقل مطلوب";
+          }
+        } else if (formData.isSelf === false) {
+          // إذا كان لشخص آخر
           if (!formData.quadriliteralName) {
             newErrors.quadriliteralName = "هذا الحقل مطلوب";
           } else if (!isValidName(formData.quadriliteralName)) {
@@ -174,19 +178,17 @@ const CivilServices = forwardRef((props, ref) => {
 
           if (!formData.kinship) newErrors.kinship = "هذا الحقل مطلوب";
           if (!formData.gender) newErrors.gender = "هذا الحقل مطلوب";
-
-          if (card.title === "قسيمة زواج" && !formData.spouseName) {
-            newErrors.spouseName = "هذا الحقل مطلوب";
-          } else if (
-            card.title === "قسيمة زواج" &&
-            !isValidName(formData.spouseName)
-          ) {
-            newErrors.spouseName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+          if (!formData.numberOfCopies) {
+            newErrors.numberOfCopies = "هذا الحقل مطلوب";
           }
-        }
 
-        if (!formData.numberOfCopies) {
-          newErrors.numberOfCopies = "هذا الحقل مطلوب";
+          if (card.title === "قسيمة زواج") {
+            if (!formData.spouseName) {
+              newErrors.spouseName = "هذا الحقل مطلوب";
+            } else if (!isValidName(formData.spouseName)) {
+              newErrors.spouseName = "يجب إدخال الاسم الرباعي (4 مقاطع)";
+            }
+          }
         }
       }
     }
@@ -200,6 +202,7 @@ const CivilServices = forwardRef((props, ref) => {
     }
 
     setErrors(newErrors);
+    console.log("Validation errors:", newErrors); // لوج للأخطاء
     return Object.keys(newErrors).length === 0;
   };
 
@@ -767,6 +770,11 @@ const CivilServices = forwardRef((props, ref) => {
           <DeliveryData onDataChange={handleDeliveryData} errors={errors} />
         );
       case 3:
+        // حساب التكلفة
+        const copiesCount = parseInt(formData.numberOfCopies || 0);
+        const docCost = copiesCount * 50;
+        const deliveryCost = 20;
+        const total = docCost + deliveryCost;
         return (
           <div className="mt-3 p-3">
             <h3 className="text-color mb-4">تأكيد الطلب</h3>
@@ -835,16 +843,16 @@ const CivilServices = forwardRef((props, ref) => {
                               <strong>صلة القرابة:</strong> {formData.kinship}
                             </p>
                             <p>
-                              <strong>النوع:</strong>{" "}
+                              <strong>النوع:</strong>
                               {formData.gender === "male" ? "ذكر" : "أنثى"}
                             </p>
                             <p>
-                              <strong>عدد النسخ:</strong>{" "}
+                              <strong>عدد النسخ:</strong>
                               {formData.numberOfCopies}
                             </p>
                             {formData.spouseName && (
                               <p>
-                                <strong>اسم الزوج/الزوجة:</strong>{" "}
+                                <strong>اسم الزوج/الزوجة:</strong>
                                 {formData.spouseName}
                               </p>
                             )}
@@ -891,16 +899,18 @@ const CivilServices = forwardRef((props, ref) => {
               <div className="card-body">
                 <div className="d-flex justify-content-between mb-2">
                   <span>تكلفة الوثيقة:</span>
-                  <span>50 جنيه</span>
+                  <span>
+                    {copiesCount} × 50 = {docCost} جنيه
+                  </span>
                 </div>
                 <div className="d-flex justify-content-between mb-2">
                   <span>تكلفة التوصيل:</span>
-                  <span>20 جنيه</span>
+                  <span>{deliveryCost} جنيه</span>
                 </div>
                 <hr />
                 <div className="d-flex justify-content-between">
                   <strong>الإجمالي:</strong>
-                  <strong>70 جنيه</strong>
+                  <strong>{total} جنيه</strong>
                 </div>
               </div>
             </div>
@@ -912,52 +922,50 @@ const CivilServices = forwardRef((props, ref) => {
   };
 
   return (
-
-      <div className="">
-        <div className="mb-3">
-          <Steppar
-            active={activeStep}
-            setActive={setActiveStep}
-            formData={{ ...formData, ...deliveryData, card }}
-            disabled={!user}
-          />
-          <NavigationButtons
-            activeStep={activeStep}
-            setActiveStep={setActiveStep}
-            formData={{ ...formData, ...deliveryData, card }}
-            disabled={!user}
-          />
-        </div>
-
-        {renderStepContent()}
-
-        {activeStep < 3 && user && <Button handleNext={handleNext} />}
-
-        {activeStep === 3 && (
-          <div className="d-flex justify-content-end">
-            <button
-              className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                "جاري الاستعلام..."
-              ) : (
-                <>
-                  تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-                </>
-              )}
-            </button>
-          </div>
-        )}
-
-        {errors.submit && (
-          <Alert variant="danger" className="mt-3">
-            {errors.submit}
-          </Alert>
-        )}
+    <div className="">
+      <div className="mb-3">
+        <Steppar
+          active={activeStep}
+          setActive={setActiveStep}
+          formData={{ ...formData, ...deliveryData, card }}
+          disabled={!user}
+        />
+        <NavigationButtons
+          activeStep={activeStep}
+          setActiveStep={setActiveStep}
+          formData={{ ...formData, ...deliveryData, card }}
+          disabled={!user}
+        />
       </div>
-  
+
+      {renderStepContent()}
+
+      {activeStep < 3 && user && <Button handleNext={handleNext} />}
+
+      {activeStep === 3 && (
+        <div className="d-flex justify-content-end">
+          <button
+            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              "جاري الاستعلام..."
+            ) : (
+              <>
+                تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+              </>
+            )}
+          </button>
+        </div>
+      )}
+
+      {errors.submit && (
+        <Alert variant="danger" className="mt-3">
+          {errors.submit}
+        </Alert>
+      )}
+    </div>
   );
 });
 

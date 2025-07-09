@@ -201,58 +201,59 @@ const ConsumptionServices = forwardRef((props, ref) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
-
+  
     setApiError(null);
     setIsSubmitting(true);
+  
     try {
-      const token = localStorage.getItem("token");
-      console.log(token);
+      // ✅ التأكد من وجود التوكن
+      const token = user?.token || localStorage.getItem("token");
+  
+      if (!token) {
+        setApiError("لم يتم العثور على التوكن، يرجى تسجيل الدخول مرة أخرى.");
+        return;
+      }
+  
       const response = await axios.post(
         `${API_CONFIG.BASE_URL}/BillRecommendations/analyze`,
         formData,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`, // ✅ التوكن هنا
           },
         }
       );
-
-      /* Transform response for charts */
+  
+      // ✅ التعامل مع الرد لو ناجح
       if (response.data) {
-        // تحويل البيانات الجديدة من الباك إند
         const transformedData = {
-          ...response.data, // الاحتفاظ بجميع البيانات الأصلية
+          ...response.data,
           featureImportanceChart: transformFeatureImportanceData(
             response.data.featureImportance || {}
           ),
         };
-
+  
         setAnalysisResults(transformedData);
-        setShowResults(true); // إظهار النتائج وإخفاء الفورم
-
-        // التمرير لأعلى الصفحة
+        setShowResults(true);
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     } catch (error) {
+      // ✅ التعامل مع الأخطاء
       console.error("Error submitting form:", error);
-      console.error("Error details:", {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
-
+  
       setApiError(
         error.response?.data?.message ||
-          error.message ||
-          "حدث خطأ أثناء تقديم الطلب. يرجى المحاولة مرة أخرى."
+        error.message ||
+        "حدث خطأ أثناء تقديم الطلب. يرجى المحاولة مرة أخرى."
       );
     } finally {
       setIsSubmitting(false);
     }
   };
+  
 
   // دالة للرجوع للفورم
   const handleBackToForm = () => {
