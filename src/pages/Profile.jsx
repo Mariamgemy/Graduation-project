@@ -574,10 +574,8 @@ const Profile = () => {
                 {user.isVerified && <span className="verified-icon">✓</span>}
               </div>
             </div>
-            <h3 className="user-name">{user.name || "undefined "}</h3>
-            <p className="member-since">
-              عضو منذ {user.memberSince || "undefined "}
-            </p>
+            <h3 className="user-name mb-5">{user.name || "undefined "}</h3>
+       
 
             <div className="profile-completion">
               <div className="completion-header">
