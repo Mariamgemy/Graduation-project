@@ -105,7 +105,7 @@ const CaptchaComponent = forwardRef((props, ref) => {
       </label>
       <canvas
         ref={captchaCanvas}
-        width="400"
+        width="300"
         height="50"
         className="rounded mb-2"
         style={{ border: "1px solid #ced4da", display: "block" }}
