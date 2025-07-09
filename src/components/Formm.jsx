@@ -33,7 +33,7 @@ function Formm() {
     card.title === "سداد فاتورة المياه" ||
     card.title === "سداد فاتورة الغاز";
 
-  const isConsumptionCard = card.title === "متابعة الاستهلاك بشكل لحظي";
+  const isConsumptionCard = card.title ==="تحليل استهلاك الكهرباء";
 
   const isCivilCard =
     card.title === "شهادة ميلاد" ||

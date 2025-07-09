@@ -411,7 +411,7 @@ const ConsumptionServices = forwardRef((props, ref) => {
                               cx="50%"
                               cy="50%"
                               outerRadius={120}
-                              innerRadius={40}
+                              innerRadius={0}
                               paddingAngle={2}
                               label={({ value }) => ` ${value}%`}
                               labelLine={false}
