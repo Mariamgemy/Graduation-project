@@ -9,6 +9,7 @@ import ConsumptionServices from "./Services/ConsumptionServices";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "../context/AuthContext";
 import { Alert } from "react-bootstrap";
+import { FaArrowRightLong } from "react-icons/fa6";
 
 const stripePromise = loadStripe(
   "pk_test_51QTN1AK1FEwOxerZfCn4zCfYZPLxgw3WwLdL2kaTBfEmexHfeoyiP2BoAWQMVkFM5w5xTrk7OPWUMelS4ktPgXqK00TW5tdcvp"
@@ -33,7 +34,7 @@ function Formm() {
     card.title === "سداد فاتورة المياه" ||
     card.title === "سداد فاتورة الغاز";
 
-  const isConsumptionCard = card.title ==="تحليل استهلاك الكهرباء";
+  const isConsumptionCard = card.title === "تحليل استهلاك الكهرباء";
 
   const isCivilCard =
     card.title === "شهادة ميلاد" ||
@@ -47,8 +48,6 @@ function Formm() {
     card.title === "طلب رخصة إلكترونية" ||
     card.title === "بدل فاقد / تالف للرخص" ||
     card.title === "مخالفات المرور ودفعها";
-
-
 
   // This handlePayment function seems to be part of Formm.jsx's own payment flow for non-utility services.
   // It's kept as is for now, as the focus is on fixing UtilityServices nesting.
@@ -123,7 +122,6 @@ function Formm() {
       if (!isValidTraffic) isFormValid = false;
       else formData = trafficRef.current?.getFormData();
     }
- 
 
     if (!isFormValid) return;
 
@@ -177,6 +175,15 @@ function Formm() {
 
   return (
     <div className="p-4">
+      {/* زر الرجوع أعلى الصفحة */}
+      <div className="d-flex justify-content-start mb-5">
+        <button
+          onClick={() => navigate(-1)}
+          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5"
+        >
+          <FaArrowRightLong className="ms-2" /> رجوع
+        </button>
+      </div>
       <h2 className="mb-5 text-color">{card.title}</h2>
       {isUtilityCard ? (
         // Render UtilityServices outside of Formm.jsx's form to prevent nesting

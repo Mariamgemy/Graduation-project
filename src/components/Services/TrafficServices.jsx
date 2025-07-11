@@ -8,7 +8,10 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "react-bootstrap";
 import { API_CONFIG } from "../../api/config";
-import Line from "../Line";
+import NavigationButtons from "../NavigationButtons";
+import Steppar from "../Steppar";
+import DeliveryData from "../DeliveryData";
+import UserInfoDisplay from "../UserInfoDisplay";
 // import { CheckCircle, Clock, Copy } from "react-feather";
 const getTrafficServiceInfo = (serviceId) => {
   switch (serviceId) {
@@ -48,7 +51,7 @@ const TrafficServices = forwardRef((props, ref) => {
 
   // البيانات المشتركة
   const [selectedService, setSelectedService] = useState("");
-  const [notes, setNotes] = useState("لا توجد ملاحظات");
+  const [notes, setNotes] = useState("");
   const [mainDocument, setMainDocument] = useState(null);
 
   // بيانات الاستلام (فقط للخدمات التي تحتاج توصيل)
@@ -56,11 +59,16 @@ const TrafficServices = forwardRef((props, ref) => {
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
   const [detailedAddress, setDetailedAddress] = useState("");
+  const [deliveryData, setDeliveryData] = useState({});
 
   // Extra Fields للخدمات المختلفة
   const [extraFields, setExtraFields] = useState({});
   const [errors, setErrors] = useState({});
+  const [activeStep, setActiveStep] = useState(1);
 
+  const showNavigationAndStepper =
+    selectedService === "DRIVING_RENEW" ||
+    selectedService === "DRIVING_REPLACE_LOST";
   // قائمة الخدمات المتاحة
   const serviceOptions = [
     {
@@ -96,7 +104,7 @@ const TrafficServices = forwardRef((props, ref) => {
           required: true,
         },
         {
-          name: "renewalPeriod",
+          name: "notes",
           label: "فترة التجديد",
           type: "select",
           options: ["سنة واحدة", "سنتين", "ثلاث سنوات"],
@@ -130,18 +138,7 @@ const TrafficServices = forwardRef((props, ref) => {
           options: ["فقدان", "تلف"],
           required: true,
         },
-        {
-          name: "policeReportUrl",
-          label: "محضر الشرطة (في حالة الفقد)",
-          type: "file",
-          required: false,
-        },
-        {
-          name: "damagedLicenseUrl",
-          label: "صورة الرخصة التالفة",
-          type: "file",
-          required: false,
-        },
+      
       ],
     },
     {
@@ -265,6 +262,29 @@ const TrafficServices = forwardRef((props, ref) => {
     }
   }, [selectedService]);
 
+  const handleExpiredLicenseUpload = async (file) => {
+    if (!file) return;
+
+    try {
+      setErrors((prev) => ({
+        ...prev,
+        expiredLicenseImage: null,
+      }));
+
+      const documentUrl = await uploadDocument(file);
+      setExtraFields((prev) => ({
+        ...prev,
+        expiredLicenseImage: documentUrl,
+      }));
+    } catch (error) {
+      console.error("Error uploading expired license:", error);
+      setErrors((prev) => ({
+        ...prev,
+        expiredLicenseImage: error.message || "فشل في رفع صورة الرخصة المنتهية",
+      }));
+    }
+  };
+
   // API functions
   const submitTrafficServiceRequest = async (requestData) => {
     try {
@@ -280,12 +300,53 @@ const TrafficServices = forwardRef((props, ref) => {
         }
       );
 
+      const contentType = response.headers.get("content-type");
+      const isJson = contentType && contentType.includes("application/json");
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "فشل في إرسال الطلب");
+        if (isJson) {
+          try {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "فشل في إرسال الطلب");
+          } catch (jsonError) {
+            throw new Error(
+              `خطأ في الخادم: ${response.status} ${response.statusText}`
+            );
+          }
+        } else {
+          const errorText = await response.text();
+          throw new Error(
+            errorText ||
+              `خطأ في الخادم: ${response.status} ${response.statusText}`
+          );
+        }
+      }
+      // التحقق من وجود محتوى في الاستجابة
+      const responseText = await response.text();
+
+      if (!responseText || responseText.trim() === "") {
+        // إذا كانت الاستجابة فارغة، نعيد كائن افتراضي
+        return {
+          success: true,
+          message: "تم تقديم الطلب بنجاح",
+          requestId: Date.now().toString(),
+        };
       }
 
-      return await response.json();
+      // محاولة تحليل JSON
+      try {
+        return JSON.parse(responseText);
+      } catch (jsonError) {
+        console.warn(
+          "Failed to parse JSON response, returning text response:",
+          responseText
+        );
+        return {
+          success: true,
+          message: responseText,
+          requestId: Date.now().toString(),
+        };
+      }
     } catch (error) {
       console.error("Error submitting traffic service request:", error);
       throw error;
@@ -294,6 +355,11 @@ const TrafficServices = forwardRef((props, ref) => {
 
   const uploadDocument = async (file) => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("Token غير موجود. يرجى تسجيل الدخول مرة أخرى.");
+      }
+
       const formData = new FormData();
       formData.append("file", file); // تغيير من "document" إلى "file"
 
@@ -305,13 +371,46 @@ const TrafficServices = forwardRef((props, ref) => {
         body: formData,
       });
 
+      const contentType = response.headers.get("content-type");
+      const isJson = contentType && contentType.includes("application/json");
+
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "فشل في رفع الملف");
+        if (isJson) {
+          try {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "فشل في رفع الملف");
+          } catch (jsonError) {
+            throw new Error(
+              `خطأ في الخادم: ${response.status} ${response.statusText}`
+            );
+          }
+        } else {
+          const errorText = await response.text();
+          throw new Error(
+            errorText ||
+              `خطأ في الخادم: ${response.status} ${response.statusText}`
+          );
+        }
       }
 
-      const result = await response.json();
-      return result.fileUrl || result.documentUrl; // التعامل مع الاستجابات المختلفة
+      // التحقق من وجود محتوى في الاستجابة
+      const responseText = await response.text();
+
+      if (!responseText || responseText.trim() === "") {
+        throw new Error("استجابة فارغة من الخادم");
+      }
+
+      // محاولة تحليل JSON
+      try {
+        const result = JSON.parse(responseText);
+        return result.fileUrl || result.documentUrl || result.url; // التعامل مع الاستجابات المختلفة
+      } catch (jsonError) {
+        console.warn(
+          "Failed to parse JSON response for file upload:",
+          responseText
+        );
+        throw new Error("استجابة غير صحيحة من الخادم");
+      }
     } catch (error) {
       console.error("Error uploading document:", error);
       throw error;
@@ -323,6 +422,10 @@ const TrafficServices = forwardRef((props, ref) => {
       ...prev,
       [fieldName]: value,
     }));
+    // إذا كان الحقل هو notes (فترة التجديد)، حدث state notes أيضًا
+    if (fieldName === "notes") {
+      setNotes(value);
+    }
   };
 
   const handleFileUpload = async (fieldName, file) => {
@@ -351,9 +454,9 @@ const TrafficServices = forwardRef((props, ref) => {
   const validateForm = () => {
     const newErrors = {};
 
-    // للخدمات التي تحتاج mainDocument
-    if (currentService?.needsDelivery && !mainDocument) {
-      newErrors.mainDocument = "يرجى رفع الوثيقة الأساسية";
+    // للخدمات التي تحتاج صورة الرخصة المنتهية (فقط الخدمات التي تحتاج توصيل)
+    if (currentService?.needsDelivery && !extraFields.expiredLicenseImage) {
+      newErrors.expiredLicenseImage = "يرجى رفع صورة الرخصة المنتهية";
     }
 
     // التحقق من الحقول المطلوبة للخدمة المختارة
@@ -375,48 +478,130 @@ const TrafficServices = forwardRef((props, ref) => {
       }
     }
 
-    // التحقق من بيانات الاستلام للخدمات التي تحتاج توصيل
+    // التحقق من فترة التجديد لخدمة تجديد رخصة قيادة
+    if (selectedService === "DRIVING_RENEW" && !extraFields.notes) {
+      newErrors.notes = "فترة التجديد مطلوبة";
+    }
+
+    // التحقق من بيانات الاستلام للخدمات التي تحتاج توصيل فقط
     if (currentService?.needsDelivery) {
-      if (!governorate) newErrors.governorate = "المحافظة مطلوبة";
-      if (!city) newErrors.city = "المدينة مطلوبة";
-      if (!district) newErrors.district = "الحي / المركز مطلوب";
-      if (!detailedAddress) newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
+      if (!deliveryData.governorate) newErrors.governorate = "المحافظة مطلوبة";
+      if (!deliveryData.city) newErrors.city = "المدينة مطلوبة";
+      if (!deliveryData.district) newErrors.district = "الحي / المركز مطلوب";
+      if (!deliveryData.detailedAddress)
+        newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // الانتقال للخطوة الثانية مع validation
+  const handleNextToStep2 = () => {
+    const newErrors = {};
+
+    // التحقق من الحقول المطلوبة للخطوة الأولى
+    if (currentService) {
+      currentService.fields.forEach((field) => {
+        if (field.required && !extraFields[field.name]) {
+          newErrors[field.name] = `${field.label} مطلوب`;
+        }
+      });
+    }
+
+    // التحقق من رفع صورة الرخصة المنتهية للخدمات التي تحتاج توصيل
+    if (currentService?.needsDelivery && !extraFields.expiredLicenseImage) {
+      newErrors.expiredLicenseImage = "صورة الرخصة المنتهية مطلوبة";
+    }
+
+    // التحقق من فترة التجديد إذا كانت مطلوبة
+    if (selectedService === "DRIVING_RENEW" && !extraFields.notes) {
+      newErrors.notes = "فترة التجديد مطلوبة";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setActiveStep(2);
+    }
+  };
+
+  const handleDeliveryData = (data) => {
+    setDeliveryData(data);
+    // تحديث البيانات المحلية أيضاً
+    setGovernorate(data.governorate || "");
+    setCity(data.city || "");
+    setDistrict(data.district || "");
+    setDetailedAddress(data.detailedAddress || "");
+  };
+
+  const handleNextToStep3 = () => {
+    const newErrors = {};
+
+    // التحقق من بيانات الاستلام
+    if (!deliveryData.governorate) newErrors.governorate = "المحافظة مطلوبة";
+    if (!deliveryData.city) newErrors.city = "المدينة مطلوبة";
+    if (!deliveryData.district) newErrors.district = "الحي / المركز مطلوب";
+    if (!deliveryData.detailedAddress)
+      newErrors.detailedAddress = "العنوان التفصيلي مطلوب";
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setActiveStep(3);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    // فحص إضافي للتأكد من وجود البيانات المطلوبة
+    if (!user?.nationalId) {
+      setErrors({
+        submit: "بيانات المستخدم غير مكتملة. يرجى تسجيل الدخول مرة أخرى.",
+      });
+      return;
+    }
+
+    if (!selectedService) {
+      setErrors({
+        submit: "يرجى اختيار نوع الخدمة.",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const { licenseType, serviceCode } = getTrafficServiceInfo(selectedService);
+      const { licenseType, serviceCode } =
+        getTrafficServiceInfo(selectedService);
 
+      // تجهيز الـ notes مع فترة التجديد
       let requestData = {
         licenseType,
         serviceCode,
         applicantNID: user.nationalId,
-        Notes: notes,
-        extraFields,
+        Notes: extraFields.notes,
+        extraFields: {
+          ...extraFields,
+          // إزالة فترة التجديد من extraFields لأنها ستكون في notes
+          renewalPeriod: undefined,
+        },
       };
 
       // إضافة بيانات الاستلام للخدمات التي تحتاج توصيل
       if (currentService?.needsDelivery) {
         requestData = {
           ...requestData,
-          governorate,
-          city,
-          district,
-          detailedAddress,
+          governorate: deliveryData.governorate,
+          city: deliveryData.city,
+          district: deliveryData.district,
+          detailedAddress: deliveryData.detailedAddress,
         };
       }
 
       // رفع الوثيقة الأساسية للخدمات التي تحتاج توصيل
-      if (currentService?.needsDelivery && mainDocument) {
-        const uploadedDocumentUrl = await uploadDocument(mainDocument);
-        requestData.uploadedDocumentUrl = uploadedDocumentUrl;
+      if (currentService?.needsDelivery && extraFields.expiredLicenseImage) {
+        requestData.uploadedDocumentUrl = extraFields.expiredLicenseImage;
       }
 
       // للرخصة الإلكترونية، الملف موجود بالفعل في extraFields
@@ -424,23 +609,52 @@ const TrafficServices = forwardRef((props, ref) => {
         requestData.uploadedDocumentUrl = extraFields.paperLicenseImage;
       }
 
+      // لدفع المخالفات، لا نحتاج رفع ملفات
+      if (selectedService === "TRAFFIC_FINE_PAY") {
+        // إزالة أي حقول ملفات من extraFields لدفع المخالفات
+        const { paperLicenseImage, expiredLicenseImage, ...cleanExtraFields } =
+          extraFields;
+        requestData.extraFields = cleanExtraFields;
+      }
+
+      console.log("Sending request to backend:", requestData);
       const response = await submitTrafficServiceRequest(requestData);
-      
+      console.log("Backend response:", response);
+
       // حفظ بيانات الطلب في localStorage
       const orderData = {
         serviceType: "خدمات المرور",
         documentType: currentService.name,
-        requestId: response.requestId || response.id,
+        requestId: response.requestId || response.id || `traffic_${Date.now()}`,
         responseData: response,
       };
-      
+
       localStorage.setItem("lastTrafficOrder", JSON.stringify(orderData));
-      
+
       navigate("/trafficDone", { state: orderData });
     } catch (error) {
       console.error("Error submitting request:", error);
+
+      // تحسين رسالة الخطأ
+      let errorMessage = "حدث خطأ أثناء تقديم الطلب";
+
+      if (error.message) {
+        if (error.message.includes("Failed to fetch")) {
+          errorMessage =
+            "فشل في الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.";
+        } else if (error.message.includes("401")) {
+          errorMessage = "انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.";
+        } else if (error.message.includes("403")) {
+          errorMessage = "ليس لديك صلاحية لتنفيذ هذه العملية.";
+        } else if (error.message.includes("500")) {
+          errorMessage = "خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
       setErrors({
-        submit: error.message || "حدث خطأ أثناء تقديم الطلب",
+        submit: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
@@ -451,7 +665,6 @@ const TrafficServices = forwardRef((props, ref) => {
     validateForm,
     getFormData: () => ({
       selectedService,
-      mainDocument,
       extraFields,
       governorate,
       city,
@@ -473,13 +686,20 @@ const TrafficServices = forwardRef((props, ref) => {
             <label className="form-label">{field.label}</label>
             <input
               type={field.type}
-              className={`form-control custom-input ${error ? "is-invalid" : ""}`}
+              className={`form-control custom-input ${
+                error ? "is-invalid" : ""
+              }`}
               value={value}
-              onChange={(e) => handleExtraFieldChange(field.name, e.target.value)}
+              onChange={(e) =>
+                handleExtraFieldChange(field.name, e.target.value)
+              }
               placeholder={field.placeholder || `أدخل ${field.label}`}
+              autoComplete="on"
             />
             {field.description && (
-              <small className="form-text text-muted">{field.description}</small>
+              <small className="form-text text-muted">
+                {field.description}
+              </small>
             )}
             {error && <div className="text-danger">{error}</div>}
           </div>
@@ -490,9 +710,13 @@ const TrafficServices = forwardRef((props, ref) => {
           <div className="mb-3" key={field.name}>
             <label className="form-label">{field.label}</label>
             <select
-              className={`form-select custom-select-style custom-input ${error ? "is-invalid" : ""}`}
+              className={`form-select custom-select-style custom-input ${
+                error ? "is-invalid" : ""
+              }`}
               value={value}
-              onChange={(e) => handleExtraFieldChange(field.name, e.target.value)}
+              onChange={(e) =>
+                handleExtraFieldChange(field.name, e.target.value)
+              }
             >
               <option value="">اختر {field.label}</option>
               {field.options.map((option) => (
@@ -502,7 +726,9 @@ const TrafficServices = forwardRef((props, ref) => {
               ))}
             </select>
             {field.description && (
-              <small className="form-text text-muted">{field.description}</small>
+              <small className="form-text text-muted">
+                {field.description}
+              </small>
             )}
             {error && <div className="text-danger">{error}</div>}
           </div>
@@ -514,12 +740,18 @@ const TrafficServices = forwardRef((props, ref) => {
             <label className="form-label">{field.label}</label>
             <input
               type="date"
-              className={`form-control custom-input ${error ? "is-invalid" : ""}`}
+              className={`form-control custom-input ${
+                error ? "is-invalid" : ""
+              }`}
               value={value}
-              onChange={(e) => handleExtraFieldChange(field.name, e.target.value)}
+              onChange={(e) =>
+                handleExtraFieldChange(field.name, e.target.value)
+              }
             />
             {field.description && (
-              <small className="form-text text-muted">{field.description}</small>
+              <small className="form-text text-muted">
+                {field.description}
+              </small>
             )}
             {error && <div className="text-danger">{error}</div>}
           </div>
@@ -534,7 +766,9 @@ const TrafficServices = forwardRef((props, ref) => {
                 type="file"
                 id={field.name}
                 accept={field.accept || "image/*,.pdf"}
-                onChange={(e) => handleFileUpload(field.name, e.target.files[0])}
+                onChange={(e) =>
+                  handleFileUpload(field.name, e.target.files[0])
+                }
               />
               <label htmlFor={field.name} className="file-input-label">
                 <span className="file-name">
@@ -548,7 +782,9 @@ const TrafficServices = forwardRef((props, ref) => {
               </label>
             </div>
             {field.description && (
-              <small className="form-text text-muted">{field.description}</small>
+              <small className="form-text text-muted">
+                {field.description}
+              </small>
             )}
             {error && <div className="text-danger">{error}</div>}
           </div>
@@ -571,165 +807,317 @@ const TrafficServices = forwardRef((props, ref) => {
 
   return (
     <div className="">
+      <div className="mb-3">
+        {showNavigationAndStepper && (
+          <>
+            <Steppar
+              active={activeStep}
+              setActive={setActiveStep}
+              formData={{
+                ...extraFields,
+                ...deliveryData,
+                card,
+              }}
+            />
+            <NavigationButtons
+              activeStep={activeStep}
+              setActiveStep={setActiveStep}
+              formData={{
+                ...extraFields,
+                ...deliveryData,
+                card,
+              }}
+            />
+          </>
+        )}
+      </div>
+
       <div className="p-3">
-        {/* رفع الوثيقة الأساسية - للخدمات التي تحتاج توصيل فقط */}
-        {currentService?.needsDelivery && (
-          <div className="mb-4">
-            <label className="form-label">الوثيقة الأساسية</label>
-            <div className="file-input-container">
-              <input
-                type="file"
-                id="mainDocument"
-                accept="image/*,.pdf"
-                onChange={(e) => setMainDocument(e.target.files[0])}
-              />
-              <label htmlFor="mainDocument" className="file-input-label">
-                <span className="file-name">
-                  {mainDocument ? mainDocument.name : "لم يتم اختيار ملف"}
-                </span>
-                <span className="browse-button">اختر ملف</span>
-              </label>
+        {currentService && activeStep === 1 && (
+          <div>
+            <div className="mt-1">
+              <div className="row">
+                {currentService.fields.map((field) => (
+                  <div key={field.name} className="col-md-6">
+                    {renderField(field)}
+                  </div>
+                ))}
+              </div>
+
+              {/* رفع صورة الرخصة المنتهية - فقط لخدمة تجديد الرخصة */}
+              {selectedService === "DRIVING_RENEW" && (
+                <div className="mt-4">
+                  <h5 className="text-color mb-3">صورة الرخصة المنتهية</h5>
+                  <div className="file-input-container">
+                    <input
+                      type="file"
+                      id="expiredLicenseImage"
+                      accept="image/*,.pdf"
+                      onChange={(e) =>
+                        handleExpiredLicenseUpload(e.target.files[0])
+                      }
+                    />
+                    <label
+                      htmlFor="expiredLicenseImage"
+                      className="file-input-label"
+                    >
+                      <span className="file-name">
+                        {extraFields.expiredLicenseImage
+                          ? "تم رفع صورة الرخصة المنتهية"
+                          : "لم يتم اختيار ملف"}
+                      </span>
+                      <span className="browse-button">اختر ملف</span>
+                    </label>
+                  </div>
+                  <small className="form-text text-muted">
+                    يرجى رفع صورة واضحة للرخصة المنتهية الصلاحية
+                  </small>
+                  {errors.expiredLicenseImage && (
+                    <div className="text-danger mt-2">
+                      {errors.expiredLicenseImage}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* رفع الملفات حسب السبب في بدل فاقد/تالف للرخص */}
+              {selectedService === "DRIVING_REPLACE_LOST" && (
+                <div className="mt-4">
+                  {extraFields.lossType === "تلف" && (
+                    <div>
+                      <h5 className="text-color mb-3">صورة الرخصة التالفة</h5>
+                      <div className="file-input-container">
+                        <input
+                          type="file"
+                          id="damagedLicenseUrl"
+                          accept="image/*,.pdf"
+                          onChange={(e) =>
+                            handleFileUpload(
+                              "damagedLicenseUrl",
+                              e.target.files[0]
+                            )
+                          }
+                        />
+                        <label
+                          htmlFor="damagedLicenseUrl"
+                          className="file-input-label"
+                        >
+                          <span className="file-name">
+                            {extraFields.damagedLicenseUrl
+                              ? "تم رفع صورة الرخصة التالفة"
+                              : "لم يتم اختيار ملف"}
+                          </span>
+                          <span className="browse-button">اختر ملف</span>
+                        </label>
+                      </div>
+                      <small className="form-text text-muted">
+                        يرجى رفع صورة الرخصة التالفة فقط في حالة التلف
+                      </small>
+                      {errors.damagedLicenseUrl && (
+                        <div className="text-danger mt-2">
+                          {errors.damagedLicenseUrl}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {extraFields.lossType === "فقدان" && (
+                    <div>
+                      <h5 className="text-color mb-3">محضر الشرطة</h5>
+                      <div className="file-input-container">
+                        <input
+                          type="file"
+                          id="policeReportUrl"
+                          accept="image/*,.pdf"
+                          onChange={(e) =>
+                            handleFileUpload(
+                              "policeReportUrl",
+                              e.target.files[0]
+                            )
+                          }
+                        />
+                        <label
+                          htmlFor="policeReportUrl"
+                          className="file-input-label"
+                        >
+                          <span className="file-name">
+                            {extraFields.policeReportUrl
+                              ? "تم رفع محضر الشرطة"
+                              : "لم يتم اختيار ملف"}
+                          </span>
+                          <span className="browse-button">اختر ملف</span>
+                        </label>
+                      </div>
+                      <small className="form-text text-muted">
+                        يرجى رفع محضر الشرطة فقط في حالة الفقدان
+                      </small>
+                      {errors.policeReportUrl && (
+                        <div className="text-danger mt-2">
+                          {errors.policeReportUrl}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            {errors.mainDocument && (
-              <div className="text-danger">{errors.mainDocument}</div>
+
+            <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
+              <h4 className="mb-3">
+                ⚠️ معلومات هامة عن {currentService.name}:
+              </h4>
+              <ul className="list-unstyled">
+                <li className="mb-2 d-flex align-items-start">
+                  <span className="me-2 text-warning">💡</span>
+                  <span>
+                    يرجى التأكد من صحة جميع البيانات المدخلة قبل التقديم.
+                  </span>
+                </li>
+                <li className="mb-2 d-flex align-items-start">
+                  <span className="me-2 text-warning">💡</span>
+                  <span>يجب أن تكون جميع الوثائق المرفوعة واضحة ومقروءة.</span>
+                </li>
+                <li className="mb-2 d-flex align-items-start">
+                  <span className="me-2 text-warning">💡</span>
+                  <span>ستتم مراجعة الطلب خلال 3-5 أيام عمل.</span>
+                </li>
+                {selectedService === "LICENSE_DIGITAL" && (
+                  <li className="mb-2 d-flex align-items-start">
+                    <span className="me-2 text-warning">💡</span>
+                    <span>سيتم إنشاء رمز QR للرخصة الإلكترونية تلقائياً.</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            {/* زر تقديم الطلب للخدمات التي لا تحتاج stepper */}
+            {!showNavigationAndStepper && (
+              <div className="d-flex justify-content-end mt-4">
+                <button
+                  className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    "جاري تقديم الطلب..."
+                  ) : (
+                    <>
+                      تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+                    </>
+                  )}
+                </button>
+              </div>
             )}
           </div>
         )}
 
-        {/* حقول الخدمة المختارة */}
-        {currentService && (
-          <div className="">
-<Line/>
-            {/* <h4 className="text-color mb-3"> بيانات {currentService.name}</h4> */}
-            <div className="row">
-              {currentService.fields.map((field) => (
-                <div key={field.name} className="col-md-6">
-                  {renderField(field)}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* بيانات الاستلام - للخدمات التي تحتاج توصيل فقط */}
-        {currentService?.needsDelivery && (
-          <div className="mt-4">
-            <h4 className="text-color mb-3">بيانات الاستلام</h4>
-            <Alert variant="secondary" className="mb-4">
-              <p className="mb-0">
-                💡 يرجى إدخال بيانات الاستلام بشكل صحيح لتسهيل عملية توصيل الوثيقة
-              </p>
-            </Alert>
-            <div className="row">
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">المحافظة</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input ${errors.governorate ? "is-invalid" : ""}`}
-                    value={governorate}
-                    onChange={(e) => setGovernorate(e.target.value)}
-                    placeholder="أدخل المحافظة"
-                  />
-                  {errors.governorate && (
-                    <div className="text-danger">{errors.governorate}</div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">المدينة</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input ${errors.city ? "is-invalid" : ""}`}
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="أدخل المدينة"
-                  />
-                  {errors.city && (
-                    <div className="text-danger">{errors.city}</div>
-                  )}
-                </div>
-              </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">الحي / المركز</label>
-                  <input
-                    type="text"
-                    className={`form-control custom-input ${errors.district ? "is-invalid" : ""}`}
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    placeholder="أدخل الحي أو المركز"
-                  />
-                  {errors.district && (
-                    <div className="text-danger">{errors.district}</div>
-                  )}
-                </div>
-                <div className="mb-3">
-                  <label className="form-label">العنوان بالتفصيل</label>
-                  <textarea
-                    className={`form-control custom-input ${errors.detailedAddress ? "is-invalid" : ""}`}
-                    rows="3"
-                    value={detailedAddress}
-                    onChange={(e) => setDetailedAddress(e.target.value)}
-                    placeholder="أدخل العنوان بالتفصيل..."
-                  />
-                  {errors.detailedAddress && (
-                    <div className="text-danger">{errors.detailedAddress}</div>
-                  )}
-                </div>
-              </div>
-            </div>
+        {currentService?.needsDelivery && activeStep === 2 && (
+          <div className="mt-3 p-3">
+            <DeliveryData onDataChange={handleDeliveryData} errors={errors} />
           </div>
         )}
 
-        {/* معلومات إضافية عن الخدمة */}
-        {currentService && (
-          <div className="mt-4 p-4 bg-light rounded-3 border border-2 border-color">
-            <h4 className="mb-3">⚠️ معلومات هامة عن {currentService.name}:</h4>
-            <ul className="list-unstyled">
-              <li className="mb-2 d-flex align-items-start">
-                <span className="me-2 text-warning">💡</span>
-                <span>يرجى التأكد من صحة جميع البيانات المدخلة قبل التقديم.</span>
-              </li>
-              <li className="mb-2 d-flex align-items-start">
-                <span className="me-2 text-warning">💡</span>
-                <span>يجب أن تكون جميع الوثائق المرفوعة واضحة ومقروءة.</span>
-              </li>
-              <li className="mb-2 d-flex align-items-start">
-                <span className="me-2 text-warning">💡</span>
-                <span>ستتم مراجعة الطلب خلال 3-5 أيام عمل.</span>
-              </li>
-              {selectedService === "LICENSE_DIGITAL" && (
-                <li className="mb-2 d-flex align-items-start">
-                  <span className="me-2 text-warning">💡</span>
-                  <span>سيتم إنشاء رمز QR للرخصة الإلكترونية تلقائياً.</span>
-                </li>
+        {/* الخطوة الثالثة - مراجعة وتأكيد */}
+        {currentService && activeStep === 3 && (
+          <>
+            <div className="mt-3 p-3">
+              <h3 className="text-color mb-4">تأكيد الطلب</h3>
+              <div className="card mb-4">
+                <div className="card-header bg-light">
+                  <h5 className="mb-0 text-color">بيانات الطلب</h5>
+                </div>
+                <div className="card-body">
+                  <div className="row mb-3">
+                    <UserInfoDisplay />
+                    <div className="col-md-6">
+                      <h5>البيانات الأساسية:</h5>
+                      {currentService.fields.map((field) => (
+                        <div key={field.name} className="mb-2">
+                          <strong>{field.label}:</strong>{" "}
+                          {extraFields[field.name] || "غير محدد"}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {currentService.needsDelivery && (
+                <div className="card mb-4">
+                  <div className="card-header bg-light">
+                    <h5 className="mb-0 text-color">بيانات الاستلام</h5>
+                  </div>
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <p>
+                          <strong>المحافظة:</strong> {deliveryData.governorate}
+                        </p>
+                        <p>
+                          <strong>المدينة:</strong> {deliveryData.city}
+                        </p>
+                      </div>
+                      <div className="col-md-6">
+                        <p>
+                          <strong>الحي/المركز:</strong> {deliveryData.district}
+                        </p>
+                        <p>
+                          <strong>العنوان التفصيلي:</strong>{" "}
+                          {deliveryData.detailedAddress}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
-            </ul>
+            </div>
+          </>
+        )}
+
+        {/* أزرار التنقل */}
+        {showNavigationAndStepper && activeStep < 3 && (
+          <div className="d-flex justify-content-end">
+            <button
+              className="btn nav-btn btn-outline-secondry mt-3 p2-4 py-2 fs-5"
+              onClick={activeStep === 1 ? handleNextToStep2 : handleNextToStep3}
+            >
+              التالي &nbsp; <FaArrowLeftLong size={20} />
+            </button>
           </div>
         )}
-      </div>
 
-      {/* زر تقديم الطلب */}
-      <div className="text-start p-3">
-        <button
-          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            "جاري تقديم الطلب..."
-          ) : (
-            <>
-              تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
-            </>
-          )}
-        </button>
+        {activeStep === 3 && (
+          <div className="d-flex justify-content-end">
+            <button
+              className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5 mb-2"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                "جاري تقديم الطلب..."
+              ) : (
+                <>
+                  تقديم الطلب &nbsp; <FaArrowLeftLong size={20} />
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {errors.submit && (
         <Alert variant="danger" className="mt-3">
           {errors.submit}
         </Alert>
+      )}
+
+      {/* رسالة خطأ للخدمات التي لا تحتاج stepper */}
+      {!showNavigationAndStepper && errors.submit && (
+        <div className="p-3">
+          <Alert variant="danger" className="mt-3">
+            {errors.submit}
+          </Alert>
+        </div>
       )}
     </div>
   );
