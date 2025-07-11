@@ -1,53 +1,47 @@
-import { useLocation  } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-import React from 'react';
+import React from "react";
 import Sidebar from "../components/SideBar";
 import Formm from "../components/Formm";
-import "../Css/UniqueCard.css"
+import "../Css/UniqueCard.css";
 import { Link } from "react-router-dom";
 import NavBar from "../components/NavBar";
 
 function CardDetails() {
   const location = useLocation();
-  const card = location.state
+  const card = location.state;
 
   if (!card) {
     return <p>لم يتم العثور على الخدمة.</p>;
   }
 
-
   return (
-<>
-<NavBar/>
-<div className="container-fluid">
-      <div className="row">
-        <div className="col-md-3 bg-light">
-          <Sidebar />
-        </div>
-        <div className="col-md-9 p-4">
-    <div className="container py-5">
- 
-      <div className="bg-light p-3 mb-3 rounded-top">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb m-0">
-            <li className="breadcrumb-item "><Link className="text-color" to="/"> الرئيسية / </Link></li>
-            <li className="breadcrumb-item me-2"><Link className="text-color" to="/services">خدامــاتـــنــا</Link></li>
-            <li className="breadcrumb-item active" aria-current="page">الاستعلام ودفع المخالفات المرورية</li>
-          </ol>
-        </nav>
-      </div>
-    <div className="card p-4 shadow rounded-4">
-      {/* <h2 className="mb-3 text-primary text-color text-center">{card.title}</h2> */}
-     
- <Formm/>
+    <>
+      <NavBar />
+      <div
+        className="container-fluid"
+        style={{ backgroundColor: "#fff", minHeight: "100vh" }}
+      >
+        <div className="row">
+          <div className="col-md-3" style={{ backgroundColor: "#fff" }}>
+            <Sidebar />
+          </div>
+          <div className="col-md-9 p-4" style={{ backgroundColor: "#fff" }}>
+            <div className="container py-5" style={{ backgroundColor: "#fff" }}>
+              {/* حذف الكارت والخلفية الرمادية حول العنوان */}
+              {/* <div className="bg-light p-3 mb-3 rounded-top"> */}
+              {/* ... */}
+              {/* </div> */}
 
-    </div>
-  </div>
-</div>
-</div>
-</div>
-</>
-  
+              {/* إزالة الكارت الأبيض حول الفورم */}
+              {/* <div className="card p-4 shadow rounded-4"> */}
+              <Formm />
+              {/* </div> */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

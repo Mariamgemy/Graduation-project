@@ -1,7 +1,7 @@
 import React from "react";
 import { FaArrowRightLong } from "react-icons/fa6";
 import "../Css/NavigationButtons.css";
-import { FaUser, FaFileAlt, FaCheck } from "react-icons/fa";
+import { FaIdCard , FaFileAlt, FaCheck } from "react-icons/fa";
 
 const NavigationButtons = ({
   activeStep,
@@ -9,8 +9,35 @@ const NavigationButtons = ({
   formData,
   stepLabels,
 }) => {
+  // تحديد العنوان حسب نوع الخدمة
+  const getFirstStepLabel = () => {
+    if (formData?.card?.title) {
+      // خدمات المرور
+      if (
+        formData.card.title === "تجديد رخصة قيادة" ||
+        formData.card.title === "بدل فاقد / تالف للرخص" ||
+        formData.card.title === "طلب رخصة إلكترونية" ||
+        formData.card.title === "مخالفات المرور ودفعها"
+      ) {
+        return "بيانات الرخصة";
+      }
+      // الخدمات المدنية
+      else if (
+        formData.card.title === "شهادة ميلاد" ||
+        formData.card.title === "قسيمة زواج" ||
+        formData.card.title === "قسيمة طلاق" ||
+        formData.card.title === "شهادة ميلاد مميكنة لأول مرة" ||
+        formData.card.title === "شهادة وفاة"
+      ) {
+        return "بيانات الطلب";
+      }
+    }
+    // افتراضي
+    return "بيانات الطلب";
+  };
+
   const currentLabels = stepLabels || [
-    { label: "بيانات الطلب", icon: <FaUser /> },
+    { label: getFirstStepLabel(), icon: <FaIdCard /> },
     { label: "بيانات الاستلام", icon: <FaFileAlt /> },
     { label: "تأكيد الطلب", icon: <FaCheck /> },
   ];
@@ -65,8 +92,6 @@ const NavigationButtons = ({
         !numberOfCopies
       )
         return false;
-    
-
     } else if (card?.title === "تجديد رخصة قيادة") {
       if (
         !licenseNumber ||
