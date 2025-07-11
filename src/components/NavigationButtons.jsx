@@ -131,7 +131,7 @@ const NavigationButtons = ({
 
   return (
     <div className="navigation-container">
-      <div className="d-flex justify-content-around align-items-center">
+      <div className="justify-content-around align-items-center">
         {currentLabels.map((button, index) => {
           const isDisabled =
             (index === 1 && !isStep1Completed()) ||

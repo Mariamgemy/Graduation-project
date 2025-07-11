@@ -79,8 +79,8 @@ const ConsumptionServices = forwardRef((props, ref) => {
       });
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
   // ألوان محسنة للمخططات
   const COLORS = [
@@ -216,32 +216,32 @@ const ConsumptionServices = forwardRef((props, ref) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!validateForm()) return;
-  
+
     setApiError(null);
     setIsSubmitting(true);
-  
+
     try {
       // ✅ التأكد من وجود التوكن
       const token = user?.token || localStorage.getItem("token");
-  
+
       if (!token) {
         setApiError("لم يتم العثور على التوكن، يرجى تسجيل الدخول مرة أخرى.");
         return;
       }
-  
+
       const response = await axios.post(
         `${API_CONFIG.BASE_URL}/BillRecommendations/analyze`,
         formData,
         {
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // ✅ التوكن هنا
+            Authorization: `Bearer ${token}`, // ✅ التوكن هنا
           },
         }
       );
-  
+
       // ✅ التعامل مع الرد لو ناجح
       if (response.data) {
         const transformedData = {
@@ -250,7 +250,7 @@ const ConsumptionServices = forwardRef((props, ref) => {
             response.data.featureImportance || {}
           ),
         };
-  
+
         setAnalysisResults(transformedData);
         setShowResults(true);
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -258,11 +258,11 @@ const ConsumptionServices = forwardRef((props, ref) => {
     } catch (error) {
       // ✅ التعامل مع الأخطاء
       console.error("Error submitting form:", error);
-  
+
       setApiError(
         error.response?.data?.message ||
-        error.message ||
-        "حدث خطأ أثناء تقديم الطلب. يرجى المحاولة مرة أخرى."
+          error.message ||
+          "حدث خطأ أثناء تقديم الطلب. يرجى المحاولة مرة أخرى."
       );
     } finally {
       setIsSubmitting(false);
@@ -271,7 +271,7 @@ const ConsumptionServices = forwardRef((props, ref) => {
   const getChartSettings = () => {
     const isMobile = windowSize.width < 768;
     const isTablet = windowSize.width >= 768 && windowSize.width < 1024;
-    
+
     return {
       isMobile,
       isTablet,
@@ -280,9 +280,9 @@ const ConsumptionServices = forwardRef((props, ref) => {
       showLabels: true, // تظهر النسب دائماً
       showLegend: !isMobile,
       fontSize: isMobile ? 10 : 11,
-      tooltipFontSize: isMobile ? 12 : 13
+      tooltipFontSize: isMobile ? 12 : 13,
     };
-  }
+  };
 
   // دالة للرجوع للفورم
   const handleBackToForm = () => {
@@ -301,7 +301,16 @@ const ConsumptionServices = forwardRef((props, ref) => {
 
   if (showResults && analysisResults) {
     return (
-      <div className="results-only-view">
+      <div
+        className="results-only-view bg-blue-full"
+        style={{
+          minHeight: "100vh",
+          width: "100vw",
+          background: "linear-gradient(135deg, #e3f0fa 0%, #b6d6f6 100%)",
+          margin: 0,
+          padding: 0,
+        }}
+      >
         {/* زر الرجوع */}
         {/* <div className="back-to-form-section mb-4">
         <Container fluid>
@@ -413,62 +422,81 @@ const ConsumptionServices = forwardRef((props, ref) => {
               </Col>
 
               {analysisResults.featureImportanceChart &&
-        analysisResults.featureImportanceChart.length > 0 && (
-          <Col lg={8} className="mb-4">
-            <Card
-              className="chart-card border-0 shadow h-100"
-              style={{ borderRadius: "20px" }}
-            >
-              <Card.Header
-                className="bg-color text-white"
-                style={{ borderRadius: "20px 20px 0 0" }}
-              >
-                <h3 className="mb-0 fw-bold" style={{ 
-                  fontSize: chartSettings.isMobile ? '1.1rem' : '1.5rem' 
-                }}>
-                  <FaChartPie className="me-2" />
-                  العوامل المؤثرة في الاستهلاك
-                </h3>
-              </Card.Header>
-              <Card.Body className={`${chartSettings.isMobile ? 'p-2' : 'p-4'}`}>
-                <div className="chart-container">
-                  <ResponsiveContainer width="100%" height={chartSettings.chartHeight}>
-                    <PieChart>
-                      <Pie
-                        data={analysisResults.featureImportanceChart}
-                        dataKey="value"
-                        nameKey="name"
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={chartSettings.outerRadius}
-                        innerRadius={0}
-                        paddingAngle={2}
-                        label={chartSettings.showLabels ? ({ value }) => `${value}%` : false}
-                        labelLine={false}
-                        fontSize={chartSettings.fontSize}
+                analysisResults.featureImportanceChart.length > 0 && (
+                  <Col lg={8} className="mb-4">
+                    <Card
+                      className="chart-card border-0 shadow h-100"
+                      style={{ borderRadius: "20px" }}
+                    >
+                      <Card.Header
+                        className="bg-color text-white"
+                        style={{ borderRadius: "20px 20px 0 0" }}
                       >
-                        {analysisResults.featureImportanceChart?.map(
-                          (entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={COLORS[index % COLORS.length]}
-                            />
-                          )
-                        )}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value) => [`${value}%`, "نسبة التأثير"]}
-                        contentStyle={{
-                          backgroundColor: "#fff",
-                          border: "1px solid #ccc",
-                          borderRadius: "8px",
-                          fontSize: `${chartSettings.tooltipFontSize}px`,
-                          direction: "rtl",
-                          maxWidth: chartSettings.isMobile ? "180px" : "200px",
-                          textAlign: "center"
-                        }}
-                      />
-                      {/* {chartSettings.showLegend && (
+                        <h3
+                          className="mb-0 fw-bold"
+                          style={{
+                            fontSize: chartSettings.isMobile
+                              ? "1.1rem"
+                              : "1.5rem",
+                          }}
+                        >
+                          <FaChartPie className="me-2" />
+                          العوامل المؤثرة في الاستهلاك
+                        </h3>
+                      </Card.Header>
+                      <Card.Body
+                        className={`${chartSettings.isMobile ? "p-2" : "p-4"}`}
+                      >
+                        <div className="chart-container">
+                          <ResponsiveContainer
+                            width="100%"
+                            height={chartSettings.chartHeight}
+                          >
+                            <PieChart>
+                              <Pie
+                                data={analysisResults.featureImportanceChart}
+                                dataKey="value"
+                                nameKey="name"
+                                cx="50%"
+                                cy="50%"
+                                outerRadius={chartSettings.outerRadius}
+                                innerRadius={0}
+                                paddingAngle={2}
+                                label={
+                                  chartSettings.showLabels
+                                    ? ({ value }) => `${value}%`
+                                    : false
+                                }
+                                labelLine={false}
+                                fontSize={chartSettings.fontSize}
+                              >
+                                {analysisResults.featureImportanceChart?.map(
+                                  (entry, index) => (
+                                    <Cell
+                                      key={`cell-${index}`}
+                                      fill={COLORS[index % COLORS.length]}
+                                    />
+                                  )
+                                )}
+                              </Pie>
+                              <Tooltip
+                                formatter={(value) => [
+                                  `${value}%`,
+                                  "نسبة التأثير",
+                                ]}
+                                contentStyle={{
+                                  backgroundColor: "#fff",
+                                  border: "1px solid #ccc",
+                                  borderRadius: "8px",
+                                  fontSize: `${chartSettings.tooltipFontSize}px`,
+                                  direction: "rtl",
+                                  maxWidth: chartSettings.isMobile
+                                    ? "180px"
+                                    : "200px",
+                                  textAlign: "center",
+                                }}
+                              />
+                              {/* {chartSettings.showLegend && (
                         <Legend
                           verticalAlign="bottom"
                           height={36}
@@ -479,63 +507,85 @@ const ConsumptionServices = forwardRef((props, ref) => {
                           }}
                         />
                       )} */}
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
+                            </PieChart>
+                          </ResponsiveContainer>
+                        </div>
 
-                {/* Custom Legend - محسن للموبايل */}
-                <div className={`custom-legend ${chartSettings.isMobile ? 'mobile-legend' : ''}`}>
-                  <div className="row g-2">
-                    {analysisResults.featureImportanceChart?.map(
-                      (entry, index) => (
-                        <div key={index} className={
-                          chartSettings.isMobile ? "col-12" : 
-                          chartSettings.isTablet ? "col-md-6" : "col-md-6 col-lg-4"
-                        }>
-                          <div
-                            className="legend-item d-flex align-items-center p-2 rounded"
-                            style={{ backgroundColor: "#f8f9fa" }}
-                          >
-                            <div
-                              className="legend-color me-2"
-                              style={{
-                                width: chartSettings.isMobile ? "12px" : "16px",
-                                height: chartSettings.isMobile ? "12px" : "16px",
-                                backgroundColor: COLORS[index % COLORS.length],
-                                borderRadius: "3px",
-                                flexShrink: 0,
-                              }}
-                            ></div>
-                            <span
-                              className="legend-text"
-                              style={{
-                                fontSize: chartSettings.isMobile ? "11px" : "13px",
-                                fontWeight: "500",
-                                color: "#495057",
-                                lineHeight: "1.2",
-                              }}
-                            >
-                              {entry.name} 
-                            </span>
+                        {/* Custom Legend - محسن للموبايل */}
+                        <div
+                          className={`custom-legend ${
+                            chartSettings.isMobile ? "mobile-legend" : ""
+                          }`}
+                        >
+                          <div className="row g-2">
+                            {analysisResults.featureImportanceChart?.map(
+                              (entry, index) => (
+                                <div
+                                  key={index}
+                                  className={
+                                    chartSettings.isMobile
+                                      ? "col-12"
+                                      : chartSettings.isTablet
+                                      ? "col-md-6"
+                                      : "col-md-6 col-lg-4"
+                                  }
+                                >
+                                  <div
+                                    className="legend-item d-flex align-items-center p-2 rounded"
+                                    style={{ backgroundColor: "#f8f9fa" }}
+                                  >
+                                    <div
+                                      className="legend-color me-2"
+                                      style={{
+                                        width: chartSettings.isMobile
+                                          ? "12px"
+                                          : "16px",
+                                        height: chartSettings.isMobile
+                                          ? "12px"
+                                          : "16px",
+                                        backgroundColor:
+                                          COLORS[index % COLORS.length],
+                                        borderRadius: "3px",
+                                        flexShrink: 0,
+                                      }}
+                                    ></div>
+                                    <span
+                                      className="legend-text"
+                                      style={{
+                                        fontSize: chartSettings.isMobile
+                                          ? "11px"
+                                          : "13px",
+                                        fontWeight: "500",
+                                        color: "#495057",
+                                        lineHeight: "1.2",
+                                      }}
+                                    >
+                                      {entry.name}
+                                    </span>
+                                  </div>
+                                </div>
+                              )
+                            )}
                           </div>
                         </div>
-                      )
-                    )}
-                  </div>
-                </div>
 
-                <div className="text-center mt-3">
-                  <small 
-                    className="text-muted" 
-                    style={{ fontSize: chartSettings.isMobile ? "11px" : "14px" }}
-                  >
-                    النسب المئوية تمثل تأثير كل عامل على إجمالي الاستهلاك
-                  </small>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        )}
+                        <div className="text-center mt-3">
+                          <small
+                            className="text-muted"
+                            style={{
+                              fontSize: chartSettings.isMobile
+                                ? "11px"
+                                : "14px",
+                            }}
+                          >
+                            النسب المئوية تمثل تأثير كل عامل على إجمالي
+                            الاستهلاك
+                          </small>
+                        </div>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                )}
 
               {/* Top Factors */}
               {analysisResults.featureImportanceChart &&
