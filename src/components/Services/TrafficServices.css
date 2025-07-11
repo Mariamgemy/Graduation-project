@@ -11,10 +11,10 @@
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   /*width: 75% !important;
    */
-   display: flex;
-   flex-direction: row-reverse; 
-   justify-content: flex-start;
-   /* align-items: center; */
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
+  /* align-items: center; */
 }
 
 .form-control:focus {
@@ -81,7 +81,6 @@
 .file-input-container {
   position: relative;
   width: 100%;
-  
 }
 
 .file-input-container input[type="file"] {
@@ -91,7 +90,6 @@
   opacity: 0;
   cursor: pointer;
   z-index: 2;
-
 }
 
 .file-input-container .file-input-label {
@@ -102,7 +100,7 @@
   background-color: #fff;
   border: 1px solid #ced4da;
   background-clip: padding-box;
-  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   border-radius: 30px !important;
   height: 3.4375rem !important;
   width: 90% !important;
@@ -120,7 +118,6 @@
 }
 
 .file-input-container .file-input-label .browse-button {
-  
   background-color: #f8f9fa;
   border: 1px solid #ced4da;
   border-radius: 15px !important;
@@ -130,8 +127,6 @@
   color: #495057;
   white-space: nowrap;
   cursor: pointer;
-
-
 }
 
 .file-input-container .file-input-label .browse-button:hover {
@@ -143,11 +138,22 @@
 input[type="date"] {
   padding: 0.375rem 0.75rem;
   cursor: pointer;
-
 }
 
 /* Required field indicator */
 .form-label:after {
   content: " *";
   color: #dc3545;
+}
+
+@media (max-width: 767.98px) {
+  .custom-input,
+  .form-control.custom-input,
+  .form-select.custom-select-style,
+  .file-input-label {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
 }
