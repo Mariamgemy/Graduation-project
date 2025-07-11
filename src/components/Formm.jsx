@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import UtilityServices from "./Services/UtilityServices";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../Css/UniqueCard.css";
@@ -28,6 +28,15 @@ function Formm() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
   const [authError, setAuthError] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const isUtilityCard =
     card.title === "سداد فاتورة الكهرباء" ||
@@ -175,30 +184,34 @@ function Formm() {
 
   return (
     <div className="p-4">
-      {/* زر الرجوع أعلى الصفحة */}
-      <div className="d-flex justify-content-start mb-5">
-        <button
-          onClick={() => navigate(-1)}
-          className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5"
-        >
-          <FaArrowRightLong className="ms-2" /> رجوع
-        </button>
-      </div>
+      {/* زر الرجوع أعلى الصفحة يظهر فقط على الموبايل */}
+      {isMobile && (
+        <div className="d-flex justify-content-start mb-5">
+          <button
+            onClick={() => navigate(-1)}
+            className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5"
+          >
+            <FaArrowRightLong className="ms-2" /> رجوع
+          </button>
+        </div>
+      )}
       <h2 className="mb-5 text-color">{card.title}</h2>
       {isUtilityCard ? (
-        // Render UtilityServices outside of Formm.jsx's form to prevent nesting
-        <UtilityServices ref={utilityRef} />
+        <UtilityServices ref={utilityRef} isMobile={isMobile} />
       ) : (
-        // For other services, use the form as before
         <div>
           {authError && (
             <Alert variant="warning" className="mb-3">
               <p className="mb-0">{authError}</p>
             </Alert>
           )}
-          {isCivilCard && <CivilServices ref={civilRef} />}
-          {isTrafficCard && <TrafficServices ref={trafficRef} />}
-          {isConsumptionCard && <ConsumptionServices ref={consumptionRef} />}
+          {isCivilCard && <CivilServices ref={civilRef} isMobile={isMobile} />}
+          {isTrafficCard && (
+            <TrafficServices ref={trafficRef} isMobile={isMobile} />
+          )}
+          {isConsumptionCard && (
+            <ConsumptionServices ref={consumptionRef} isMobile={isMobile} />
+          )}
         </div>
       )}
     </div>

@@ -63,3 +63,14 @@
   background-color: #e9ecef;
   border-color: #ced4da;
 }
+@media (max-width: 768px) {
+  .navigation-container .d-flex {
+    flex-direction: column !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .navigation-container .d-flex {
+    flex-direction: row !important;
+  }
+}

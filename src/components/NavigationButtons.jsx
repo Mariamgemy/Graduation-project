@@ -1,13 +1,14 @@
 import React from "react";
 import { FaArrowRightLong } from "react-icons/fa6";
 import "../Css/NavigationButtons.css";
-import { FaIdCard , FaFileAlt, FaCheck } from "react-icons/fa";
+import { FaIdCard, FaFileAlt, FaCheck } from "react-icons/fa";
 
 const NavigationButtons = ({
   activeStep,
   setActiveStep,
   formData,
   stepLabels,
+  isMobile, // استقبل prop isMobile
 }) => {
   // تحديد العنوان حسب نوع الخدمة
   const getFirstStepLabel = () => {
@@ -131,7 +132,8 @@ const NavigationButtons = ({
 
   return (
     <div className="navigation-container">
-      <div className="justify-content-around align-items-center">
+         <div className="d-flex justify-content-around align-items-center">
+
         {currentLabels.map((button, index) => {
           const isDisabled =
             (index === 1 && !isStep1Completed()) ||

@@ -138,7 +138,6 @@ const TrafficServices = forwardRef((props, ref) => {
           options: ["فقدان", "تلف"],
           required: true,
         },
-      
       ],
     },
     {

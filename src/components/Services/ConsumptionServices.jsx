@@ -302,10 +302,10 @@ const ConsumptionServices = forwardRef((props, ref) => {
   if (showResults && analysisResults) {
     return (
       <div
-        className="results-only-view bg-blue-full"
+        className="results-only-view d-flex flex-column justify-content-center align-items-center"
         style={{
           minHeight: "100vh",
-          width: "100vw",
+          width: "100%",
           background: "linear-gradient(135deg, #e3f0fa 0%, #b6d6f6 100%)",
           margin: 0,
           padding: 0,
