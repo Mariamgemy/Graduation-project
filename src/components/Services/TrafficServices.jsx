@@ -25,11 +25,6 @@ const getTrafficServiceInfo = (serviceId) => {
         licenseType: "Lost License Replacement",
         serviceCode: "DRIVING_REPLACE_LOST",
       };
-    case "TRAFFIC_FINE_PAY":
-      return {
-        licenseType: "Traffic Fine Payment",
-        serviceCode: "TRAFFIC_FINE_PAY",
-      };
     case "LICENSE_DIGITAL":
       return {
         licenseType: "Digital License Issuance",
@@ -138,51 +133,7 @@ const TrafficServices = forwardRef((props, ref) => {
           options: ["فقدان", "تلف"],
           required: true,
         },
-      ],
-    },
-    {
-      id: "TRAFFIC_FINE_PAY",
-      name: "مخالفات المرور ودفعها",
-      type: "Traffic Fine Payment",
-      needsDelivery: false,
-      fields: [
-        {
-          name: "fineNumber",
-          label: "رقم المخالفة",
-          type: "text",
-          required: true,
-        },
-        {
-          name: "violationType",
-          label: "نوع المخالفة",
-          type: "select",
-          options: [
-            "تجاوز السرعة",
-            "عدم التوقف عند الإشارة الحمراء",
-            "الوقوف في مكان ممنوع",
-            "عدم ربط حزام الأمان",
-            "استخدام الهاتف أثناء القيادة",
-          ],
-          required: true,
-        },
-        {
-          name: "violationDate",
-          label: "تاريخ المخالفة",
-          type: "date",
-          required: true,
-        },
-        {
-          name: "vehiclePlateNumber",
-          label: "رقم اللوحة",
-          type: "text",
-          required: true,
-        },
-        {
-          name: "amount",
-          label: "مبلغ الغرامة",
-          type: "number",
-          required: true,
-        },
+        // تم حذف حقل lossReportNumber من هنا
       ],
     },
     {
@@ -453,8 +404,11 @@ const TrafficServices = forwardRef((props, ref) => {
   const validateForm = () => {
     const newErrors = {};
 
-    // للخدمات التي تحتاج صورة الرخصة المنتهية (فقط الخدمات التي تحتاج توصيل)
-    if (currentService?.needsDelivery && !extraFields.expiredLicenseImage) {
+    // صورة الرخصة المنتهية مطلوبة فقط في تجديد الرخصة
+    if (
+      selectedService === "DRIVING_RENEW" &&
+      !extraFields.expiredLicenseImage
+    ) {
       newErrors.expiredLicenseImage = "يرجى رفع صورة الرخصة المنتهية";
     }
 
@@ -480,6 +434,16 @@ const TrafficServices = forwardRef((props, ref) => {
     // التحقق من فترة التجديد لخدمة تجديد رخصة قيادة
     if (selectedService === "DRIVING_RENEW" && !extraFields.notes) {
       newErrors.notes = "فترة التجديد مطلوبة";
+    }
+
+    // تحقق من الملفات المطلوبة حسب نوع السبب في بدل فاقد/تالف
+    if (selectedService === "DRIVING_REPLACE_LOST") {
+      if (extraFields.lossType === "تلف" && !extraFields.damagedLicenseUrl) {
+        newErrors.damagedLicenseUrl = "يرجى رفع صورة الرخصة التالفة";
+      }
+      if (extraFields.lossType === "فقدان" && !extraFields.policeReportUrl) {
+        newErrors.policeReportUrl = "يرجى رفع محضر الشرطة";
+      }
     }
 
     // التحقق من بيانات الاستلام للخدمات التي تحتاج توصيل فقط
@@ -517,7 +481,14 @@ const TrafficServices = forwardRef((props, ref) => {
     if (selectedService === "DRIVING_RENEW" && !extraFields.notes) {
       newErrors.notes = "فترة التجديد مطلوبة";
     }
-
+    if (selectedService === "DRIVING_REPLACE_LOST") {
+      if (extraFields.lossType === "تلف" && !extraFields.damagedLicenseUrl) {
+        newErrors.damagedLicenseUrl = "يرجى رفع صورة الرخصة التالفة";
+      }
+      if (extraFields.lossType === "فقدان" && !extraFields.policeReportUrl) {
+        newErrors.policeReportUrl = "يرجى رفع محضر الشرطة";
+      }
+    }
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
@@ -552,11 +523,19 @@ const TrafficServices = forwardRef((props, ref) => {
   };
 
   const handleSubmit = async () => {
+    console.log("handleSubmit called", {
+      selectedService,
+      extraFields,
+      errors,
+    });
     if (!validateForm()) return;
 
     // فحص إضافي للتأكد من وجود البيانات المطلوبة
     if (!user?.nationalId) {
       setErrors({
+        submit: "بيانات المستخدم غير مكتملة. يرجى تسجيل الدخول مرة أخرى.",
+      });
+      console.log("setErrors called", {
         submit: "بيانات المستخدم غير مكتملة. يرجى تسجيل الدخول مرة أخرى.",
       });
       return;
@@ -566,6 +545,7 @@ const TrafficServices = forwardRef((props, ref) => {
       setErrors({
         submit: "يرجى اختيار نوع الخدمة.",
       });
+      console.log("setErrors called", { submit: "يرجى اختيار نوع الخدمة." });
       return;
     }
 
@@ -574,7 +554,6 @@ const TrafficServices = forwardRef((props, ref) => {
       const { licenseType, serviceCode } =
         getTrafficServiceInfo(selectedService);
 
-      // تجهيز الـ notes مع فترة التجديد
       let requestData = {
         licenseType,
         serviceCode,
@@ -582,7 +561,6 @@ const TrafficServices = forwardRef((props, ref) => {
         Notes: extraFields.notes,
         extraFields: {
           ...extraFields,
-          // إزالة فترة التجديد من extraFields لأنها ستكون في notes
           renewalPeriod: undefined,
         },
       };
@@ -610,11 +588,57 @@ const TrafficServices = forwardRef((props, ref) => {
 
       // لدفع المخالفات، لا نحتاج رفع ملفات
       if (selectedService === "TRAFFIC_FINE_PAY") {
-        // إزالة أي حقول ملفات من extraFields لدفع المخالفات
         const { paperLicenseImage, expiredLicenseImage, ...cleanExtraFields } =
           extraFields;
         requestData.extraFields = cleanExtraFields;
       }
+
+      // --- تعديل خاص بخدمة بدل فاقد/تالف للرخص ---
+      if (selectedService === "DRIVING_REPLACE_LOST") {
+        // تحديد الرابط المناسب حسب السبب
+        let uploadedDocumentUrl = null;
+        let cleanExtraFields = { ...extraFields };
+
+        // التحقق من وجود الملف المطلوب
+        if (extraFields.lossType === "تلف") {
+          if (!extraFields.damagedLicenseUrl) {
+            setErrors({ submit: "يرجى رفع صورة الرخصة التالفة" });
+            console.log("setErrors called", {
+              submit: "يرجى رفع صورة الرخصة التالفة",
+            });
+            return;
+          }
+          uploadedDocumentUrl = extraFields.damagedLicenseUrl;
+          delete cleanExtraFields.damagedLicenseUrl;
+        } else if (extraFields.lossType === "فقدان") {
+          if (!extraFields.policeReportUrl) {
+            setErrors({ submit: "يرجى رفع محضر الشرطة" });
+            console.log("setErrors called", { submit: "يرجى رفع محضر الشرطة" });
+            return;
+          }
+          uploadedDocumentUrl = extraFields.policeReportUrl;
+          delete cleanExtraFields.policeReportUrl;
+        }
+        // حذف روابط الملفات من extraFields
+        delete cleanExtraFields.damagedLicenseUrl;
+        delete cleanExtraFields.policeReportUrl;
+        delete cleanExtraFields.expiredLicenseImage;
+        // lossReportNumber إذا كان موجودًا
+        if (!cleanExtraFields.lossReportNumber) {
+          setErrors({ submit: "رقم محضر الفقدان/التلف مطلوب" });
+          console.log("setErrors called", {
+            submit: "رقم محضر الفقدان/التلف مطلوب",
+          });
+          return;
+        }
+
+        requestData = {
+          ...requestData,
+          uploadedDocumentUrl,
+          extraFields: cleanExtraFields,
+        };
+      }
+      // --- نهاية التعديل ---
 
       console.log("Sending request to backend:", requestData);
       const response = await submitTrafficServiceRequest(requestData);
@@ -882,6 +906,34 @@ const TrafficServices = forwardRef((props, ref) => {
               {/* رفع الملفات حسب السبب في بدل فاقد/تالف للرخص */}
               {selectedService === "DRIVING_REPLACE_LOST" && (
                 <div className="mt-4">
+                  {/* إظهار حقل رقم المحضر */}
+                  <div className="mb-3">
+                    <label className="form-label">رقم محضر الفقدان/التلف</label>
+                    <input
+                      type="text"
+                      className={`form-control custom-input ${
+                        errors.lossReportNumber ? "is-invalid" : ""
+                      }`}
+                      value={extraFields.lossReportNumber || ""}
+                      onChange={(e) =>
+                        handleExtraFieldChange(
+                          "lossReportNumber",
+                          e.target.value
+                        )
+                      }
+                      placeholder="أدخل رقم المحضر"
+                    />
+                    <small className="form-text text-muted">
+                      رقم المحضر من قسم الشرطة أو الوحدة المرورية
+                    </small>
+                    {errors.lossReportNumber && (
+                      <div className="text-danger">
+                        {errors.lossReportNumber}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* رفع الملفات حسب السبب */}
                   {extraFields.lossType === "تلف" && (
                     <div>
                       <h5 className="text-color mb-3">صورة الرخصة التالفة</h5>
@@ -910,7 +962,7 @@ const TrafficServices = forwardRef((props, ref) => {
                         </label>
                       </div>
                       <small className="form-text text-muted">
-                        يرجى رفع صورة الرخصة التالفة فقط في حالة التلف
+                        يرجى رفع صورة واضحة للرخصة التالفة
                       </small>
                       {errors.damagedLicenseUrl && (
                         <div className="text-danger mt-2">
@@ -919,6 +971,7 @@ const TrafficServices = forwardRef((props, ref) => {
                       )}
                     </div>
                   )}
+
                   {extraFields.lossType === "فقدان" && (
                     <div>
                       <h5 className="text-color mb-3">محضر الشرطة</h5>
@@ -947,7 +1000,7 @@ const TrafficServices = forwardRef((props, ref) => {
                         </label>
                       </div>
                       <small className="form-text text-muted">
-                        يرجى رفع محضر الشرطة فقط في حالة الفقدان
+                        يرجى رفع صورة واضحة لمحضر الشرطة
                       </small>
                       {errors.policeReportUrl && (
                         <div className="text-danger mt-2">
@@ -990,7 +1043,7 @@ const TrafficServices = forwardRef((props, ref) => {
 
             {/* زر تقديم الطلب للخدمات التي لا تحتاج stepper */}
             {!showNavigationAndStepper && (
-              <div className="d-flex justify-content-end mt-4">
+              <div className="d-flex flex-column align-items-end mt-4">
                 <button
                   className="btn nav-btn btn-outline-secondry p2-4 py-2 fs-5"
                   onClick={handleSubmit}
@@ -1004,6 +1057,12 @@ const TrafficServices = forwardRef((props, ref) => {
                     </>
                   )}
                 </button>
+                {/* رسالة الخطأ تظهر أسفل الزر مباشرة */}
+                {errors.submit && (
+                  <div className="w-100 mt-3">
+                    <Alert variant="danger">{errors.submit}</Alert>
+                  </div>
+                )}
               </div>
             )}
           </div>
