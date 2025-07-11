@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -9,28 +9,51 @@ export const AuthProvider = ({ children }) => {
     // console.log("جاري تحميل بيانات المستخدم من localStorage:", saved);
     return saved ? JSON.parse(saved) : null;
   });
+  const [sessionExpired, setSessionExpired] = useState(false);
 
+  // تسجيل الدخول: احفظ وقت الدخول
   const login = (userData) => {
-  
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
-    console.log("تم حفظ بيانات المستخدم في localStorage");
+    localStorage.setItem("loginTime", Date.now().toString());
+    setSessionExpired(false);
   };
 
+  // تسجيل الخروج: امسح كل شيء
   const logout = () => {
-    console.log("جاري تسجيل خروج المستخدم");
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    console.log("تم حذف بيانات المستخدم من localStorage");
+    localStorage.removeItem("loginTime");
+    setSessionExpired(false);
   };
 
+  // تحقق من انتهاء الجلسة تلقائيًا
+  useEffect(() => {
+    const checkSession = () => {
+      const loginTime = localStorage.getItem("loginTime");
+      if (loginTime) {
+        const now = Date.now();
+        const diff = now - parseInt(loginTime, 10);
+        if (diff >= 60 * 60 * 1000) {
+          // 1 ساعة
+          logout();
+          setSessionExpired(true);
+        }
+      }
+    };
+    // افحص عند mount وعند تغيير المستخدم
+    checkSession();
+    // افحص كل دقيقة
+    const interval = setInterval(checkSession, 60 * 1000);
+    return () => clearInterval(interval);
+  }, [user]);
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, sessionExpired }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
 export const useAuth = () => useContext(AuthContext);
-
