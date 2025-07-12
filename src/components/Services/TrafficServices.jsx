@@ -213,82 +213,24 @@ const TrafficServices = forwardRef((props, ref) => {
   }, [selectedService]);
 
   const handleExpiredLicenseUpload = async (file) => {
-    if (!file) {
-      console.log("No expired license file selected");
-      return;
-    }
-
-    // تحقق من نوع الملف
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "application/pdf",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      setErrors((prev) => ({
-        ...prev,
-        expiredLicenseImage:
-          "نوع الملف غير مدعوم. يرجى رفع ملف بصيغة JPG, PNG, GIF, WEBP أو PDF",
-      }));
-      return;
-    }
-
-    // تحقق من حجم الملف (أقل من 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      setErrors((prev) => ({
-        ...prev,
-        expiredLicenseImage: "حجم الملف كبير جداً. الحد الأقصى 10 ميجابايت",
-      }));
-      return;
-    }
+    if (!file) return;
 
     try {
-      console.log(
-        "Starting expired license upload. File:",
-        file.name,
-        "Size:",
-        file.size,
-        "Type:",
-        file.type
-      );
-
       setErrors((prev) => ({
         ...prev,
         expiredLicenseImage: null,
       }));
 
-      // إضافة loading state
-      setExtraFields((prev) => ({
-        ...prev,
-        expiredLicenseImage_loading: true,
-      }));
-
       const documentUrl = await uploadDocument(file);
-
-      console.log("Expired license uploaded successfully:", documentUrl);
-
       setExtraFields((prev) => ({
         ...prev,
         expiredLicenseImage: documentUrl,
-        expiredLicenseImage_loading: false,
       }));
     } catch (error) {
       console.error("Error uploading expired license:", error);
       setErrors((prev) => ({
         ...prev,
-        expiredLicenseImage:
-          error.message ||
-          "فشل في رفع صورة الرخصة المنتهية. يرجى المحاولة مرة أخرى",
-      }));
-
-      // إزالة loading state
-      setExtraFields((prev) => ({
-        ...prev,
-        expiredLicenseImage_loading: false,
+        expiredLicenseImage: error.message || "فشل في رفع صورة الرخصة المنتهية",
       }));
     }
   };
@@ -368,60 +310,32 @@ const TrafficServices = forwardRef((props, ref) => {
         throw new Error("Token غير موجود. يرجى تسجيل الدخول مرة أخرى.");
       }
 
-      console.log(
-        "Preparing to upload file:",
-        file.name,
-        "Size:",
-        file.size,
-        "Type:",
-        file.type
-      );
-
       const formData = new FormData();
-      formData.append("file", file);
-
-      // إضافة timeout للطلب (30 ثانية)
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      formData.append("file", file); // تغيير من "document" إلى "file"
 
       const response = await fetch(`${API_CONFIG.BASE_URL}/fileupload/single`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: formData,
-        signal: controller.signal,
       });
-
-      clearTimeout(timeoutId);
-
-      console.log(
-        "Upload response status:",
-        response.status,
-        "OK:",
-        response.ok
-      );
 
       const contentType = response.headers.get("content-type");
       const isJson = contentType && contentType.includes("application/json");
 
       if (!response.ok) {
-        console.error("Upload failed with status:", response.status);
-
         if (isJson) {
           try {
             const errorData = await response.json();
-            console.error("JSON error response:", errorData);
             throw new Error(errorData.message || "فشل في رفع الملف");
           } catch (jsonError) {
-            console.error("Failed to parse JSON error:", jsonError);
             throw new Error(
               `خطأ في الخادم: ${response.status} ${response.statusText}`
             );
           }
         } else {
           const errorText = await response.text();
-          console.error("Text error response:", errorText);
           throw new Error(
             errorText ||
               `خطأ في الخادم: ${response.status} ${response.statusText}`
@@ -431,7 +345,6 @@ const TrafficServices = forwardRef((props, ref) => {
 
       // التحقق من وجود محتوى في الاستجابة
       const responseText = await response.text();
-      console.log("Upload response text:", responseText);
 
       if (!responseText || responseText.trim() === "") {
         throw new Error("استجابة فارغة من الخادم");
@@ -440,16 +353,9 @@ const TrafficServices = forwardRef((props, ref) => {
       // محاولة تحليل JSON
       try {
         const result = JSON.parse(responseText);
-        console.log("Parsed upload result:", result);
-
-        const fileUrl = result.fileUrl || result.documentUrl || result.url;
-        if (!fileUrl) {
-          throw new Error("لم يتم استلام رابط الملف من الخادم");
-        }
-
-        return fileUrl;
+        return result.fileUrl || result.documentUrl || result.url; // التعامل مع الاستجابات المختلفة
       } catch (jsonError) {
-        console.error(
+        console.warn(
           "Failed to parse JSON response for file upload:",
           responseText
         );
@@ -457,20 +363,6 @@ const TrafficServices = forwardRef((props, ref) => {
       }
     } catch (error) {
       console.error("Error uploading document:", error);
-
-      // تحسين رسائل الخطأ للموبايل
-      if (error.name === "AbortError") {
-        throw new Error("انتهت مهلة رفع الملف. يرجى المحاولة مرة أخرى");
-      } else if (error.message.includes("Failed to fetch")) {
-        throw new Error("فشل في الاتصال بالخادم. تحقق من اتصال الإنترنت");
-      } else if (error.message.includes("401")) {
-        throw new Error("انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى");
-      } else if (error.message.includes("413")) {
-        throw new Error("حجم الملف كبير جداً");
-      } else if (error.message.includes("500")) {
-        throw new Error("خطأ في الخادم. يرجى المحاولة مرة أخرى");
-      }
-
       throw error;
     }
   };
@@ -487,83 +379,24 @@ const TrafficServices = forwardRef((props, ref) => {
   };
 
   const handleFileUpload = async (fieldName, file) => {
-    if (!file) {
-      console.log("No file selected");
-      return;
-    }
-
-    // تحقق من نوع الملف
-    const allowedTypes = [
-      "image/jpeg",
-      "image/jpg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "application/pdf",
-    ];
-    if (!allowedTypes.includes(file.type)) {
-      setErrors((prev) => ({
-        ...prev,
-        [fieldName]:
-          "نوع الملف غير مدعوم. يرجى رفع ملف بصيغة JPG, PNG, GIF, WEBP أو PDF",
-      }));
-      return;
-    }
-
-    // تحقق من حجم الملف (أقل من 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    if (file.size > maxSize) {
-      setErrors((prev) => ({
-        ...prev,
-        [fieldName]: "حجم الملف كبير جداً. الحد الأقصى 10 ميجابايت",
-      }));
-      return;
-    }
+    if (!file) return;
 
     try {
-      console.log(
-        "Starting file upload for:",
-        fieldName,
-        "File:",
-        file.name,
-        "Size:",
-        file.size,
-        "Type:",
-        file.type
-      );
-
       setErrors((prev) => ({
         ...prev,
         [fieldName]: null,
       }));
 
-      // إضافة loading state للملف
-      setExtraFields((prev) => ({
-        ...prev,
-        [`${fieldName}_loading`]: true,
-      }));
-
       const documentUrl = await uploadDocument(file);
-
-      console.log("File uploaded successfully:", documentUrl);
-
       setExtraFields((prev) => ({
         ...prev,
         [fieldName]: documentUrl,
-        [`${fieldName}_loading`]: false,
       }));
     } catch (error) {
       console.error("Error uploading file:", error);
       setErrors((prev) => ({
         ...prev,
-        [fieldName]:
-          error.message || "فشل في رفع الملف. يرجى المحاولة مرة أخرى",
-      }));
-
-      // إزالة loading state
-      setExtraFields((prev) => ({
-        ...prev,
-        [`${fieldName}_loading`]: false,
+        [fieldName]: error.message || "فشل في رفع الملف",
       }));
     }
   };
@@ -978,41 +811,19 @@ const TrafficServices = forwardRef((props, ref) => {
                 type="file"
                 id={field.name}
                 accept={field.accept || "image/*,.pdf"}
-                onChange={(e) => {
-                  const file = e.target.files[0];
-                  if (file) {
-                    console.log(
-                      "File selected:",
-                      file.name,
-                      "Size:",
-                      file.size,
-                      "Type:",
-                      file.type
-                    );
-                    handleFileUpload(field.name, file);
-                  }
-                }}
-                style={{ display: "none" }}
+                onChange={(e) =>
+                  handleFileUpload(field.name, e.target.files[0])
+                }
               />
               <label htmlFor={field.name} className="file-input-label">
                 <span className="file-name">
-                  {extraFields[`${field.name}_loading`] ? (
-                    <span style={{ color: "#007bff" }}>جاري رفع الملف...</span>
-                  ) : extraFields[field.name] ? (
-                    typeof extraFields[field.name] === "string" ? (
-                      "تم رفع الملف"
-                    ) : (
-                      extraFields[field.name].name || "تم رفع الملف"
-                    )
-                  ) : (
-                    "لم يتم اختيار ملف"
-                  )}
+                  {extraFields[field.name]
+                    ? typeof extraFields[field.name] === "string"
+                      ? "تم رفع الملف"
+                      : extraFields[field.name].name || "تم رفع الملف"
+                    : "لم يتم اختيار ملف"}
                 </span>
-                <span className="browse-button">
-                  {extraFields[`${field.name}_loading`]
-                    ? "جاري الرفع..."
-                    : "اختر ملف"}
-                </span>
+                <span className="browse-button">اختر ملف</span>
               </label>
             </div>
             {field.description && (
@@ -1087,31 +898,20 @@ const TrafficServices = forwardRef((props, ref) => {
                       type="file"
                       id="expiredLicenseImage"
                       accept="image/*,.pdf"
-                      onChange={(e) => {
-                        const file = e.target.files[0];
-                        if (file) {
-                          console.log("Expired license file selected:", file.name, "Size:", file.size, "Type:", file.type);
-                          handleExpiredLicenseUpload(file);
-                        }
-                      }}
-                      style={{ display: 'none' }}
+                      onChange={(e) =>
+                        handleExpiredLicenseUpload(e.target.files[0])
+                      }
                     />
                     <label
                       htmlFor="expiredLicenseImage"
                       className="file-input-label"
                     >
                       <span className="file-name">
-                        {extraFields.expiredLicenseImage_loading ? (
-                          <span style={{ color: '#007bff' }}>جاري رفع صورة الرخصة المنتهية...</span>
-                        ) : extraFields.expiredLicenseImage ? (
-                          "تم رفع صورة الرخصة المنتهية"
-                        ) : (
-                          "لم يتم اختيار ملف"
-                        )}
+                        {extraFields.expiredLicenseImage
+                          ? "تم رفع صورة الرخصة المنتهية"
+                          : "لم يتم اختيار ملف"}
                       </span>
-                      <span className="browse-button">
-                        {extraFields.expiredLicenseImage_loading ? "جاري الرفع..." : "اختر ملف"}
-                      </span>
+                      <span className="browse-button">اختر ملف</span>
                     </label>
                   </div>
                   <small className="form-text text-muted">
@@ -1164,31 +964,23 @@ const TrafficServices = forwardRef((props, ref) => {
                           type="file"
                           id="damagedLicenseUrl"
                           accept="image/*,.pdf"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              console.log("Damaged license file selected:", file.name, "Size:", file.size, "Type:", file.type);
-                              handleFileUpload("damagedLicenseUrl", file);
-                            }
-                          }}
-                          style={{ display: 'none' }}
+                          onChange={(e) =>
+                            handleFileUpload(
+                              "damagedLicenseUrl",
+                              e.target.files[0]
+                            )
+                          }
                         />
                         <label
                           htmlFor="damagedLicenseUrl"
                           className="file-input-label"
                         >
                           <span className="file-name">
-                            {extraFields.damagedLicenseUrl_loading ? (
-                              <span style={{ color: '#007bff' }}>جاري رفع صورة الرخصة التالفة...</span>
-                            ) : extraFields.damagedLicenseUrl ? (
-                              "تم رفع صورة الرخصة التالفة"
-                            ) : (
-                              "لم يتم اختيار ملف"
-                            )}
+                            {extraFields.damagedLicenseUrl
+                              ? "تم رفع صورة الرخصة التالفة"
+                              : "لم يتم اختيار ملف"}
                           </span>
-                          <span className="browse-button">
-                            {extraFields.damagedLicenseUrl_loading ? "جاري الرفع..." : "اختر ملف"}
-                          </span>
+                          <span className="browse-button">اختر ملف</span>
                         </label>
                       </div>
                       <small className="form-text text-muted">
@@ -1210,31 +1002,23 @@ const TrafficServices = forwardRef((props, ref) => {
                           type="file"
                           id="policeReportUrl"
                           accept="image/*,.pdf"
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              console.log("Police report file selected:", file.name, "Size:", file.size, "Type:", file.type);
-                              handleFileUpload("policeReportUrl", file);
-                            }
-                          }}
-                          style={{ display: 'none' }}
+                          onChange={(e) =>
+                            handleFileUpload(
+                              "policeReportUrl",
+                              e.target.files[0]
+                            )
+                          }
                         />
                         <label
                           htmlFor="policeReportUrl"
                           className="file-input-label"
                         >
                           <span className="file-name">
-                            {extraFields.policeReportUrl_loading ? (
-                              <span style={{ color: '#007bff' }}>جاري رفع محضر الشرطة...</span>
-                            ) : extraFields.policeReportUrl ? (
-                              "تم رفع محضر الشرطة"
-                            ) : (
-                              "لم يتم اختيار ملف"
-                            )}
+                            {extraFields.policeReportUrl
+                              ? "تم رفع محضر الشرطة"
+                              : "لم يتم اختيار ملف"}
                           </span>
-                          <span className="browse-button">
-                            {extraFields.policeReportUrl_loading ? "جاري الرفع..." : "اختر ملف"}
-                          </span>
+                          <span className="browse-button">اختر ملف</span>
                         </label>
                       </div>
                       <small className="form-text text-muted">
