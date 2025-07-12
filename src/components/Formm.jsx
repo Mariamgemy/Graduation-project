@@ -60,7 +60,7 @@ function Formm() {
 
   // This handlePayment function seems to be part of Formm.jsx's own payment flow for non-utility services.
   // It's kept as is for now, as the focus is on fixing UtilityServices nesting.
-  const handlePayment = async (paymentIntentId, clientSecret) => {
+  const handlePayment = async (paymentIntentId, clientSecret, result) => {
     setPaymentProcessing(true);
 
     try {
@@ -86,9 +86,42 @@ function Formm() {
         alert("فشل الدفع: " + error.message);
         setPaymentProcessing(false);
       } else {
-        alert("تم الدفع بنجاح!");
+        // بدلاً من alert، نوجه لصفحة PaymentSuccess مع بيانات الدفع
+        const paymentData = {
+          paymentIntentId: paymentIntentId,
+          clientSecret: clientSecret,
+          amount: result?.amount || "غير محدد",
+          billNumber: result?.billNumber || "غير محدد",
+        };
+
+        const paymentResult = {
+          transactionId: paymentIntentId,
+          paymentIntentId: paymentIntentId,
+          status: "succeeded",
+          amount: result?.amount || "غير محدد",
+          date: new Date().toLocaleDateString("ar-EG"),
+        };
+
+        const formData = {
+          NID: user?.nationalId || "غير محدد",
+          currentReading: formData?.meterReading || "غير محدد",
+          // إضافة بيانات إضافية لخدمات المرور
+          serviceType: card.title,
+          userData: {
+            name: user?.name || "غير محدد",
+            nationalId: user?.nationalId || "غير محدد",
+          },
+        };
+
         setPaymentProcessing(false);
-        navigate("/payment-success");
+        navigate("/payment-success", {
+          state: {
+            paymentResult,
+            paymentData,
+            formData,
+            card,
+          },
+        });
       }
     } catch (err) {
       console.error(err);
@@ -162,7 +195,11 @@ function Formm() {
       const result = await response.json();
 
       if (result.success) {
-        await handlePayment(result.paymentIntentId, result.clientSecret);
+        await handlePayment(
+          result.paymentIntentId,
+          result.clientSecret,
+          result
+        );
       } else {
         throw new Error(result.errorMessage || "حدث خطأ أثناء الدفع");
       }

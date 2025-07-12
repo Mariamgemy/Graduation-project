@@ -40,6 +40,14 @@ function EnhancedSuccessMessage({
     if (title?.includes("كهرباء")) return "كهرباء";
     if (title?.includes("مياه")) return "مياه";
     if (title?.includes("غاز")) return "غاز";
+    if (
+      title?.includes("مرور") ||
+      title?.includes("رخصة") ||
+      title?.includes("للرخص") ||
+      title === "خدمات المرور"
+    )
+      return "خدمات المرور";
+    if (title?.includes("مخالفات")) return "مخالفات المرور";
     return "خدمة أخرى";
   };
 
@@ -109,22 +117,47 @@ function EnhancedSuccessMessage({
           <div className="payment-detail-item">
             <span className="payment-detail-label">الرقم القومي</span>
             <span className="payment-detail-value">
-              {formData?.NID || "غير محدد"}
+              {formData?.NID || formData?.userData?.nationalId || "غير محدد"}
             </span>
           </div>
 
-          <div className="payment-detail-item">
-            <span className="payment-detail-label">قراءة العداد</span>
-            <span className="payment-detail-value">
-              {formData?.currentReading || "غير محدد"}
-            </span>
-          </div>
+          {/* عرض اسم المستخدم لخدمات المرور */}
+          {formData?.userData?.name && (
+            <div className="payment-detail-item">
+              <span className="payment-detail-label">اسم المستخدم</span>
+              <span className="payment-detail-value">
+                {formData.userData.name}
+              </span>
+            </div>
+          )}
+
+          {/* عرض قراءة العداد فقط للخدمات التي تحتاجها */}
+          {(card?.title?.includes("كهرباء") ||
+            card?.title?.includes("مياه") ||
+            card?.title?.includes("غاز")) && (
+            <div className="payment-detail-item">
+              <span className="payment-detail-label">قراءة العداد</span>
+              <span className="payment-detail-value">
+                {formData?.currentReading || "غير محدد"}
+              </span>
+            </div>
+          )}
 
           {(paymentData?.billNumber || paymentResult?.billNumber) && (
             <div className="payment-detail-item">
               <span className="payment-detail-label">رقم الفاتورة</span>
               <span className="payment-detail-value">
                 #{paymentData?.billNumber || paymentResult?.billNumber}
+              </span>
+            </div>
+          )}
+
+          {/* عرض كود الدفع لخدمات المرور */}
+          {paymentData?.paymentCode && (
+            <div className="payment-detail-item">
+              <span className="payment-detail-label">كود الدفع</span>
+              <span className="payment-detail-value">
+                {paymentData.paymentCode}
               </span>
             </div>
           )}
@@ -420,6 +453,9 @@ function translateServiceType(serviceType) {
   if (serviceType?.includes("كهرباء")) return "Electricity";
   if (serviceType?.includes("مياه")) return "Water";
   if (serviceType?.includes("غاز")) return "Gas";
+  if (serviceType?.includes("مرور") || serviceType?.includes("رخصة"))
+    return "Traffic Services";
+  if (serviceType?.includes("مخالفات")) return "Traffic Violations";
   return serviceType || "Other Service";
 }
 

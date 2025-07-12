@@ -38,3 +38,229 @@
   --bs-btn-disabled-border-color: #3377A9;
   --bs-gradient: none;
 }
+/* إضافة هذه الأنماط لملف orders.css */
+
+/* تحسين تصميم البطاقات */
+.order-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #2d485c;
+}
+
+/* تحسين تصميم كود الدفع */
+.payment-code-section {
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payment-code-display {
+  background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+  border: 2px dashed #198754;
+  transition: all 0.3s ease;
+}
+
+.payment-code-display:hover {
+  background: linear-gradient(45deg, #e9ecef, #f8f9fa);
+  transform: scale(1.02);
+}
+
+.payment-code-number {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  user-select: all;
+}
+
+/* تحسين تصميم بطاقات المعلومات */
+.info-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.info-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #2d485c;
+}
+
+/* تحسين تصميم الأزرار */
+.btn-primary {
+  background: linear-gradient(45deg, #3377A9, #2d485c);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(45deg, #2d485c, #3377A9);
+
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+
+
+
+
+/* تحسين تصميم المودال */
+.modal-header {
+  border-bottom: 2px solid #e9ecef;
+}
+
+.modal-footer {
+  border-top: 2px solid #e9ecef;
+}
+
+/* تحسين تصميم الحالات */
+.badge {
+  font-size: 0.8em;
+  padding: 0.5em 0.8em;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* تحسين تصميم النماذج */
+.form-control {
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #3377A9;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* تحسين تصميم التبويبات */
+.nav-tabs .nav-link {
+  border-radius: 8px 8px 0 0;
+  margin-right: 5px;
+  transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+.nav-tabs .nav-link.active {
+  background: linear-gradient(45deg, #3377A9, #2d485c);
+
+  color: white;
+  border-color: #3377A9;
+}
+
+/* تحسين تصميم التنبيهات */
+.alert {
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.alert-info {
+  background: linear-gradient(45deg, #d1ecf1, #bee5eb);
+  color: #0c5460;
+}
+
+.alert-success {
+  background: linear-gradient(45deg, #d4edda, #c3e6cb);
+  color: #155724;
+}
+
+.alert-warning {
+  background: linear-gradient(45deg, #fff3cd, #ffeaa7);
+  color: #856404;
+}
+
+.alert-danger {
+  background: linear-gradient(45deg, #f8d7da, #f5c6cb);
+  color: #721c24;
+}
+
+/* تحسين تصميم اللودر */
+.spinner-border {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 0.2em;
+}
+
+/* تأثيرات للنسخ */
+.copy-success {
+  animation: copySuccess 0.6s ease;
+}
+
+@keyframes copySuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: #28a745;
+    color: white;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* تحسين التصميم المتجاوب */
+@media (max-width: 768px) {
+  .payment-code-display {
+    text-align: center;
+  }
+  
+  .payment-code-number {
+    font-size: 1.2rem !important;
+    letter-spacing: 2px !important;
+  }
+  
+  .info-card {
+    margin-bottom: 1rem;
+  }
+  
+  .modal-dialog {
+    margin: 1rem;
+  }
+}
+
+/* تحسين تصميم زر الرجوع */
+.nav-btn {
+  border-radius: 25px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* تحسين تصميم الكارد العام */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+  font-weight: 600;
+}

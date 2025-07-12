@@ -436,6 +436,14 @@ const TrafficServices = forwardRef((props, ref) => {
       newErrors.notes = "فترة التجديد مطلوبة";
     }
 
+    // التحقق من رقم محضر الفقدان/التلف لخدمة بدل فاقد/تالف
+    if (
+      selectedService === "DRIVING_REPLACE_LOST" &&
+      !extraFields.lossReportNumber
+    ) {
+      newErrors.lossReportNumber = "رقم محضر الفقدان/التلف مطلوب";
+    }
+
     // تحقق من الملفات المطلوبة حسب نوع السبب في بدل فاقد/تالف
     if (selectedService === "DRIVING_REPLACE_LOST") {
       if (extraFields.lossType === "تلف" && !extraFields.damagedLicenseUrl) {
@@ -472,8 +480,11 @@ const TrafficServices = forwardRef((props, ref) => {
       });
     }
 
-    // التحقق من رفع صورة الرخصة المنتهية للخدمات التي تحتاج توصيل
-    if (currentService?.needsDelivery && !extraFields.expiredLicenseImage) {
+    // التحقق من رفع صورة الرخصة المنتهية فقط لخدمة تجديد الرخصة
+    if (
+      selectedService === "DRIVING_RENEW" &&
+      !extraFields.expiredLicenseImage
+    ) {
       newErrors.expiredLicenseImage = "صورة الرخصة المنتهية مطلوبة";
     }
 
@@ -481,6 +492,16 @@ const TrafficServices = forwardRef((props, ref) => {
     if (selectedService === "DRIVING_RENEW" && !extraFields.notes) {
       newErrors.notes = "فترة التجديد مطلوبة";
     }
+
+    // التحقق من رقم محضر الفقدان/التلف لخدمة بدل فاقد/تالف
+    if (
+      selectedService === "DRIVING_REPLACE_LOST" &&
+      !extraFields.lossReportNumber
+    ) {
+      newErrors.lossReportNumber = "رقم محضر الفقدان/التلف مطلوب";
+    }
+
+    // التحقق من الملفات المطلوبة حسب نوع السبب في بدل فاقد/تالف
     if (selectedService === "DRIVING_REPLACE_LOST") {
       if (extraFields.lossType === "تلف" && !extraFields.damagedLicenseUrl) {
         newErrors.damagedLicenseUrl = "يرجى رفع صورة الرخصة التالفة";
@@ -489,6 +510,7 @@ const TrafficServices = forwardRef((props, ref) => {
         newErrors.policeReportUrl = "يرجى رفع محضر الشرطة";
       }
     }
+
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
